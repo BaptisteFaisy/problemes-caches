@@ -8,6 +8,7 @@
  */
 
 import { confidenceLabel } from '../../src/ui/format';
+import { localeFrom } from '../../src/ui/i18n';
 import { copyOf } from './i18n';
 import { renderAgentVideo, renderCompteursPortail, renderPortail, renderResultat, renderVocabulaire } from './render-agents';
 import { renderDetail, renderHero, renderMessage, renderProblems, renderSections, renderStatic } from './render';
@@ -15,7 +16,12 @@ import { addMeToo, buildDemoState, confirmSuspect, detachTicket, matchText, reje
 import type { DemoLocale, DemoState } from './types';
 
 /** État courant, tenu par ce module uniquement : le DOM n'est qu'une vue. */
-let etat: DemoState = buildDemoState('fr');
+/**
+ * État courant, tenu par ce module uniquement : le DOM n'est qu'une vue.
+ * Anglais par défaut — la soumission Codegeist est en anglais (§17) —, le
+ * français étant à un clic via le sélecteur de langue.
+ */
+let etat: DemoState = buildDemoState('en');
 
 /** Rend tout : textes statiques, accroche, sections, panneaux et onglet. */
 function rendreTout(etatCourant: DemoState): void {
