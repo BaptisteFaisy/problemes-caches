@@ -31,6 +31,8 @@ L'agent présente 5 amorces prêtes à l'emploi :
 
 Toutes les actions renvoient une enveloppe standardisée définie dans [src/mcp/result.ts](../src/mcp/result.ts) (`{ ok: true, data: T }` ou `{ ok: false, error: string }`). Une action ne jette jamais d'exception non gérée : en cas d'erreur ou d'absence de données, l'agent reçoit un motif explicable.
 
+Les entrées ci-dessous sont celles déclarées dans le bloc `action:` de [manifest.yml](../manifest.yml) ; les formes de données renvoient aux types du domaine ([src/core/types.ts](../src/core/types.ts) : `MatchResult`, `Problem`, `ProblemBill`, `Surge`, `CustomerUpdateDraft`…). Les exemples de réponse sont **illustratifs** (valeurs cohérentes avec le parcours du §7) ; l'implémentation des gestionnaires (`src/mcp/actions.ts`, contrat WP-M de [docs/CONTRATS.md](CONTRATS.md)) est en cours de fusion au moment de la rédaction.
+
 ### 2.1 `match-known-problem`
 - **Verbe** : `GET`
 - **Description** : Vérifie si un texte libre ou une clé de ticket Jira correspond à un problème connu, renvoie le contournement et le niveau de confiance.
@@ -102,7 +104,7 @@ Toutes les actions renvoient une enveloppe standardisée définie dans [src/mcp/
         "key": "PRB-12",
         "title": "VPN · déconnexion · après mise à jour du poste",
         "state": "workaround-published",
-        "tickets": 43,
+        "tickets": 41,
         "hours": 61.0,
         "people": 38,
         "trend": {
@@ -114,7 +116,7 @@ Toutes les actions renvoient une enveloppe standardisée définie dans [src/mcp/
       },
       {
         "key": "PRB-15",
-        "title": "Imprimante étage 3 · blocage spooler · badge non reconnu",
+        "title": "Imprimante étage 3 · échec d'impression · file d'attente bloquée",
         "state": "confirmed",
         "tickets": 24,
         "hours": 19.5,
@@ -173,7 +175,7 @@ Toutes les actions renvoient une enveloppe standardisée définie dans [src/mcp/
       "slaBreaches": 6,
       "reopens": 3,
       "escalations": 5,
-      "meToo": 12,
+      "meToo": 23,
       "hoursMethod": "mixed",
       "methodLabel": "temps saisi quand disponible, interventions × 10 min sinon"
     }
@@ -333,28 +335,27 @@ Toutes les actions renvoient une enveloppe standardisée définie dans [src/mcp/
 
 ## 3. Connexion depuis un client MCP externe
 
-Le module `rovo:mcp` (clé `problemes-caches-mcp`) est compatible avec les spécifications ouvertes du **Model Context Protocol** d'Anthropic.
+Le module `rovo:mcp` (clé `problemes-caches-mcp`) déclare les 7 outils ci-dessus au serveur MCP hébergé par Atlassian pour l'app installée :
 
-Pour brancher les outils sur un client externe (ex. Cursor IDE, Claude Desktop ou orchestrateur d'agents) :
-
-1. **Passerelle Atlassian MCP** : l'accès distant s'appuie sur le connecteur MCP officiel d'Atlassian Forge exposant les modules déclarés dans `manifest.yml`.
-2. **Authentification** : le client s'authentifie par jeton d'API Atlassian ou jeton OAuth 2.0 3LO avec les scopes déclarés (`read:jira-work`, `read:servicedesk-request`).
-3. **Configuration du client** (exemple `claude_desktop_config.json` ou `.cursor/mcp.json`) :
-```json
-{
-  "mcpServers": {
-    "problemes-caches": {
-      "command": "npx",
-      "args": [
-        "-y",
-        "@atlassian/forge-mcp-gateway",
-        "--site",
-        "https://votredomaine.atlassian.net",
-        "--app-id",
-        "ari:cloud:ecosystem::app/REPLACE_WITH_APP_ID"
-      ]
-    }
-  }
-}
+```yaml
+# manifest.yml — extrait
+rovo:mcp:
+  - key: problemes-caches-mcp
+    name: Problèmes cachés
+    tools:
+      - match-known-problem
+      - list-top-problems
+      - get-problem
+      - list-suspects
+      - get-surges
+      - draft-customer-update
+      - confirm-membership
 ```
-Une fois le serveur connecté, les 7 outils apparaissent dans la palette d'actions de l'assistant IA avec leur schéma d'entrée strict.
+
+Principe de branchement :
+
+1. **Serveur distant hébergé** : c'est la plateforme Atlassian qui expose les outils de l'app en tant que serveur MCP distant — l'app elle-même n'ouvre aucun port ni aucune sortie réseau (§17).
+2. **Authentification** : le client MCP s'authentifie auprès d'Atlassian (OAuth) avec un compte autorisé sur le site où l'app est installée ; les appels s'exécutent ensuite avec les scopes déclarés dans le manifeste (`read:jira-work`, `read:servicedesk-request`, …).
+3. **Client** : tout client compatible MCP (Rovo Chat, IDE ou assistant prenant en charge les serveurs MCP distants) ajoute l'URL du serveur MCP de l'app et découvre les 7 outils avec leur schéma d'entrée strict (celui du bloc `action:` du manifeste).
+
+> **À valider** : la procédure exacte de connexion d'un client tiers (URL du serveur, flux OAuth) dépend de la documentation Atlassian du module [`rovo:mcp`](https://developer.atlassian.com/platform/forge/manifest-reference/modules/rovo-mcp/) au moment de la soumission ; elle sera complétée ici après test sur le site de démonstration (§16). Rien dans le dépôt ne présume d'un paquet passerelle tiers.

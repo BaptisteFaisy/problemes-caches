@@ -26,11 +26,11 @@ graph TD
 ```
 
 ### Fonctions d'arrière-plan et d'exécution
-- `trigger` : capte les événements Jira `avi:jira:created:issue`, `avi:jira:updated:issue` et `avi:jira:commented:issue` pour lancer la détection immédiate.
-- `consumer` : file de messages `problemes-caches-bootstrap` dédiée aux traitements de masse lors de l'initialisation.
-- `scheduledTrigger` : déclencheur périodique quotidien (`nightly-recalc`) pour la consolidation nocturne (grappes, suspects, surveillance et synthèses).
+- `trigger` : capte les événements Jira `avi:jira:created:issue`, `avi:jira:updated:issue` et `avi:jira:commented:issue` pour lancer la détection immédiate (fonctions `issue-created`, `issue-updated`, `issue-commented`).
+- `consumer` : file de messages `problemes-caches-bootstrap`, dédiée au traitement par lots de l'initialisation (fonction `bootstrap-batch`, timeout 900 s). Le cahier (§14) esquisse aussi une file pour l'extraction à l'arrivée ; dans le manifeste actuel, les déclencheurs appellent directement leurs fonctions — le branchement définitif relève de l'orchestration (contrat WP-K de [docs/CONTRATS.md](CONTRATS.md), en cours de fusion).
+- `scheduledTrigger` : déclencheur périodique quotidien (`nightly-recalc`, timeout 900 s) pour la consolidation nocturne (grappes, suspects, surveillance et synthèses).
 - `sql` : moteur de persistance relationnel managé Forge SQL (`engine: mysql`).
-- `llm` : accès au modèle Claude hébergé par Atlassian pour l'extraction de signatures et la justification des proximités textuelles.
+- `llm` : accès au modèle Claude hébergé par Atlassian (`model: [claude]`) pour l'extraction de signatures, la comparaison ticket ↔ problème et les brouillons.
 
 ### Interfaces utilisateur (UI Custom / UI Kit)
 - `jira:issuePanel` : panneau contextuel sur chaque ticket de support ([src/ui/issue-panel.tsx](../src/ui/issue-panel.tsx)) et sur le ticket de problème unique.
@@ -123,7 +123,7 @@ L'application consomme l'API GraphQL Atlassian Teamwork Graph ([src/platform/gra
 
 ## 6. Modèle de données — Les 11 tables Forge SQL (§15)
 
-Toutes les tables sont créées dans Forge SQL (moteur MySQL/InnoDB, encodage `utf8mb4_bin`, schéma défini dans [src/platform/db/schema.ts](../src/platform/db/schema.ts)) :
+Toutes les tables sont créées dans Forge SQL (moteur MySQL/InnoDB, encodage `utf8mb4_bin`, schéma défini dans [src/platform/db/schema.ts](../src/platform/db/schema.ts)). Forge SQL ne supporte pas les clés étrangères : les liens entre tables sont portés par des colonnes `*_id` et des index. Le tableau du §15 du cahier liste dix tables ; la onzième (`bootstrap_progress`) a été ajoutée par le code pour porter la progression de l'initialisation (PC-10) :
 
 | N° | Table | Rôle & Contenu |
 |---|---|---|
@@ -156,7 +156,7 @@ Le choix architectural d'une signature explicite repose sur trois contraintes et
 | Limite plateforme | Contrainte Forge | Conséquence & Solution retenue dans l'app |
 |---|---|---|
 | **Espace disque SQL** | 1 Gio max par installation | Stockage strict des faits et signatures. **Aucun texte intégral de ticket n'est conservé en base** : seul le résumé (`summary`) est tronqué à 512 caractères. |
-| **Temps de requête SQL** | 5 secondes par `SELECT` | Indexation systématique de toutes les clés de recherche (`project_id`, `created_at`, signatures, statuts). Aucune jointure polygonale complexe. |
-| **Pas de transactions distribuées** | Pas de commit multi-ressources | Opérations de persistance idempotentes (`REPLACE INTO`, `INSERT ... ON DUPLICATE KEY UPDATE`) garantissant la cohérence en cas de reprise sur incident. |
+| **Temps de requête SQL** | 5 secondes par `SELECT` | Indexation systématique des clés de recherche (`project_id`, `created_at`, signature, statut — voir les `KEY` de [src/platform/db/schema.ts](../src/platform/db/schema.ts)) ; pas de jointures complexes, écritures groupées par paquets de 200 lignes ([src/platform/db/query.ts](../src/platform/db/query.ts)). |
+| **Aucune API de transaction** | Une seule instruction par requête ; pas de commit multi-instructions | Écritures idempotentes et rejouables : `INSERT ... ON DUPLICATE KEY UPDATE` (`onDuplicateUpdate`), remplacement en deux instructions (`DELETE` puis `INSERT` groupé, `replaceRows`), schéma rejouable (`CREATE TABLE IF NOT EXISTS`) — [src/platform/db/query.ts](../src/platform/db/query.ts). |
 | **Durée d'exécution** | 900 s pour les fonctions asynchrones | Découpage des calculs de masse en étapes ordonnées avec reprise sur curseur (`bootstrapBatch`, `nightlyRecalc`). |
 | **Débit LLM** | 100 req/min et 500k tokens/min | Limiteur de débit local dans [src/platform/llm.ts](../src/platform/llm.ts) borné à 90 req/min, cache d'empreintes SHA-256 et préfiltrage déterministe par indices certains. |

@@ -24,11 +24,13 @@ The app groups recurring incidents that share the same root cause, prices their 
 1. Open your JSM service project (e.g. `SUP`).
 2. Go to **Project settings** → **Hidden problems** (screen 5, `jira:projectSettingsPage` in [manifest.yml](../manifest.yml)).
 3. Scroll down to the **Sample set** card and click **Load 60 days of sample tickets** (`settings.loadSample` in [src/ui/i18n/en.ts](../src/ui/i18n/en.ts)).
-4. 120 tickets across 60 days are injected into Forge SQL (§20). Three hidden problems and one recurring request cluster are instantly computed:
-   - **Problem 1**: VPN disconnects after workstation OS update (43 tickets, 61 hours, 38 people).
-   - **Problem 2**: Floor 3 badge/printer spooler timeout (`0x80070005`, 24 tickets).
-   - **Problem 3**: Duplicate monthly invoice notification (`ERR-4001`, 18 tickets).
-   - **Recurring service request**: Self-service password resets (grouped apart as an automation candidate, §18).
+4. 120 tickets across 60 days are injected into Forge SQL (§20), generated deterministically from a fixed seed (`src/sample/dataset.ts`, contract WP-O in [docs/CONTRATS.md](CONTRATS.md), being merged). The set contains **three hidden problems and one normal recurring request**:
+   - **Remote access dropping after a workstation update** — the reference scenario of the specification: 43 tickets in 3 weeks, 61 support hours, 38 people touched, rising (§7.1).
+   - **A floor printer** repeatedly failing (§20).
+   - **Invoices received twice** (§20).
+   - **Password resets** — a costly but defect-free recurring request, classified apart as an automation candidate (§18).
+
+   Exact per-problem counts for the printer and invoice clusters are displayed by the app itself after loading: check the **Suspects to review** and **Problems by cost** sections of the queue page.
 
 ---
 
@@ -39,7 +41,7 @@ Follow this order to walk through the complete problem management lifecycle:
 | Step | Screen | Forge Module | What to Look For |
 |---|---|---|---|
 | 1 | **Queue Page: "Problems"** | `jiraServiceManagement:queuePage` | Top suspect cluster at the top, cost breakdown, surge alert banner, recurring request section ([src/ui/queue-page.tsx](../src/ui/queue-page.tsx)). |
-| 2 | **Suspect drilldown** | Queue modal | Review the 43 grouped tickets, see the rationale per ticket, remove 2 false positives, click **Confirm and create problem ticket** (§7.1). |
+| 2 | **Suspect drilldown** | Queue modal | Review the grouped tickets (43 in the VPN scenario of §7.1), see the rationale per ticket, remove 2 false positives, click **Confirm and create problem ticket** (§7.1). |
 | 3 | **Problem Issue Panel** | `jira:issuePanel` | Open the generated `PRB` issue: cumulative bill (tickets, hours, people), ticket curve per day, cause/workaround fields, portal toggle ([src/ui/issue-panel.tsx](../src/ui/issue-panel.tsx)). |
 | 4 | **Agent Panel on an incident** | `jira:issuePanel` | Open any ticket from the group: recognized problem banner, confidence level, validated workaround, one-click "Attach and prepare answer" button (§7.2). |
 | 5 | **Developer Encart** | `jira:issueContext` | Open the bug linked to the fix: "This bug costs 61 h of support per month for 38 people" (§13.4, [src/ui/issue-context.tsx](../src/ui/issue-context.tsx)). |
@@ -50,7 +52,9 @@ Follow this order to walk through the complete problem management lifecycle:
 
 ## 4. Option B — Live Ticket Recognition (under 30 s, PC-07)
 
-Submit any of the following 5 realistic texts in the customer portal or via Jira issue creation. Then open the ticket as an agent: within 30 seconds, the agent panel flags the match.
+Submit any of the following 5 realistic texts in the customer portal or via Jira issue creation. Then open the ticket as an agent: within 30 seconds (PC-07, `MATCH_DEADLINE_SECONDS = 30` in [src/core/constants.ts](../src/core/constants.ts)), the agent panel flags the match.
+
+The texts are aligned with the three hidden problems of the sample set (§20). Expected matches below assume the sample set has been loaded first (Option A); the error-code texts (`0x80070005`, `ERR-4001`) match through the shared hard clue when the grouped tickets carry the same code, otherwise through the signature itself (§8.4).
 
 ### Text 1 · VPN / Remote Access (Matches Problem 1)
 - **French**: `Mon accès distant coupe toutes les dix minutes depuis la mise à jour de mon poste ce matin.`
@@ -114,7 +118,15 @@ Open Atlassian Rovo and select the **Hidden Problems** agent (`problemes-caches-
 
 ---
 
-## 7. Clean Up
+## 7. Prerequisites & Build Status
+
+- The app runs on any Jira site with Jira Service Management; the Codegeist demo site already includes JSM and sample data (§16).
+- Recognition, panels, the Rovo agent and the MCP tools all read from Forge SQL — no external service, no network egress (§17).
+- **Status at time of writing (11 Nov 2026)**: the domain layer (`src/core/`), the Atlassian platform layer (`src/platform/`), the SQL layer (`src/platform/db/`) and the six UI screens (`src/ui/`) are merged. The backend orchestration (resolver handlers, event jobs — contracts WP-K/WP-L in [docs/CONTRATS.md](CONTRATS.md)), the MCP action implementations (WP-M) and the sample-set loader (WP-O) are being merged in parallel branches. This note will be removed for the submission build.
+
+---
+
+## 8. Clean Up
 
 To reset the demo environment:
 - Go to **Project settings** → **Hidden problems** → **Sample set**.
