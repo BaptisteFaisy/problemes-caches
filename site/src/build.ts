@@ -16,7 +16,7 @@ import type { BillTicket } from '../../src/core/bill';
 import { computeBill, computeTrend, hoursOf } from '../../src/core/bill';
 import { classifyRecurring, clusterIdOf, computeCluster } from '../../src/core/cluster';
 import { detectSurge } from '../../src/core/surge';
-import { normalizeLabel, resolveTermId, suggestNewTerm } from '../../src/core/vocabulary';
+import { suggestNewTerm } from '../../src/core/vocabulary';
 import { normalizeTrigger, signatureKey } from '../../src/core/types';
 import type {
   BillPeriod,
@@ -49,6 +49,20 @@ import type {
   DemoTicket,
   DemoTotals,
 } from './types';
+
+/** Déclencheurs du jeu d'exemple, traduits pour l'affichage seulement. */
+const TRIGGERS: Record<string, { fr: string; en: string }> = {
+  'après la mise à jour du poste': { fr: 'après la mise à jour du poste', en: 'after the workstation update' },
+  '3e étage': { fr: '3e étage', en: 'third floor' },
+  'après la clôture mensuelle': { fr: 'après la clôture mensuelle', en: 'after the monthly close' },
+  '': { fr: '', en: '' },
+};
+
+/** Déclencheur affiché dans la langue du site (la donnée, elle, ne change pas). */
+function triggerOf(texte: string, locale: DemoLocale): string {
+  const trouve = TRIGGERS[texte];
+  return trouve ? trouve[locale] : texte;
+}
 
 /** Clé du problème de démonstration déjà confirmé (§7.1 : « PRB-12 »). */
 const SEEDED_PROBLEM_GROUP = 'remote-access';
@@ -201,32 +215,46 @@ export function trendFor(tickets: readonly DemoTicket[], meToo: readonly DemoMeT
   return computeTrend(previous, current);
 }
 
-/** Vocabulaire tenu, dérivé des signatures du jeu (§8.3). */
-function buildVocabulary(tickets: readonly DemoTicket[], projectId: string, now: string): Vocabulary {
+/** Vocabulaire tenu, dérivé des signatures du jeu (§8.3), libellés dans la langue du site. */
+function buildVocabulary(
+  tickets: readonly DemoTicket[],
+  projectId: string,
+  now: string,
+  locale: DemoLocale,
+): Vocabulary {
   const systems: Term[] = [];
   const symptoms: Term[] = [];
   const vus = new Set<string>();
   for (const ticket of tickets) {
     if (ticket.undetermined) continue;
-    for (const [kind, id, label, bucket] of [
-      ['system', ticket.systemId, ticket.systemId, systems],
-      ['symptom', ticket.symptomId, ticket.symptomId, symptoms],
-    ] as const) {
-      if (vus.has(`${kind}:${id}`)) continue;
-      vus.add(`${kind}:${id}`);
-      const known = resolveTermId({ systems, symptoms }, kind, label);
-      const created = suggestNewTerm(projectId, kind, LABELS[label]?.fr ?? label, now);
-      bucket.push({ ...created, id: known ?? label });
-    }
+    ajouterTerme(systems, vus, 'system', ticket.systemId, projectId, now, locale);
+    ajouterTerme(symptoms, vus, 'symptom', ticket.symptomId, projectId, now, locale);
   }
   return { systems, symptoms };
+}
+
+/** Ajoute un terme une seule fois ; son identifiant reste celui du jeu (§8.3). */
+function ajouterTerme(
+  bucket: Term[],
+  vus: Set<string>,
+  kind: 'system' | 'symptom',
+  id: string,
+  projectId: string,
+  now: string,
+  locale: DemoLocale,
+): void {
+  const cle = `${kind}:${id}`;
+  if (vus.has(cle)) return;
+  vus.add(cle);
+  const terme = suggestNewTerm(projectId, kind, LABELS[id]?.[locale] ?? id, now);
+  bucket.push({ ...terme, id });
 }
 
 /** Libellé lisible d'un terme, dans la langue du site (§8.3, §17). */
 function labelOf(vocabulary: Vocabulary, kind: 'system' | 'symptom', id: string, locale: DemoLocale): string {
   const terms = kind === 'system' ? vocabulary.systems : vocabulary.symptoms;
-  const label = terms.find((term) => term.id === id)?.label ?? id;
-  return LABELS[label]?.[locale] ?? label;
+  const trouve = terms.find((term) => term.id === id);
+  return trouve?.label ?? LABELS[id]?.[locale] ?? id;
 }
 
 /** Le problème déjà confirmé de la démo (§7.1) : état, cause, contournement. */
@@ -283,7 +311,7 @@ export function buildCluster(
   });
   return {
     id,
-    signature: `${labelOf(vocabulary, 'system', first.systemId, locale)} · ${labelOf(vocabulary, 'symptom', first.symptomId, locale)} · ${first.triggerText}`,
+    signature: `${labelOf(vocabulary, 'system', first.systemId, locale)} · ${labelOf(vocabulary, 'symptom', first.symptomId, locale)} · ${triggerOf(first.triggerText, locale)}`,
     systemLabel: labelOf(vocabulary, 'system', first.systemId, locale),
     symptomLabel: labelOf(vocabulary, 'symptom', first.symptomId, locale),
     triggerText: first.triggerText,
@@ -384,7 +412,7 @@ export function buildDemoState(locale: DemoLocale, seed: number = SAMPLE_DEFAULT
     minutesPerTouch: MINUTES_PER_TOUCH,
     enabledLines: ['tickets', 'hours', 'people', 'orgs', 'meToo'],
   };
-  const vocabulary = buildVocabulary(tickets, settings.projectId, now);
+  const vocabulary = buildVocabulary(tickets, settings.projectId, now, locale);
   const groups = groupBySignature(tickets);
   const clusters = [...groups.values()]
     .map((bucket) => buildCluster(bucket, vocabulary, settings, locale, now))
