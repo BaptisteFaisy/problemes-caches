@@ -21,7 +21,7 @@ export function PanelWorkaround({
   return (
     <Fragment>
       {problem.workaround ? (
-        <SectionMessage appearance="info" title={t(locale, 'panel.workaround')}>
+        <SectionMessage appearance="information" title={t(locale, 'panel.workaround')}>
           <Text>{problem.workaround}</Text>
           {problem.workaroundUrl ? (
             <Link href={problem.workaroundUrl}>{t(locale, 'panel.procedure')}</Link>

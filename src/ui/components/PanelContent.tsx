@@ -52,7 +52,7 @@ export function PanelContent({
         onAttach={() => onAttach(matchProblemId)}
         onDetach={() => onDetach(membership?.problemId ?? '')}
       />
-      {notice ? <SectionMessage appearance="info"><Text>{notice}</Text></SectionMessage> : null}
+      {notice ? <PanelNotice notice={notice} /> : null}
       <PanelAnswer locale={locale} draft={draft} />
       <PanelAlternatives locale={locale} alternatives={data.alternatives} onAttach={onAttach} />
       <PanelProposals
@@ -62,5 +62,17 @@ export function PanelContent({
         onAttach={onAttach}
       />
     </Fragment>
+  );
+}
+
+/**
+ * Avis d'une action du panneau (rattachement, retrait, erreur). UI Kit 2 :
+ * `appearance="information"`, l'ancienne valeur `info` n'existe plus.
+ */
+function PanelNotice({ notice }: { notice: string }): JSX.Element {
+  return (
+    <SectionMessage appearance="information">
+      <Text>{notice}</Text>
+    </SectionMessage>
   );
 }

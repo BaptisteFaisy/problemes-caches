@@ -58,7 +58,10 @@ function PanelAlternativeItem({
       <Text>{title} · {confidenceLabel(locale, match.confidence)}</Text>
       <Text>{t(locale, 'panel.justification', { rationale: match.rationale })}</Text>
       {problem ? (
-        <Button text={t(locale, 'panel.attachAndDraft')} onClick={() => onAttach(problem.id)} />
+        // UI Kit 2 : libellé du bouton en children.
+        <Button onClick={() => onAttach(problem.id)}>
+          {t(locale, 'panel.attachAndDraft')}
+        </Button>
       ) : null}
     </Fragment>
   );

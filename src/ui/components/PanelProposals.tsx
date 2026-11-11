@@ -33,10 +33,10 @@ export function PanelProposals({
           </Text>
           <Text>{t(locale, 'panel.justification', { rationale: proposal.rationale })}</Text>
           {proposal.issueId === issueId ? (
-            <Button
-              text={t(locale, 'panel.attachAndDraft')}
-              onClick={() => onAttach(proposal.problemId)}
-            />
+            // UI Kit 2 : libellé du bouton en children.
+            <Button onClick={() => onAttach(proposal.problemId)}>
+              {t(locale, 'panel.attachAndDraft')}
+            </Button>
           ) : null}
         </Fragment>
       ))}
