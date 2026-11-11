@@ -9,13 +9,14 @@
     "node": ">=22"
   },
   "scripts": {
-    "typecheck": "tsc --noEmit",
-    "test": "node --test --experimental-strip-types --import ./tools/strip_ts_loader.mjs \"src/**/*.test.ts\"",
+    "typecheck": "tsc --noEmit && tsc -p site/tsconfig.json --noEmit",
+    "test": "node --test --experimental-strip-types --import ./tools/strip_ts_loader.mjs \"src/**/*.test.ts\" \"site/src/*.test.ts\"",
     "test:core": "node --test --experimental-strip-types --import ./tools/strip_ts_loader.mjs src/core/*.test.ts",
     "lint": "forge lint",
     "build": "forge build",
     "check": "npm run typecheck && npm run test",
-    "limits": "python3 tools/check_limits.py"
+    "limits": "python3 tools/check_limits.py",
+    "site:build": "node site/build.mjs"
   },
   "dependencies": {
     "@forge/api": "^8.5.0",
@@ -31,9 +32,10 @@
   "devDependencies": {
     "@forge/manifest": "^13.9.0",
     "@types/node": "^22.10.0",
+    "@types/react": "^18.2.64",
     "ajv": "^8.20.0",
+    "esbuild": "^0.28.2",
     "js-yaml": "^4.3.2",
-    "typescript": "^5.7.0",
-    "@types/react": "^18.2.64"
+    "typescript": "^5.7.0"
   }
 }

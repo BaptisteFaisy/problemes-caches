@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Hidden Problems — what your tickets repeat, and what it costs</title>
+  <meta name="description" content="Hidden Problems is an Atlassian Forge app for Jira Service Management: it groups tickets that share a root cause, prices each recurring problem, keeps one problem ticket up to date, recognises new tickets on arrival and warns customers before they write." />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <a class="skip" href="#demo" data-i18n="skip">Skip to the demo</a>
+
+  <header id="entete">
+    <a id="marque" href="#accroche">
+      <span class="marque-symbole" aria-hidden="true">◍</span>
+      <span id="marque-nom">Hidden Problems</span>
+    </a>
+    <nav id="navigation" aria-label="Sections">
+      <a href="#probleme" data-i18n="nav.problem">The problem</a>
+      <a href="#demo" data-i18n="nav.demo">Live demo</a>
+      <a href="#architecture" data-i18n="nav.architecture">Architecture</a>
+      <a href="#rovo" data-i18n="nav.rovo">Rovo &amp; MCP</a>
+      <a href="#juges" data-i18n="nav.judges">For judges</a>
+    </nav>
+    <div id="selecteur-langue" role="group" aria-label="Language / Langue">
+      <button type="button" data-locale="en" aria-pressed="true">EN</button>
+      <button type="button" data-locale="fr" aria-pressed="false">FR</button>
+    </div>
+  </header>
+
+  <main>
+    <!-- ---------------------------------------------------------- accroche -->
+    <section id="accroche" aria-labelledby="titre-app">
+      <p class="surtitre" data-i18n="hero.kicker">Atlassian Forge · Codegeist 2026 · Apps for Business Teams</p>
+      <h1 id="titre-app" data-i18n="hero.title">Hidden Problems</h1>
+      <p id="sous-titre" data-i18n="hero.subtitle"></p>
+      <ul id="chiffres-cles" class="chiffres"></ul>
+      <div id="actions-acroche">
+        <a class="bouton bouton--primaire" href="#demo" data-i18n="hero.cta">Try the live demo</a>
+        <a class="bouton" href="https://github.com/BaptisteFaisy/problemes-caches" rel="noopener">GitHub</a>
+      </div>
+      <p class="note" data-i18n="hero.note"></p>
+    </section>
+
+    <!-- -------------------------------------------------------- le problème -->
+    <section id="probleme" aria-labelledby="titre-probleme">
+      <h2 id="titre-probleme" data-i18n="problem.title"></h2>
+      <p class="chapo" data-i18n="problem.lead"></p>
+      <ul id="liste-probleme" class="cartes"></ul>
+    </section>
+
+    <!-- ------------------------------------------------------- démo vivante -->
+    <section id="demo" aria-labelledby="titre-demo">
+      <h2 id="titre-demo" data-i18n="demo.title"></h2>
+      <p class="chapo" data-i18n="demo.lead"></p>
+      <p class="note" data-i18n="demo.disclaimer"></p>
+
+      <div id="onglets" role="tablist" aria-label="Demo">
+        <button type="button" role="tab" id="onglet-problems" data-onglet="problems" aria-selected="true" aria-controls="panneau-problems" data-i18n="tab.problems">Problems queue</button>
+        <button type="button" role="tab" id="onglet-agent" data-onglet="agent" aria-selected="false" aria-controls="panneau-agent" tabindex="-1" data-i18n="tab.agent">Agent panel</button>
+        <button type="button" role="tab" id="onglet-portail" data-onglet="portail" aria-selected="false" aria-controls="panneau-portail" tabindex="-1" data-i18n="tab.portal">Customer portal</button>
+        <button type="button" role="tab" id="onglet-vocabulaire" data-onglet="vocabulaire" aria-selected="false" aria-controls="panneau-vocabulaire" tabindex="-1" data-i18n="tab.vocabulary">Vocabulary</button>
+      </div>
+
+      <div id="panneau-problems" class="panneau" role="tabpanel" aria-labelledby="onglet-problems" tabindex="0">
+        <div class="panneau-barre">
+          <h3 data-i18n="demo.suspects"></h3>
+          <div class="periode" role="group" aria-label="Period">
+            <button type="button" data-periode="30d" aria-pressed="true" data-i18n="demo.period30">30 days</button>
+            <button type="button" data-periode="90d" aria-pressed="false" data-i18n="demo.period90">90 days</button>
+          </div>
+        </div>
+        <div id="suspects"></div>
+        <h3 data-i18n="demo.problems"></h3>
+        <div id="problemes-ouverts"></div>
+        <h3 data-i18n="demo.surges"></h3>
+        <div id="flambees"></div>
+        <h3 data-i18n="demo.recurring"></h3>
+        <div id="recurrentes"></div>
+        <h3 data-i18n="demo.undetermined"></h3>
+        <div id="tickets-sans-grappe"></div>
+      </div>
+
+      <div id="panneau-agent" class="panneau panneau--cache" role="tabpanel" aria-labelledby="onglet-agent" tabindex="0">
+        <label class="etiquette" for="texte-libre" data-i18n="agent.field"></label>
+        <textarea id="texte-libre" rows="3" data-i18n-placeholder="agent.placeholder"></textarea>
+        <div id="exemples-textes" class="exemples"></div>
+        <button type="button" id="bouton-reconnaitre" class="bouton bouton--primaire" data-i18n="agent.run"></button>
+        <div id="resultat-reconnaissance" class="resultat" aria-live="polite"></div>
+      </div>
+
+      <div id="panneau-portail" class="panneau panneau--cache" role="tabpanel" aria-labelledby="onglet-portail" tabindex="0">
+        <p class="note" data-i18n="portal.context"></p>
+        <div id="bandeau-portail" class="portail"></div>
+        <div id="compteurs-portail" class="compteurs" aria-live="polite"></div>
+      </div>
+
+      <div id="panneau-vocabulaire" class="panneau panneau--cache" role="tabpanel" aria-labelledby="onglet-vocabulaire" tabindex="0">
+        <p class="note" data-i18n="vocab.lead"></p>
+        <div class="deux-colonnes">
+          <div>
+            <h3 data-i18n="vocab.systems"></h3>
+            <ul id="liste-systemes" class="liste-termes"></ul>
+          </div>
+          <div>
+            <h3 data-i18n="vocab.symptoms"></h3>
+            <ul id="liste-symptomes" class="liste-termes"></ul>
+          </div>
+        </div>
+      </div>
+
+      <dialog id="detail-grappe" aria-labelledby="detail-titre">
+        <h3 id="detail-titre"></h3>
+        <p id="detail-signature" class="signature"></p>
+        <div id="detail-addition"></div>
+        <p id="detail-justification" class="justification"></p>
+        <h4 data-i18n="demo.tickets"></h4>
+        <ul id="detail-tickets" class="liste-tickets"></ul>
+        <div id="detail-actions" class="actions">
+          <button type="button" id="bouton-confirmer" class="bouton bouton--primaire" data-i18n="demo.confirm"></button>
+          <button type="button" id="bouton-rejeter" class="bouton bouton--discret" data-i18n="demo.reject"></button>
+          <button type="button" id="bouton-fermer" class="bouton" data-i18n="demo.close"></button>
+        </div>
+        <p id="detail-message" class="message" aria-live="polite"></p>
+      </dialog>
+    </section>
+
+    <!-- ------------------------------------------------------ architecture -->
+    <section id="architecture" aria-labelledby="titre-architecture">
+      <h2 id="titre-architecture" data-i18n="arch.title"></h2>
+      <p class="chapo" data-i18n="arch.lead"></p>
+      <h3 data-i18n="arch.flow"></h3>
+      <ol id="flux-arrivee" class="flux"></ol>
+      <h3 data-i18n="arch.modules"></h3>
+      <ul id="modules-forge" class="cartes"></ul>
+    </section>
+
+    <!-- -------------------------------------------------------- rovo & mcp -->
+    <section id="rovo" aria-labelledby="titre-rovo">
+      <h2 id="titre-rovo" data-i18n="rovo.title"></h2>
+      <p class="chapo" data-i18n="rovo.lead"></p>
+      <table id="outils-mcp" class="tableau">
+        <caption class="visually-hidden" data-i18n="rovo.tableCaption"></caption>
+        <thead>
+          <tr>
+            <th scope="col" data-i18n="rovo.key"></th>
+            <th scope="col" data-i18n="rovo.verb"></th>
+            <th scope="col" data-i18n="rovo.inputs"></th>
+            <th scope="col" data-i18n="rovo.returns"></th>
+          </tr>
+        </thead>
+        <tbody id="outils-mcp-corps"></tbody>
+      </table>
+    </section>
+
+    <!-- ------------------------------------------------------------ juges -->
+    <section id="juges" aria-labelledby="titre-juges">
+      <h2 id="titre-juges" data-i18n="judges.title"></h2>
+      <p class="chapo" data-i18n="judges.lead"></p>
+      <ol id="etapes-juges" class="etapes"></ol>
+      <h3 data-i18n="judges.texts"></h3>
+      <div id="texte-portal-exemples" class="exemples"></div>
+    </section>
+  </main>
+
+  <footer id="pied">
+    <p id="pied-licence" data-i18n="footer.license"></p>
+    <ul id="liens-pied">
+      <li><a href="https://github.com/BaptisteFaisy/problemes-caches" rel="noopener">GitHub</a></li>
+      <li><a href="https://github.com/BaptisteFaisy/problemes-caches/blob/main/docs/JUGES.md" rel="noopener" data-i18n="footer.judges"></a></li>
+      <li><a href="https://github.com/BaptisteFaisy/problemes-caches/blob/main/docs/ARCHITECTURE.md" rel="noopener" data-i18n="footer.architecture"></a></li>
+      <li><a href="https://codegeist2026.devpost.com/" rel="noopener">Codegeist 2026</a></li>
+    </ul>
+  </footer>
+
+  <script type="module" src="assets/demo.js"></script>
+</body>
+</html>
