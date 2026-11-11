@@ -58,7 +58,7 @@ function PanelAlternativeItem({
       <Text>{title} · {confidenceLabel(locale, match.confidence)}</Text>
       <Text>{t(locale, 'panel.justification', { rationale: match.rationale })}</Text>
       {problem ? (
-        <Button onClick={() => onAttach(problem.id)}>t(locale, 'panel.attachAndDraft')</Button>
+        <Button onClick={() => onAttach(problem.id)}>{t(locale, 'panel.attachAndDraft')}</Button>
       ) : null}
     </Fragment>
   );

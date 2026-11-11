@@ -32,7 +32,7 @@ export function QueueBootstrap({
     appearance="primary"
     
     isDisabled={busy}
-    onClick={onBootstrap}>t(locale, 'settings.bootstrapRun')</Button>
+    onClick={onBootstrap}>{t(locale, 'settings.bootstrapRun')}</Button>
       {bootstrap ? (
         <Text>
           {t(locale, 'settings.bootstrapProgress', {
@@ -46,13 +46,13 @@ export function QueueBootstrap({
         <Text>{t(locale, 'settings.bootstrapDone')}</Text>
       ) : null}
       {bootstrap && !bootstrap.finished ? (
-        <Button onClick={onRefresh}>t(locale, 'common.retry')</Button>
+        <Button onClick={onRefresh}>{t(locale, 'common.retry')}</Button>
       ) : null}
       <Heading size="small">{t(locale, 'settings.sample')}</Heading>
       <Button
     
     isDisabled={busy}
-    onClick={onSample}>t(locale, 'settings.loadSample')</Button>
+    onClick={onSample}>{t(locale, 'settings.loadSample')}</Button>
     </Fragment>
   );
 }

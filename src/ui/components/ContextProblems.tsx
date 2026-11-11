@@ -27,7 +27,7 @@ export function ContextProblems({
               key: entry.problem.issueKey ?? entry.problem.id,
             })}
           </Text>
-          <Lozenge>stateLabel(locale, entry.problem.state)</Lozenge>
+          <Lozenge>{stateLabel(locale, entry.problem.state)}</Lozenge>
           {entry.bill ? (
             <Text>
               {t(locale, 'common.perMonth', {

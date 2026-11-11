@@ -16,7 +16,7 @@ export function ErrorState({
     <SectionMessage appearance="error" title={t(locale, 'common.errorTitle')}>
       <Text>{t(locale, 'common.errorBody')}</Text>
       <Text>{message}</Text>
-      {retry ? <Button onClick={retry}>t(locale, 'common.retry')</Button> : null}
+      {retry ? <Button onClick={retry}>{t(locale, 'common.retry')}</Button> : null}
     </SectionMessage>
   );
 }

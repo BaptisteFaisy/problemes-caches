@@ -34,10 +34,10 @@ export function PanelActions({
      appearance="primary"
      
      isDisabled={busy}
-     onClick={onAttach}>t(locale, 'panel.attachAndDraft')</Button>
+     onClick={onAttach}>{t(locale, 'panel.attachAndDraft')}</Button>
       ) : null}
       {attached ? (
-        <Button isDisabled={busy} onClick={onDetach}>t(locale, 'panel.detach')</Button>
+        <Button isDisabled={busy} onClick={onDetach}>{t(locale, 'panel.detach')}</Button>
       ) : null}
     </ButtonGroup>
   );

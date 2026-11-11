@@ -60,15 +60,15 @@ function QueueSuspectRow({
      appearance="primary"
      
      isDisabled={busy}
-     onClick={() => onConfirm(line)}>t(locale, 'problems.confirm')</Button>
+     onClick={() => onConfirm(line)}>{t(locale, 'problems.confirm')}</Button>
         <Button
      
      isDisabled={busy}
-     onClick={() => onReject(line.cluster.id)}>t(locale, 'problems.reject')</Button>
+     onClick={() => onReject(line.cluster.id)}>{t(locale, 'problems.reject')}</Button>
         <Button
      
      isDisabled={busy}
-     onClick={() => onSplit(line)}>t(locale, 'problems.split')</Button>
+     onClick={() => onSplit(line)}>{t(locale, 'problems.split')}</Button>
       </ButtonGroup>
     </Fragment>
   );

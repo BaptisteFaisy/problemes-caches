@@ -50,7 +50,7 @@ function QueueByCostRow({
   return (
     <Fragment>
       <Text>{title}</Text>
-      {problem ? <Lozenge>stateLabel(locale, problem.state)</Lozenge> : null}
+      {problem ? <Lozenge>{stateLabel(locale, problem.state)}</Lozenge> : null}
       <QueueBillLine
         locale={locale}
         tickets={line.bill?.tickets}

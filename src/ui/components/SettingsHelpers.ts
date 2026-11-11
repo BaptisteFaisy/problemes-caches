@@ -95,3 +95,25 @@ function toFiniteNumber(raw: unknown): number | null {
   const value = Number(text);
   return Number.isFinite(value) ? value : null;
 }
+
+/**
+ * Valeurs initiales du formulaire, dérivées des réglages enregistrés (§13.5).
+ * Fonction pure : testable sans rendu, et seule source de l'état initial —
+ * l'écran ne recalcule jamais ces valeurs par lui-même (§17).
+ */
+export function formValuesFromSettings(settings: Settings, projectKey: string): SettingsFormData {
+  return {
+    watchedProject: settings.projectKey || projectKey,
+    thresholdTickets: String(settings.thresholds.tickets),
+    thresholdHours: String(settings.thresholds.hours),
+    thresholdPeople: String(settings.thresholds.people),
+    minutesPerTouch: String(settings.minutesPerTouch),
+    hourRateEur: settings.hourRateEur === null ? '' : String(settings.hourRateEur),
+    problemIssueType: settings.problemIssueType ?? '',
+    portalServices: settings.portalServices.join(', '),
+    surgeFactor: String(settings.surgeFactor),
+    surgeWindowMinutes: String(settings.surgeWindowMinutes),
+    watchDays: String(settings.watchDays),
+    enabledLines: [...settings.enabledLines],
+  };
+}

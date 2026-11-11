@@ -4,7 +4,7 @@
  */
 
 import { Fragment, useState } from 'react';
-import { Button, ButtonGroup, Heading, Range, SectionMessage, Text } from '@forge/react';
+import { Button, ButtonGroup, Heading, Label, Range, SectionMessage, Text } from '@forge/react';
 import type { BootstrapProgress, DataQuality } from '../../core/types';
 import { bootstrapProgress, clearSampleData, loadSampleData, startBootstrap } from '../api';
 import { errorMessage } from '../async';
@@ -121,8 +121,8 @@ function BootstrapSection({
     <Fragment>
       <Heading size="medium">{t(locale, 'settings.bootstrap')}</Heading>
       <ButtonGroup>
-        <Button onClick={handleStart}>t(locale, 'settings.bootstrapRun')</Button>
-        <Button onClick={handleCheck}>t(locale, 'common.retry')</Button>
+        <Button onClick={handleStart}>{t(locale, 'settings.bootstrapRun')}</Button>
+        <Button onClick={handleCheck}>{t(locale, 'common.retry')}</Button>
       </ButtonGroup>
       <BootstrapBar locale={locale} progress={progress} />
     </Fragment>
@@ -144,13 +144,16 @@ function BootstrapBar({
   if (!progress) return null;
   return (
     <Fragment>
-      <Range
-        name="bootstrapProgressBar"
-        label={t(locale, 'settings.bootstrapProgress', {
+      <Label labelFor="bootstrapProgressBar">
+        {t(locale, 'settings.bootstrapProgress', {
           done: progress.done,
           total: progress.total,
           failed: progress.failed,
         })}
+      </Label>
+      <Range
+        id="bootstrapProgressBar"
+        name="bootstrapProgressBar"
         min={0}
         max={progress.total > 0 ? progress.total : 1}
         defaultValue={progress.done}
@@ -194,8 +197,8 @@ function SampleSection({
     <Fragment>
       <Heading size="medium">{t(locale, 'settings.sample')}</Heading>
       <ButtonGroup>
-        <Button onClick={handleLoad}>t(locale, 'settings.loadSample')</Button>
-        {demoData ? <Button appearance="warning" onClick={handleClear}>t(locale, 'settings.clearSample')</Button> : null}
+        <Button onClick={handleLoad}>{t(locale, 'settings.loadSample')}</Button>
+        {demoData ? <Button appearance="warning" onClick={handleClear}>{t(locale, 'settings.clearSample')}</Button> : null}
       </ButtonGroup>
     </Fragment>
   );
