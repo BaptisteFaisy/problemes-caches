@@ -1,3 +1,3 @@
 # Sondage hermes
 
-Ligne A écrite par la branche de test.
+Ligne B écrite par la seconde branche : elle contredit la ligne A.
