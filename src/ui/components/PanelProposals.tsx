@@ -34,9 +34,8 @@ export function PanelProposals({
           <Text>{t(locale, 'panel.justification', { rationale: proposal.rationale })}</Text>
           {proposal.issueId === issueId ? (
             <Button
-              text={t(locale, 'panel.attachAndDraft')}
-              onClick={() => onAttach(proposal.problemId)}
-            />
+       
+       onClick={() => onAttach(proposal.problemId)}>t(locale, 'panel.attachAndDraft')</Button>
           ) : null}
         </Fragment>
       ))}

@@ -89,7 +89,7 @@ function SaveFeedback({
   return (
     <Fragment>
       {saved ? (
-        <SectionMessage appearance="confirmation">
+        <SectionMessage appearance="success">
           <Text>{t(locale, 'settings.saved')}</Text>
         </SectionMessage>
       ) : null}

@@ -22,7 +22,7 @@ export function PanelMatch({
   if (match.undetermined) {
     // §18 : une signature indéterminée n'est jamais regroupée d'office.
     return (
-      <SectionMessage appearance="info" title={t(locale, 'panel.title')}>
+      <SectionMessage appearance="information" title={t(locale, 'panel.title')}>
         <Text>{t(locale, 'panel.undetermined')}</Text>
       </SectionMessage>
     );

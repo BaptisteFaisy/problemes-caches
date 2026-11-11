@@ -41,7 +41,7 @@ export function PortalMeToo({ locale, problemId, symptomLabel, isAnonymous }: Po
 
   return (
     <Fragment>
-      <Button text={t(locale, 'portal.meToo')} disabled={isAnonymous} onClick={() => setConfirmOpen(true)} />
+      <Button isDisabled={isAnonymous} onClick={() => setConfirmOpen(true)}>t(locale, 'portal.meToo')</Button>
       {isAnonymous ? <Text>{t(locale, 'common.error')}</Text> : null}
       {error ? <Text>{error}</Text> : null}
       {confirmOpen ? (
@@ -51,7 +51,7 @@ export function PortalMeToo({ locale, problemId, symptomLabel, isAnonymous }: Po
           closeButtonText={t(locale, 'common.cancel')}
         >
           <Text>{t(locale, 'portal.banner.body', { symptom: symptomLabel })}</Text>
-          <Button appearance="primary" text={t(locale, 'common.confirm')} onClick={confirm} />
+          <Button appearance="primary" onClick={confirm}>t(locale, 'common.confirm')</Button>
         </ModalDialog>
       ) : null}
     </Fragment>

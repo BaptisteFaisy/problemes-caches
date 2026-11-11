@@ -40,7 +40,7 @@ export function QueueContent(props: QueueContentProps): JSX.Element {
       <Heading size="large">{t(locale, 'problems.title')}</Heading>
       {isEmpty(data) ? <Text>{t(locale, 'problems.empty')}</Text> : null}
       {notice ? (
-        <SectionMessage appearance="info"><Text>{notice}</Text></SectionMessage>
+        <SectionMessage appearance="information"><Text>{notice}</Text></SectionMessage>
       ) : null}
       <QueueSuspects
         locale={locale}

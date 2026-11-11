@@ -5,7 +5,7 @@ import { t } from '../i18n/index';
 /** État de chargement : jamais une page blanche (§14). */
 export function LoadingState({ locale }: { locale: Locale }): JSX.Element {
   return (
-    <SectionMessage appearance="info" title={t(locale, 'common.loadingTitle')}>
+    <SectionMessage appearance="information" title={t(locale, 'common.loadingTitle')}>
       <Text>{t(locale, 'common.loading')}</Text>
     </SectionMessage>
   );

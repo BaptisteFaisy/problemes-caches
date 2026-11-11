@@ -67,7 +67,7 @@ function OperationFeedback({
   return (
     <Fragment>
       {notice ? (
-        <SectionMessage appearance="confirmation">
+        <SectionMessage appearance="success">
           <Text>{notice}</Text>
         </SectionMessage>
       ) : null}
@@ -121,8 +121,8 @@ function BootstrapSection({
     <Fragment>
       <Heading size="medium">{t(locale, 'settings.bootstrap')}</Heading>
       <ButtonGroup>
-        <Button text={t(locale, 'settings.bootstrapRun')} onClick={handleStart} />
-        <Button text={t(locale, 'common.retry')} onClick={handleCheck} />
+        <Button onClick={handleStart}>t(locale, 'settings.bootstrapRun')</Button>
+        <Button onClick={handleCheck}>t(locale, 'common.retry')</Button>
       </ButtonGroup>
       <BootstrapBar locale={locale} progress={progress} />
     </Fragment>
@@ -194,8 +194,8 @@ function SampleSection({
     <Fragment>
       <Heading size="medium">{t(locale, 'settings.sample')}</Heading>
       <ButtonGroup>
-        <Button text={t(locale, 'settings.loadSample')} onClick={handleLoad} />
-        {demoData ? <Button appearance="warning" text={t(locale, 'settings.clearSample')} onClick={handleClear} /> : null}
+        <Button onClick={handleLoad}>t(locale, 'settings.loadSample')</Button>
+        {demoData ? <Button appearance="warning" onClick={handleClear}>t(locale, 'settings.clearSample')</Button> : null}
       </ButtonGroup>
     </Fragment>
   );

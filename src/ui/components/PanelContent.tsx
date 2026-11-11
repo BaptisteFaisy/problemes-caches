@@ -52,7 +52,7 @@ export function PanelContent({
         onAttach={() => onAttach(matchProblemId)}
         onDetach={() => onDetach(membership?.problemId ?? '')}
       />
-      {notice ? <SectionMessage appearance="info"><Text>{notice}</Text></SectionMessage> : null}
+      {notice ? <SectionMessage appearance="information"><Text>{notice}</Text></SectionMessage> : null}
       <PanelAnswer locale={locale} draft={draft} />
       <PanelAlternatives locale={locale} alternatives={data.alternatives} onAttach={onAttach} />
       <PanelProposals

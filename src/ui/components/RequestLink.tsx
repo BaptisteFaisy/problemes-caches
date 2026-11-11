@@ -29,8 +29,8 @@ export function RequestLink({ locale, detail }: RequestLinkProps): JSX.Element {
   const fixTarget = detail.fixIssueKey ?? detail.fixedAt;
 
   return (
-    <SectionMessage appearance="info" title={t(locale, 'portal.request.attached')}>
-      <Lozenge text={stateText} appearance={stateAppearance(state)} />
+    <SectionMessage appearance="information" title={t(locale, 'portal.request.attached')}>
+      <Lozenge appearance={stateAppearance(state)}>stateText</Lozenge>
       <Text>{t(locale, 'portal.request.state', { state: stateText })}</Text>
       {detail.workaround ? <Text>{detail.workaround}</Text> : null}
       {fixTarget ? (

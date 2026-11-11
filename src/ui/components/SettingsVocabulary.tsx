@@ -76,7 +76,7 @@ function VocabNotice({
   return (
     <Fragment>
       {feedback ? (
-        <SectionMessage appearance="confirmation">
+        <SectionMessage appearance="success">
           <Text>{feedback}</Text>
         </SectionMessage>
       ) : null}
@@ -104,7 +104,7 @@ function TermSection({
     <Fragment>
       <Heading size="small">{title}</Heading>
       {terms.length >= 2 ? (
-        <Button text={t(locale, 'settings.merge')} onClick={() => onAction({ kind: 'merge', terms })} />
+        <Button onClick={() => onAction({ kind: 'merge', terms })}>t(locale, 'settings.merge')</Button>
       ) : null}
       {terms.length === 0 ? (
         <Text>{t(locale, 'common.none')}</Text>
@@ -125,8 +125,8 @@ function TermSection({
               </Cell>
               <Cell>
                 <ButtonGroup>
-                  <Button text={t(locale, 'settings.rename')} onClick={() => onAction({ kind: 'rename', term })} />
-                  <Button text={t(locale, 'settings.split')} onClick={() => onAction({ kind: 'split', term })} />
+                  <Button onClick={() => onAction({ kind: 'rename', term })}>t(locale, 'settings.rename')</Button>
+                  <Button onClick={() => onAction({ kind: 'split', term })}>t(locale, 'settings.split')</Button>
                 </ButtonGroup>
               </Cell>
             </Row>
