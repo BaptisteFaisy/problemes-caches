@@ -1,106 +1,157 @@
 /**
- * Seuils de suspicion, durée moyenne, taux horaire, type problème et flambées (§13.5).
- * Aucun calcul métier (§17) : affiche et collecte uniquement les paramètres saisis.
+ * Seuils de suspicion, coûts, type de problème et flambées (§13.5, §8.5, §8.6).
+ *
+ * Aucun calcul métier (§17) : le composant affiche les valeurs et remonte la
+ * saisie brute au formulaire parent, qui seul les convertit en `Settings`
+ * (`SettingsHelpers.buildSettingsFromForm`).
  */
 
-import { Fragment } from 'react';
-import { Heading, Textfield } from '@forge/react';
+import { Heading } from '@forge/react';
 import type { Settings } from '../../core/types';
 import type { Locale } from '../i18n/index';
 import { t } from '../i18n/index';
+import { SettingsField } from './SettingsField';
+import type { SettingsFormData } from './SettingsHelpers';
 
 export interface SettingsThresholdsProps {
   locale: Locale;
-  settings: Settings;
+  /** Valeurs courantes du formulaire, tenues par `SettingsForm`. */
+  values: SettingsFormData;
+  /** Remonte une saisie : `onChange(name, value)`. */
+  onChange: (name: string, value: unknown) => void;
 }
 
-/** Bloc formulaire des seuils (fenêtre 30 j), coûts, type de problème et flambées (§13.5). */
-export function SettingsThresholds({ locale, settings }: SettingsThresholdsProps): JSX.Element {
+/** Bloc « seuils » : tickets, heures, personnes sur la fenêtre de 30 jours (§8.5). */
+export function SettingsThresholds({ locale, values, onChange }: SettingsThresholdsProps): JSX.Element {
   return (
-    <Fragment>
+    <>
       <Heading size="medium">{t(locale, 'settings.thresholds')}</Heading>
-      <Textfield
+      <NumberField
+        locale={locale}
+        values={values}
+        onChange={onChange}
         name="thresholdTickets"
-        type="number"
-        label={t(locale, 'settings.thresholdTickets')}
-        defaultValue={String(settings.thresholds.tickets)}
-        isRequired
+        labelKey="settings.thresholdTickets"
+        required
       />
-      <Textfield
+      <NumberField
+        locale={locale}
+        values={values}
+        onChange={onChange}
         name="thresholdHours"
-        type="number"
-        label={t(locale, 'settings.thresholdHours')}
-        defaultValue={String(settings.thresholds.hours)}
-        isRequired
+        labelKey="settings.thresholdHours"
+        required
       />
-      <Textfield
+      <NumberField
+        locale={locale}
+        values={values}
+        onChange={onChange}
         name="thresholdPeople"
-        type="number"
-        label={t(locale, 'settings.thresholdPeople')}
-        defaultValue={String(settings.thresholds.people)}
-        isRequired
+        labelKey="settings.thresholdPeople"
+        required
       />
-      <Textfield
+      <NumberField
+        locale={locale}
+        values={values}
+        onChange={onChange}
         name="minutesPerTouch"
-        type="number"
-        label={t(locale, 'settings.minutesPerTouch')}
-        defaultValue={String(settings.minutesPerTouch)}
-        isRequired
+        labelKey="settings.minutesPerTouch"
+        required
       />
-      <Textfield
+      <NumberField
+        locale={locale}
+        values={values}
+        onChange={onChange}
         name="hourRateEur"
-        type="number"
-        label={t(locale, 'settings.hourRate')}
-        defaultValue={settings.hourRateEur === null ? '' : String(settings.hourRateEur)}
+        labelKey="settings.hourRate"
       />
-      <ProblemTypeField locale={locale} problemIssueType={settings.problemIssueType} />
-      <SurgeFields locale={locale} settings={settings} />
-    </Fragment>
+      <ProblemTypeField locale={locale} values={values} onChange={onChange} />
+      <SurgeFields locale={locale} values={values} onChange={onChange} />
+    </>
   );
 }
 
-function ProblemTypeField({
+/** Champ numérique du formulaire, libellé par la clé i18n passée (§17 : pas de texte en dur). */
+function NumberField({
   locale,
-  problemIssueType,
+  values,
+  onChange,
+  name,
+  labelKey,
+  required,
 }: {
   locale: Locale;
-  problemIssueType: string | null;
+  values: SettingsFormData;
+  onChange: (name: string, value: unknown) => void;
+  name: string;
+  labelKey: Parameters<typeof t>[1];
+  required?: boolean;
 }): JSX.Element {
   return (
-    <Textfield
-      name="problemIssueType"
-      label={t(locale, 'settings.problemType')}
-      description={t(locale, 'settings.problemTypeHelp')}
-      defaultValue={problemIssueType ?? ''}
+    <SettingsField
+      name={name}
+      type="number"
+      label={t(locale, labelKey)}
+      defaultValue={String(values[name] ?? '')}
+      isRequired={required}
+      onChange={(value) => onChange(name, value)}
     />
   );
 }
 
-function SurgeFields({ locale, settings }: { locale: Locale; settings: Settings }): JSX.Element {
+/** Type du ticket de problème : celui du projet s'il existe, sinon ce choix (§10). */
+function ProblemTypeField({
+  locale,
+  values,
+  onChange,
+}: {
+  locale: Locale;
+  values: SettingsFormData;
+  onChange: (name: string, value: unknown) => void;
+}): JSX.Element {
   return (
-    <Fragment>
-      <Heading size="medium">{t(locale, 'settings.surge')}</Heading>
-      <Textfield
-        name="surgeFactor"
-        type="number"
-        label={t(locale, 'settings.surgeFactor')}
-        defaultValue={String(settings.surgeFactor)}
-        isRequired
-      />
-      <Textfield
-        name="surgeWindowMinutes"
-        type="number"
-        label={t(locale, 'settings.surgeWindow')}
-        defaultValue={String(settings.surgeWindowMinutes)}
-        isRequired
-      />
-      <Textfield
-        name="watchDays"
-        type="number"
-        label={t(locale, 'settings.watchDays')}
-        defaultValue={String(settings.watchDays)}
-        isRequired
-      />
-    </Fragment>
+    <SettingsField
+      name="problemIssueType"
+      label={t(locale, 'settings.problemType')}
+      description={t(locale, 'settings.problemTypeHelp')}
+      defaultValue={String(values['problemIssueType'] ?? '')}
+      onChange={(value) => onChange('problemIssueType', value)}
+    />
   );
 }
+
+/** Réglages de détection des flambées et de la surveillance après correction (§8.6, §7.4). */
+function SurgeFields({
+  locale,
+  values,
+  onChange,
+}: {
+  locale: Locale;
+  values: SettingsFormData;
+  onChange: (name: string, value: unknown) => void;
+}): JSX.Element {
+  const champs: { name: string; labelKey: Parameters<typeof t>[1] }[] = [
+    { name: 'surgeFactor', labelKey: 'settings.surgeFactor' },
+    { name: 'surgeWindowMinutes', labelKey: 'settings.surgeWindow' },
+    { name: 'watchDays', labelKey: 'settings.watchDays' },
+  ];
+  return (
+    <>
+      <Heading size="medium">{t(locale, 'settings.surge')}</Heading>
+      {champs.map((champ) => (
+        <NumberField
+          key={champ.name}
+          locale={locale}
+          values={values}
+          onChange={onChange}
+          name={champ.name}
+          labelKey={champ.labelKey}
+          required
+        />
+      ))}
+    </>
+  );
+}
+
+/** Type conservé pour les appelants historiques : les réglages lus du resolver. */
+export type SettingsForThresholds = Settings;

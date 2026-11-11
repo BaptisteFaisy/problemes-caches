@@ -57,21 +57,18 @@ function QueueSuspectRow({
       <QueueTrend locale={locale} trend={line.trend} />
       <ButtonGroup>
         <Button
-          appearance="primary"
-          text={t(locale, 'problems.confirm')}
-          disabled={busy}
-          onClick={() => onConfirm(line)}
-        />
+     appearance="primary"
+     
+     isDisabled={busy}
+     onClick={() => onConfirm(line)}>{t(locale, 'problems.confirm')}</Button>
         <Button
-          text={t(locale, 'problems.reject')}
-          disabled={busy}
-          onClick={() => onReject(line.cluster.id)}
-        />
+     
+     isDisabled={busy}
+     onClick={() => onReject(line.cluster.id)}>{t(locale, 'problems.reject')}</Button>
         <Button
-          text={t(locale, 'problems.split')}
-          disabled={busy}
-          onClick={() => onSplit(line)}
-        />
+     
+     isDisabled={busy}
+     onClick={() => onSplit(line)}>{t(locale, 'problems.split')}</Button>
       </ButtonGroup>
     </Fragment>
   );

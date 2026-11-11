@@ -1,20 +1,24 @@
 /**
- * Formulaire principal des réglages du projet (§13 écran 5).
- * Champs : projet de service suivi, seuils et coûts, type du ticket de problème,
- * services du portail qui affichent le bandeau, et postes de l'addition activés (§9).
- * L'enregistrement passe par `saveSettings` avec un retour visuel (§13.5).
+ * Formulaire des réglages — état contrôlé (§13 écran 5).
+ *
+ * UI Kit 2 : `Form.onSubmit` ne reçoit plus les valeurs et `Textfield` n'a plus
+ * de prop `label`. L'écran tient donc l'état de la saisie (`useState`), chaque
+ * champ remonte sa valeur, et l'enregistrement passe par `saveSettings` avec un
+ * retour visuel. Aucun calcul métier ici (§17) : les valeurs brutes sont
+ * converties par `SettingsHelpers.buildSettingsFromForm`.
  */
 
-import { Fragment, useState } from 'react';
-import { Checkbox, CheckboxGroup, Form, SectionMessage, Text, Textfield } from '@forge/react';
+import { useState } from 'react';
+import { Button, CheckboxGroup, Form, SectionMessage, Text } from '@forge/react';
 import { BILL_LINE_KEYS } from '../../core/constants';
 import type { BillLineKey, Settings } from '../../core/types';
 import { saveSettings } from '../api';
 import { errorMessage } from '../async';
 import type { Locale, MessageKey } from '../i18n/index';
 import { t } from '../i18n/index';
+import { SettingsField } from './SettingsField';
 import type { SettingsFormData } from './SettingsHelpers';
-import { buildSettingsFromForm } from './SettingsHelpers';
+import { buildSettingsFromForm, formValuesFromSettings } from './SettingsHelpers';
 import { SettingsThresholds } from './SettingsThresholds';
 
 /** Libellés des huit postes de l'addition, une seule table de correspondance (§9). */
@@ -40,13 +44,21 @@ export interface SettingsFormProps {
 export function SettingsForm({ locale, initial, projectKey, onSaved }: SettingsFormProps): JSX.Element {
   const [saved, setSaved] = useState(false);
   const [saveError, setSaveError] = useState<string | null>(null);
+  const [values, setValues] = useState<SettingsFormData>(() =>
+    formValuesFromSettings(initial, projectKey),
+  );
 
-  const handleSubmit = async (formData: SettingsFormData): Promise<void> => {
+  const setValue = (name: string, value: unknown): void => {
+    setValues((current) => ({ ...current, [name]: value }));
+  };
+
+  const handleSubmit = async (): Promise<void> => {
     setSaved(false);
     setSaveError(null);
     try {
-      const updated = await saveSettings(buildSettingsFromForm(initial, formData));
+      const updated = await saveSettings(buildSettingsFromForm(initial, values));
       setSaved(true);
+      setValues(formValuesFromSettings(updated, projectKey));
       onSaved(updated);
     } catch (err) {
       setSaveError(errorMessage(err));
@@ -54,26 +66,57 @@ export function SettingsForm({ locale, initial, projectKey, onSaved }: SettingsF
   };
 
   return (
-    <Fragment>
+    <>
       <SaveFeedback locale={locale} saved={saved} error={saveError} />
-      <Form
-        onSubmit={handleSubmit}
-        submitButtonText={t(locale, 'common.save')}
-        submitButtonAppearance="primary"
-      >
-        <WatchedProjectField
+      <Form onSubmit={handleSubmit}>
+        <SettingsFields
           locale={locale}
-          projectKey={initial.projectKey || projectKey}
+          values={values}
+          enabledLines={initial.enabledLines}
+          onChange={setValue}
         />
-        <SettingsThresholds locale={locale} settings={initial} />
-        <Textfield
-          name="portalServices"
-          label={t(locale, 'settings.portalServices')}
-          defaultValue={initial.portalServices.join(', ')}
-        />
-        <BillLinesGroup locale={locale} enabledLines={initial.enabledLines} />
+        <Button appearance="primary" type="submit">
+          {t(locale, 'common.save')}
+        </Button>
       </Form>
-    </Fragment>
+    </>
+  );
+}
+
+/** Champs de saisie du formulaire, hors titre et bouton (§13.5). */
+function SettingsFields({
+  locale,
+  values,
+  enabledLines,
+  onChange,
+}: {
+  locale: Locale;
+  values: SettingsFormData;
+  enabledLines: BillLineKey[];
+  onChange: (name: string, value: unknown) => void;
+}): JSX.Element {
+  return (
+    <>
+      <SettingsField
+        name="watchedProject"
+        label={t(locale, 'settings.projects')}
+        defaultValue={String(values['watchedProject'] ?? '')}
+        isRequired
+        onChange={(value) => onChange('watchedProject', value)}
+      />
+      <SettingsThresholds locale={locale} values={values} onChange={onChange} />
+      <SettingsField
+        name="portalServices"
+        label={t(locale, 'settings.portalServices')}
+        defaultValue={String(values['portalServices'] ?? '')}
+        onChange={(value) => onChange('portalServices', value)}
+      />
+      <BillLinesGroup
+        locale={locale}
+        enabledLines={enabledLines}
+        onChange={(lines) => onChange('enabledLines', lines)}
+      />
+    </>
   );
 }
 
@@ -85,45 +128,44 @@ function SaveFeedback({
   locale: Locale;
   saved: boolean;
   error: string | null;
+}): JSX.Element | null {
+  if (saved) {
+    return (
+      <SectionMessage appearance="success">
+        <Text>{t(locale, 'settings.saved')}</Text>
+      </SectionMessage>
+    );
+  }
+  if (error) {
+    return (
+      <SectionMessage appearance="error" title={t(locale, 'common.errorTitle')}>
+        <Text>{error}</Text>
+      </SectionMessage>
+    );
+  }
+  return null;
+}
+
+/** Postes de l'addition activés (§9) : `CheckboxGroup` attend des `options`. */
+function BillLinesGroup({
+  locale,
+  enabledLines,
+  onChange,
+}: {
+  locale: Locale;
+  enabledLines: BillLineKey[];
+  onChange: (lines: string[]) => void;
 }): JSX.Element {
+  const options = BILL_LINE_KEYS.map((line) => ({
+    label: t(locale, LINE_LABEL_KEYS[line]),
+    value: line as string,
+  }));
   return (
-    <Fragment>
-      {saved ? (
-        <SectionMessage appearance="confirmation">
-          <Text>{t(locale, 'settings.saved')}</Text>
-        </SectionMessage>
-      ) : null}
-      {error ? (
-        <SectionMessage appearance="error" title={t(locale, 'common.errorTitle')}>
-          <Text>{error}</Text>
-        </SectionMessage>
-      ) : null}
-    </Fragment>
-  );
-}
-
-/**
- * Projet de service suivi par ces réglages (§13.5). La table `settings` (§15) porte une
- * ligne par projet, avec le `project_key` réellement surveillé : on le règle ici.
- */
-function WatchedProjectField({ locale, projectKey }: { locale: Locale; projectKey: string }): JSX.Element {
-  return (
-    <Textfield
-      name="watchedProject"
-      label={t(locale, 'settings.projects')}
-      defaultValue={projectKey}
-      isRequired
+    <CheckboxGroup
+      name="enabledLines"
+      options={options}
+      defaultValue={[...enabledLines]}
+      onChange={onChange}
     />
-  );
-}
-
-function BillLinesGroup({ locale, enabledLines }: { locale: Locale; enabledLines: BillLineKey[] }): JSX.Element {
-  const enabled = new Set(enabledLines);
-  return (
-    <CheckboxGroup name="enabledLines" label={t(locale, 'settings.lines')}>
-      {BILL_LINE_KEYS.map((line) => (
-        <Checkbox label={t(locale, LINE_LABEL_KEYS[line])} value={line} defaultChecked={enabled.has(line)} />
-      ))}
-    </CheckboxGroup>
   );
 }

@@ -32,7 +32,7 @@ export function QueueSurges({
             })}
           </Text>
           {surge.expected ? (
-            <Lozenge text={t(locale, 'problems.surgeExpected')} />
+            <Lozenge>{t(locale, 'problems.surgeExpected')}</Lozenge>
           ) : (
             <MarkExpectedButton locale={locale} />
           )}
@@ -49,6 +49,6 @@ export function QueueSurges({
  */
 function MarkExpectedButton({ locale }: { locale: Locale }): JSX.Element {
   return (
-    <Button text={t(locale, 'problems.markExpected')} disabled onClick={() => undefined} />
+    <Button isDisabled onClick={() => undefined}>{t(locale, 'problems.markExpected')}</Button>
   );
 }

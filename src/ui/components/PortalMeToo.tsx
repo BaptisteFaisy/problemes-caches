@@ -6,7 +6,7 @@
  */
 
 import { Fragment, useState } from 'react';
-import { Button, ModalDialog, Text } from '@forge/react';
+import { Button, Modal, ModalBody, ModalFooter, ModalTransition, Text } from '@forge/react';
 import { meToo } from '../api';
 import { errorMessage } from '../async';
 import type { Locale } from '../i18n/index';
@@ -41,19 +41,24 @@ export function PortalMeToo({ locale, problemId, symptomLabel, isAnonymous }: Po
 
   return (
     <Fragment>
-      <Button text={t(locale, 'portal.meToo')} disabled={isAnonymous} onClick={() => setConfirmOpen(true)} />
+      <Button isDisabled={isAnonymous} onClick={() => setConfirmOpen(true)}>{t(locale, 'portal.meToo')}</Button>
       {isAnonymous ? <Text>{t(locale, 'common.error')}</Text> : null}
       {error ? <Text>{error}</Text> : null}
-      {confirmOpen ? (
-        <ModalDialog
-          header={t(locale, 'portal.meToo')}
-          onClose={() => setConfirmOpen(false)}
-          closeButtonText={t(locale, 'common.cancel')}
-        >
-          <Text>{t(locale, 'portal.banner.body', { symptom: symptomLabel })}</Text>
-          <Button appearance="primary" text={t(locale, 'common.confirm')} onClick={confirm} />
-        </ModalDialog>
-      ) : null}
+      <ModalTransition>
+        {confirmOpen ? (
+          <Modal title={t(locale, 'portal.meToo')} onClose={() => setConfirmOpen(false)} width="small">
+            <ModalBody>
+              <Text>{t(locale, 'portal.banner.body', { symptom: symptomLabel })}</Text>
+            </ModalBody>
+            <ModalFooter>
+              <Button appearance="subtle" onClick={() => setConfirmOpen(false)}>
+                {t(locale, 'common.cancel')}
+              </Button>
+              <Button appearance="primary" onClick={confirm}>{t(locale, 'common.confirm')}</Button>
+            </ModalFooter>
+          </Modal>
+        ) : null}
+      </ModalTransition>
     </Fragment>
   );
 }
