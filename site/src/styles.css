@@ -1,0 +1,198 @@
+/* Styles du site de démonstration « Problèmes cachés ».
+ * Design sobre et lisible, thème clair et sombre (prefers-color-scheme),
+ * responsive, sans dépendance externe. */
+
+:root {
+  --fond: #f7f8fa;
+  --fond-carte: #ffffff;
+  --texte: #172b4d;
+  --texte-discret: #5e6c84;
+  --bordure: #dfe4ec;
+  --accent: #0052cc;
+  --accent-fort: #0747a6;
+  --accent-doux: #deebff;
+  --alerte: #de350b;
+  --alerte-doux: #ffebe6;
+  --succes: #006644;
+  --succes-doux: #e3fcef;
+  --largeur: 68rem;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --fond: #0d1421;
+    --fond-carte: #17233a;
+    --texte: #e6edf6;
+    --texte-discret: #9aa8bd;
+    --bordure: #2b3a55;
+    --accent: #4c9aff;
+    --accent-fort: #85b8ff;
+    --accent-doux: #1d2b45;
+    --alerte: #ff6a52;
+    --alerte-doux: #38190f;
+    --succes: #4dbf8a;
+    --succes-doux: #0f2a1d;
+  }
+}
+
+* { box-sizing: border-box; }
+
+html { scroll-behavior: smooth; }
+
+body {
+  margin: 0;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  background: var(--fond);
+  color: var(--texte);
+  line-height: 1.6;
+  font-size: 1rem;
+}
+
+main { max-width: var(--largeur); margin: 0 auto; padding: 0 1rem; }
+
+section { padding: 3rem 0 2rem; }
+
+h1, h2, h3, h4 { line-height: 1.25; margin: 0 0 0.75rem; }
+h1 { font-size: 2.4rem; letter-spacing: -0.02em; }
+h2 { font-size: 1.8rem; }
+h3 { font-size: 1.15rem; color: var(--texte); }
+h4 { font-size: 1rem; }
+
+p { margin: 0 0 1rem; }
+a { color: var(--accent); }
+:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
+
+.visually-hidden {
+  position: absolute; width: 1px; height: 1px;
+  overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap;
+}
+
+.skip {
+  position: absolute; left: -9999px; top: 0;
+  background: var(--accent-fort); color: #fff; padding: 0.5rem 1rem; z-index: 10;
+}
+.skip:focus { left: 0; }
+
+.texte-discret { color: var(--texte-discret); font-size: 0.9rem; }
+.chapo { font-size: 1.1rem; max-width: 46rem; }
+.note { color: var(--texte-discret); font-size: 0.9rem; font-style: italic; }
+
+/* ----------------------------------------------------------------- entête */
+#entete {
+  display: flex; align-items: center; gap: 1rem; flex-wrap: wrap;
+  padding: 0.8rem 1rem; border-bottom: 1px solid var(--bordure);
+  position: sticky; top: 0; background: var(--fond); z-index: 5;
+}
+#marque { display: flex; align-items: center; gap: 0.5rem; font-weight: 700; text-decoration: none; color: var(--texte); }
+.marque-symbole { color: var(--accent); font-size: 1.3rem; }
+#navigation { display: flex; gap: 0.25rem; flex-wrap: wrap; flex: 1; }
+#navigation a { text-decoration: none; color: var(--texte); padding: 0.35rem 0.6rem; border-radius: 6px; }
+#navigation a:hover { background: var(--accent-doux); }
+#selecteur-langue { display: flex; gap: 0.15rem; }
+#selecteur-langue button {
+  border: 1px solid var(--bordure); background: transparent; color: var(--texte);
+  padding: 0.25rem 0.6rem; cursor: pointer; border-radius: 6px;
+}
+#selecteur-langue button[aria-pressed="true"] { background: var(--accent-fort); color: #fff; border-color: var(--accent-fort); }
+
+/* -------------------------------------------------------------- accroche */
+#accroche { padding-top: 4rem; }
+.surtitre { text-transform: uppercase; letter-spacing: 0.08em; font-size: 0.8rem; color: var(--accent); font-weight: 600; }
+#sous-titre { font-size: 1.2rem; max-width: 46rem; }
+.chiffres { display: grid; grid-template-columns: repeat(auto-fit, minmax(10rem, 1fr)); gap: 1rem; list-style: none; padding: 0; }
+.chiffre { background: var(--fond-carte); border: 1px solid var(--bordure); border-radius: 10px; padding: 1rem; }
+.chiffre-valeur { display: block; font-size: 1.9rem; font-weight: 700; }
+.chiffre-libelle { display: block; color: var(--texte-discret); font-size: 0.85rem; }
+#actions-acroche { display: flex; gap: 0.75rem; flex-wrap: wrap; margin-top: 1.25rem; }
+
+/* --------------------------------------------------------------- boutons */
+.bouton {
+  display: inline-block; border: 1px solid var(--bordure); background: transparent;
+  color: var(--texte); padding: 0.5rem 1rem; border-radius: 6px; cursor: pointer;
+  text-decoration: none; font: inherit;
+}
+.bouton:hover { background: var(--accent-doux); }
+.bouton--primaire { background: var(--accent); border-color: var(--accent); color: #fff; }
+.bouton--primaire:hover { background: var(--accent-fort); }
+.bouton--discret { color: var(--texte-discret); }
+.bouton--petit { padding: 0.25rem 0.6rem; font-size: 0.85rem; }
+.bouton[disabled] { opacity: 0.5; cursor: not-allowed; }
+
+/* ----------------------------------------------------------------- cartes */
+.cartes { list-style: none; padding: 0; display: grid; grid-template-columns: repeat(auto-fit, minmax(16rem, 1fr)); gap: 1rem; }
+.carte { background: var(--fond-carte); border: 1px solid var(--bordure); border-radius: 10px; padding: 1.1rem; }
+.carte h3 { margin: 0 0 0.4rem; }
+
+/* -------------------------------------------------- démo : onglets, grappes */
+#onglets { display: flex; gap: 0.25rem; border-bottom: 2px solid var(--bordure); margin: 1.25rem 0 1.5rem; }
+.onglet {
+  border: none; background: transparent; color: var(--texte-discret);
+  padding: 0.6rem 1rem; cursor: pointer; font: inherit; border-bottom: 2px solid transparent; margin-bottom: -2px;
+}
+.onglet--actif { color: var(--accent-fort); border-bottom-color: var(--accent-fort); font-weight: 600; }
+
+.panneau--cache { display: none; }
+
+.carte-grappe { background: var(--fond-carte); border: 1px solid var(--bordure); border-left: 4px solid var(--accent); border-radius: 8px; padding: 1rem; margin-bottom: 0.75rem; }
+.carte--alerte { border-left-color: var(--alerte); }
+.carte-entete { display: flex; align-items: baseline; gap: 0.6rem; flex-wrap: wrap; }
+.signature { font-weight: 600; margin: 0.5rem 0 0; }
+.chiffres--petits { grid-template-columns: repeat(auto-fit, minmax(8rem, 1fr)); gap: 0.6rem; margin: 0.6rem 0; }
+.chiffres--petits .chiffre { padding: 0.6rem; }
+.chiffres--petits .chiffre-valeur { font-size: 1.3rem; }
+
+.badge { display: inline-block; border-radius: 999px; padding: 0.1rem 0.6rem; font-size: 0.8rem; background: var(--accent-doux); color: var(--accent-fort); }
+.badge--probleme { background: var(--succes-doux); color: var(--succes); }
+
+.liste-tickets, .ticket, .terme { list-style: none; padding: 0; margin: 0; }
+.ticket { display: flex; align-items: center; gap: 0.6rem; padding: 0.35rem 0; border-bottom: 1px dashed var(--bordure); }
+.ticket code { background: var(--accent-doux); padding: 0 0.4rem; border-radius: 4px; }
+.ticket--masque { color: var(--texte-discret); font-style: italic; }
+.terme { display: flex; justify-content: space-between; padding: 0.35rem 0; border-bottom: 1px solid var(--bordure); }
+
+/* ------------------------------------------------------- tableaux & flux */
+.tableau { width: 100%; border-collapse: collapse; background: var(--fond-carte); border-radius: 8px; overflow: hidden; }
+.tableau th, .tableau td { text-align: left; padding: 0.6rem 0.8rem; border-bottom: 1px solid var(--bordure); }
+.tableau thead th { background: var(--accent-doux); }
+.tableau--addition th { width: 70%; }
+
+.flux, .etapes { padding-left: 1.3rem; }
+.flux li, .etapes li { margin-bottom: 0.6rem; }
+
+.exemples { display: flex; flex-wrap: wrap; gap: 0.5rem; margin: 0.75rem 0; }
+.exemple-texte { background: var(--fond-carte); border: 1px solid var(--bordure); padding: 0.5rem 0.8rem; border-radius: 8px; font-size: 0.95rem; }
+
+/* ------------------------------------------------------------------ zones */
+textarea {
+  width: 100%; padding: 0.6rem; border: 1px solid var(--bordure); border-radius: 6px;
+  background: var(--fond-carte); color: var(--texte); font: inherit; resize: vertical;
+}
+.etiquette { display: block; margin-bottom: 0.35rem; font-weight: 600; }
+
+.resultat { margin-top: 1rem; }
+.resultat-carte { border-left-color: var(--succes); }
+.resultat-aucun { color: var(--texte-discret); }
+.justification { color: var(--texte-discret); font-size: 0.95rem; }
+.avertissement { background: var(--alerte-doux); color: var(--alerte); border-radius: 6px; padding: 0.5rem 0.8rem; font-size: 0.9rem; }
+
+.banniere { background: var(--accent-doux); border: 1px solid var(--bordure); border-radius: 8px; padding: 1rem; }
+.compteurs { margin-top: 0.75rem; }
+
+.deux-colonnes { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; }
+@media (max-width: 40rem) { .deux-colonnes { grid-template-columns: 1fr; } }
+
+/* ------------------------------------------------------------- dialogues */
+dialog { border: 1px solid var(--bordure); border-radius: 10px; background: var(--fond-carte); color: var(--texte); max-width: 42rem; width: calc(100% - 2rem); padding: 1.4rem; }
+dialog::backdrop { background: rgba(9, 30, 66, 0.55); }
+#detail-actions { display: flex; gap: 0.6rem; flex-wrap: wrap; }
+.actions { display: flex; gap: 0.6rem; flex-wrap: wrap; margin-top: 1rem; }
+.message { font-weight: 600; color: var(--succes); }
+
+/* ------------------------------------------------------------------ pied */
+#pied { border-top: 1px solid var(--bordure); margin-top: 3rem; padding: 1.5rem 1rem; display: flex; justify-content: space-between; gap: 1rem; flex-wrap: wrap; }
+#liens-pied { display: flex; gap: 1rem; list-style: none; margin: 0; padding: 0; flex-wrap: wrap; }
+
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  * { transition: none !important; animation: none !important; }
+}
