@@ -16,7 +16,7 @@ import type { ScreenContext } from './context';
  * rattachement, qualité des données et initialisation : tout vient de
  * `getProblemsPage`, l'UI n'agrège rien (§17).
  */
-export default function App(): JSX.Element {
+function App(): JSX.Element {
   return <ScreenShell>{(context) => <QueueScreen context={context} />}</ScreenShell>;
 }
 
