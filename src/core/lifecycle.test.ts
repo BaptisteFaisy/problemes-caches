@@ -13,10 +13,10 @@ import {
   startWatching,
   watchElapsed,
   watchWindow,
-} from './lifecycle.ts';
-import { addDays } from './time.ts';
-import { defaultSettings } from './types.ts';
-import type { Problem, Settings } from './types.ts';
+} from './lifecycle';
+import { addDays } from './time';
+import { defaultSettings } from './types';
+import type { Problem, Settings } from './types';
 
 const NOW = '2026-11-01T08:00:00.000Z';
 const SETTINGS: Settings = { ...defaultSettings('PROJ', 'PRJ'), watchDays: 14 };

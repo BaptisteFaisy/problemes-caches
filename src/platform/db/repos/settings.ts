@@ -6,12 +6,12 @@
  * sérialisés via `toJson` et relus par `toSettings`.
  */
 
-import type { Settings } from '../../../core/types.ts';
-import type { Row } from '../mappers.ts';
-import { toSettings } from '../mappers.ts';
-import { insertRows, onDuplicateUpdate, selectRows } from '../query.ts';
-import type { SqlParam } from '../rows.ts';
-import { toDbBool, toJson, toNumberOrNull, toTextOrNull } from '../rows.ts';
+import type { Settings } from '../../../core/types';
+import type { Row } from '../mappers';
+import { toSettings } from '../mappers';
+import { insertRows, onDuplicateUpdate, selectRows } from '../query';
+import type { SqlParam } from '../rows';
+import { toDbBool, toJson, toNumberOrNull, toTextOrNull } from '../rows';
 
 const TABLE = 'settings';
 

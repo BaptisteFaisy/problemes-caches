@@ -6,14 +6,14 @@
  * et donc pour qu'aucune requête SQL ne soit écrite hors de ces fichiers.
  */
 
-export * from './repos/tickets.ts';
-export * from './repos/signatures.ts';
-export * from './repos/terms.ts';
-export * from './repos/clusters.ts';
-export * from './repos/problems.ts';
-export * from './repos/memberships.ts';
-export * from './repos/meToo.ts';
-export * from './repos/bills.ts';
-export * from './repos/surges.ts';
-export * from './repos/settings.ts';
-export * from './repos/bootstrap.ts';
+export * from './repos/tickets';
+export * from './repos/signatures';
+export * from './repos/terms';
+export * from './repos/clusters';
+export * from './repos/problems';
+export * from './repos/memberships';
+export * from './repos/meToo';
+export * from './repos/bills';
+export * from './repos/surges';
+export * from './repos/settings';
+export * from './repos/bootstrap';

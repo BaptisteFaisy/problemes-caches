@@ -7,17 +7,17 @@
  * - extraction des paramètres avec replis sûrs.
  */
 
-import type { BillLineKey, DataQuality, Settings, Thresholds } from '../core/types.ts';
-import { BILL_LINE_KEYS } from '../core/types.ts';
+import type { BillLineKey, DataQuality, Settings, Thresholds } from '../core/types';
+import { BILL_LINE_KEYS } from '../core/types';
 import {
   countClusters,
   countOpenProblems,
   countSignatures,
   countTickets,
   getBootstrapProgress,
-} from '../platform/db/repos.ts';
-import type { Locale } from '../ui/i18n/index.ts';
-import { DEFAULT_LOCALE, localeFrom } from '../ui/i18n/index.ts';
+} from '../platform/db/repos';
+import type { Locale } from '../ui/i18n/index';
+import { DEFAULT_LOCALE, localeFrom } from '../ui/i18n/index';
 
 export type JsonRecord = Record<string, unknown>;
 

@@ -1,7 +1,7 @@
-import { Checkbox, CheckboxGroup, Form, ModalDialog, TextField } from '@forge/ui';
-import type { ClusterLine } from '../api.ts';
-import type { Locale } from '../i18n/index.ts';
-import { t } from '../i18n/index.ts';
+import { Checkbox, CheckboxGroup, Form, ModalDialog, Textfield } from '@forge/react';
+import type { ClusterLine } from '../api';
+import type { Locale } from '../i18n/index';
+import { t } from '../i18n/index';
 
 /**
  * Scinder une grappe (§18) : les tickets choisis rejoignent une grappe
@@ -34,7 +34,7 @@ export function QueueSplit({
             <Checkbox key={key} label={key} value={key} />
           ))}
         </CheckboxGroup>
-        <TextField
+        <Textfield
           name="triggerText"
           label={t(locale, 'panel.justification', { rationale: line.cluster.triggerText })}
           defaultValue={line.cluster.triggerText}

@@ -4,21 +4,19 @@
  * §16 : ce panneau n'accepte pas les visiteurs anonymes — le contexte porte donc la demande.
  */
 
-import { Fragment, PortalRequestDetailPanel } from '@forge/ui';
-import type { RequestDetailData } from './api.ts';
-import { getRequestDetail } from './api.ts';
-import { useResolver } from './async.ts';
-import { AsyncView } from './components/AsyncView.tsx';
-import { RequestLink } from './components/RequestLink.tsx';
-import { ScreenShell } from './components/ScreenShell.tsx';
-import type { ScreenContext } from './context.ts';
+import { Fragment } from 'react';
+import type { RequestDetailData } from './api';
+import { getRequestDetail } from './api';
+import { useResolver } from './async';
+import { AsyncView } from './components/AsyncView';
+import { RequestLink } from './components/RequestLink';
+import { ScreenShell } from './components/ScreenShell';
+import type { ScreenContext } from './context';
 
 /** Point d'entrée de la ressource `portal-request-detail`. */
 export default function App(): JSX.Element {
   return (
-    <PortalRequestDetailPanel>
       <ScreenShell>{(ctx) => <RequestDetailBody ctx={ctx} />}</ScreenShell>
-    </PortalRequestDetailPanel>
   );
 }
 

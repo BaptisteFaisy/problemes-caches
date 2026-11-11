@@ -10,14 +10,14 @@
 
 import { Queue } from '@forge/events';
 
-import { BOOTSTRAP_BATCH, BOOTSTRAP_DAYS } from '../core/constants.ts';
-import { addDays } from '../core/time.ts';
-import type { BootstrapProgress } from '../core/types.ts';
-import { getBootstrapProgress, upsertBootstrapProgress } from '../platform/db/repos.ts';
-import { chunkArray } from '../platform/field.ts';
-import { searchTickets } from '../platform/jira.ts';
-import { logShort, shortError } from '../platform/log.ts';
-import { registerFollowedProject } from './sync.ts';
+import { BOOTSTRAP_BATCH, BOOTSTRAP_DAYS } from '../core/constants';
+import { addDays } from '../core/time';
+import type { BootstrapProgress } from '../core/types';
+import { getBootstrapProgress, upsertBootstrapProgress } from '../platform/db/repos';
+import { chunkArray } from '../platform/field';
+import { searchTickets } from '../platform/jira';
+import { logShort, shortError } from '../platform/log';
+import { registerFollowedProject } from './sync';
 
 /** File d'attente Forge des lots d'amorçage (déclarée dans `manifest.yml`). */
 export const BOOTSTRAP_QUEUE_NAME = 'problemes-caches-bootstrap';

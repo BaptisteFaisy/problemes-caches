@@ -9,11 +9,11 @@
  * fenêtre glissante — sans filtre, les deux additions seraient identiques.
  */
 
-import { computeBill, computeTrend } from '../core/bill.ts';
-import type { BillTicket } from '../core/bill.ts';
-import { addDays, parseIso } from '../core/time.ts';
-import type { BillPeriod, ProblemBill, Settings, TicketFact, Trend } from '../core/types.ts';
-import { defaultSettings } from '../core/types.ts';
+import { computeBill, computeTrend } from '../core/bill';
+import type { BillTicket } from '../core/bill';
+import { addDays, parseIso } from '../core/time';
+import type { BillPeriod, ProblemBill, Settings, TicketFact, Trend } from '../core/types';
+import { defaultSettings } from '../core/types';
 import {
   getBill,
   getProblem,
@@ -22,7 +22,7 @@ import {
   listMembershipsByProblem,
   listMeTooByProblem,
   replaceBill,
-} from '../platform/db/repos.ts';
+} from '../platform/db/repos';
 
 /** Jours de fenêtre glissante par période d'addition (§9). */
 const PERIOD_DAYS: Record<BillPeriod, number> = { '30d': 30, '90d': 90 };

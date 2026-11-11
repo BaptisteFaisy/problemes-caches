@@ -7,7 +7,7 @@
  * problèmes les plus actifs quand le service consulté n'est pas connu.
  */
 
-import type { MeToo, Problem } from '../core/types.ts';
+import type { MeToo, Problem } from '../core/types';
 import {
   getBill,
   getProblem,
@@ -16,10 +16,10 @@ import {
   listMembershipsByProblem,
   listMembershipsByIssue,
   listProblems,
-} from '../platform/db/repos.ts';
-import { currentAccountId, searchTickets } from '../platform/jira.ts';
-import type { PortalBannerData, RequestDetailData } from '../ui/api.ts';
-import { asRecord, readString } from './helpers.ts';
+} from '../platform/db/repos';
+import { currentAccountId, searchTickets } from '../platform/jira';
+import type { PortalBannerData, RequestDetailData } from '../ui/api';
+import { asRecord, readString } from './helpers';
 
 type ResolverReq = { payload?: unknown; context?: unknown };
 

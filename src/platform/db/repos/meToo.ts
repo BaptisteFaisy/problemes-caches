@@ -5,12 +5,12 @@
  * Aucune valeur externe n'est interpolée dans le SQL : tout passe par `?`.
  */
 
-import type { MeToo } from '../../../core/types.ts';
-import type { Row } from '../mappers.ts';
-import { toMeToo } from '../mappers.ts';
-import { insertRows, onDuplicateUpdate, selectRows } from '../query.ts';
-import type { SqlParam } from '../rows.ts';
-import { toDbDateRequired, toNumber, toTextOrNull } from '../rows.ts';
+import type { MeToo } from '../../../core/types';
+import type { Row } from '../mappers';
+import { toMeToo } from '../mappers';
+import { insertRows, onDuplicateUpdate, selectRows } from '../query';
+import type { SqlParam } from '../rows';
+import { toDbDateRequired, toNumber, toTextOrNull } from '../rows';
 
 const TABLE = 'me_too';
 

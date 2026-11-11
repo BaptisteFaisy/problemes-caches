@@ -13,10 +13,10 @@
  * déploiement sans erreur de compilation, d'où ce fichier unique et court.
  */
 
-import { handlers } from './resolvers/handlers.ts';
-import { bootstrapBatch } from './jobs/consumer.ts';
-import { nightlyRecalc } from './jobs/scheduled.ts';
-import { issueCommented, issueCreated, issueUpdated } from './jobs/triggers.ts';
+import { handlers } from './resolvers/handlers';
+import { bootstrapBatch } from './jobs/consumer';
+import { nightlyRecalc } from './jobs/scheduled';
+import { issueCommented, issueCreated, issueUpdated } from './jobs/triggers';
 import {
   actionConfirmMembership,
   actionDraftCustomerUpdate,
@@ -25,13 +25,13 @@ import {
   actionListSuspects,
   actionListTopProblems,
   actionMatchKnownProblem,
-} from './mcp/index.ts';
+} from './mcp/index';
 
 /**
  * Resolver des écrans : `handler` est la fonction nommée `index.resolver` dans
  * le manifeste (clé `resolver`, référencée par les six ressources).
  */
-export { handler as resolver } from './resolvers/index.ts';
+export { handler as resolver } from './resolvers/index';
 
 /**
  * Triggers Jira (§14 « à l'arrivée d'un ticket ») : au fil de l'eau, sans

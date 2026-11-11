@@ -3,8 +3,8 @@
  * aucune règle métier, aucun calcul de coût ou d'addition n'est fait côté UI (§17).
  */
 
-import { BILL_LINE_KEYS, SUSPECT_WINDOW_DAYS } from '../../core/constants.ts';
-import type { BillLineKey, Settings } from '../../core/types.ts';
+import { BILL_LINE_KEYS, SUSPECT_WINDOW_DAYS } from '../../core/constants';
+import type { BillLineKey, Settings } from '../../core/types';
 
 /** Contenu brut du `Form` Forge : une valeur par `name` de champ. */
 export type SettingsFormData = Record<string, unknown>;

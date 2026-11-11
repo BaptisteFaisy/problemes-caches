@@ -1,7 +1,8 @@
-import { Fragment, Link, SectionMessage, Text } from '@forge/ui';
-import type { Problem } from '../../core/types.ts';
-import type { Locale } from '../i18n/index.ts';
-import { t } from '../i18n/index.ts';
+import { Fragment } from 'react';
+import { Link, SectionMessage, Text } from '@forge/react';
+import type { Problem } from '../../core/types';
+import type { Locale } from '../i18n/index';
+import { t } from '../i18n/index';
 
 /**
  * Contournement validé, lien de procédure et correctif prévu (§7.2, PC-08) :

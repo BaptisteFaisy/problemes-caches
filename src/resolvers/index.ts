@@ -6,7 +6,7 @@
  */
 
 import Resolver from '@forge/resolver';
-import { handlers } from './handlers.ts';
+import { handlers } from './handlers';
 
 const resolver = new Resolver();
 

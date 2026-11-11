@@ -17,10 +17,10 @@
 import { asApp, asUser, route } from '@forge/api';
 import type { RequestInit, Route } from '@forge/api';
 
-import type { Problem, ProblemBill } from '../core/types.ts';
-import { parseIso } from '../core/time.ts';
-import { logShort, shortError } from './log.ts';
-import { chunkArray, slaBreached, toAdf, worklogSecondsOf } from './field.ts';
+import type { Problem, ProblemBill } from '../core/types';
+import { parseIso } from '../core/time';
+import { logShort, shortError } from './log';
+import { chunkArray, slaBreached, toAdf, worklogSecondsOf } from './field';
 import type {
   DailySummaryProperty,
   JiraCreatedIssue,
@@ -35,7 +35,7 @@ import type {
   ProblemBillProperty,
   ProblemIssueInput,
   ProblemSignatureProperty,
-} from './jira-types.ts';
+} from './jira-types';
 
 /** Propriété d'app tenant l'addition du problème (§10). */
 export const BILL_PROPERTY = 'problemes-caches.problem-bill';
@@ -145,10 +145,10 @@ function jsonInit(method: string, body: unknown): RequestInit {
 }
 
 /** Texte simple en document ADF (commentaires, descriptions) : voir `field.ts`. */
-export { toAdf } from './field.ts';
+export { toAdf } from './field';
 
 /** Découpe et parallélisme borné (débit, §16) : voir `field.ts`. */
-export { chunkArray, mapWithLimit } from './field.ts';
+export { chunkArray, mapWithLimit } from './field';
 
 /** Échappe une valeur destinée à une chaîne JQL. */
 function escapeJql(value: string): string {

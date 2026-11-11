@@ -1,14 +1,15 @@
-import { Fragment, Heading, SectionMessage, Text } from '@forge/ui';
-import type { AgentPanelData, AttachResult } from '../api.ts';
-import type { Locale } from '../i18n/index.ts';
-import { t } from '../i18n/index.ts';
-import { PanelActions } from './PanelActions.tsx';
-import { PanelAlternatives } from './PanelAlternatives.tsx';
-import { PanelAnswer } from './PanelAnswer.tsx';
-import { PanelBill } from './PanelBill.tsx';
-import { PanelMatch } from './PanelMatch.tsx';
-import { PanelProposals } from './PanelProposals.tsx';
-import { PanelWorkaround } from './PanelWorkaround.tsx';
+import { Fragment } from 'react';
+import { Heading, SectionMessage, Text } from '@forge/react';
+import type { AgentPanelData, AttachResult } from '../api';
+import type { Locale } from '../i18n/index';
+import { t } from '../i18n/index';
+import { PanelActions } from './PanelActions';
+import { PanelAlternatives } from './PanelAlternatives';
+import { PanelAnswer } from './PanelAnswer';
+import { PanelBill } from './PanelBill';
+import { PanelMatch } from './PanelMatch';
+import { PanelProposals } from './PanelProposals';
+import { PanelWorkaround } from './PanelWorkaround';
 
 /**
  * Corps du panneau de l'agent (§13 écran 1, §7.2, PC-08). Tout vient de

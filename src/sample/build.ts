@@ -6,9 +6,9 @@
  * et les signatures attendues à partir des slots générés par `dataset.ts`.
  */
 
-import type { HardClues, TicketFact } from '../core/types.ts';
-import { UNDETERMINED_ID } from '../core/types.ts';
-import { addDays, round2 } from '../core/time.ts';
+import type { HardClues, TicketFact } from '../core/types';
+import { UNDETERMINED_ID } from '../core/types';
+import { addDays, round2 } from '../core/time';
 import {
   ALL_GROUPS,
   FIRST_NAMES,
@@ -24,8 +24,8 @@ import {
   interleave,
   mulberry32,
   toSlots,
-} from './dataset.ts';
-import type { SampleDataset, SampleGroupSpec, SampleTicket, Slot } from './dataset.ts';
+} from './dataset';
+import type { SampleDataset, SampleGroupSpec, SampleTicket, Slot } from './dataset';
 
 /** Construit les indices certains d'un ticket d'exemple à partir de son groupe. */
 function buildClues(spec: SampleGroupSpec): HardClues {

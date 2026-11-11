@@ -1,8 +1,9 @@
-import { Button, Fragment, Heading, Text } from '@forge/ui';
-import type { MatchResult } from '../../core/types.ts';
-import { confidenceLabel } from '../format.ts';
-import type { Locale } from '../i18n/index.ts';
-import { t } from '../i18n/index.ts';
+import { Fragment } from 'react';
+import { Button, Heading, Text } from '@forge/react';
+import type { MatchResult } from '../../core/types';
+import { confidenceLabel } from '../format';
+import type { Locale } from '../i18n/index';
+import { t } from '../i18n/index';
 
 /**
  * Autres problèmes plausibles, proposés sans rattachement d'office (§18) :

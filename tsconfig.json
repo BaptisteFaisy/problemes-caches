@@ -11,9 +11,7 @@
     "esModuleInterop": true,
     "skipLibCheck": true,
     "resolveJsonModule": true,
-    "allowImportingTsExtensions": true,
     "verbatimModuleSyntax": true,
-    "noEmit": true,
     "types": ["node"],
     "jsx": "react-jsx"
   },

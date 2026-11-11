@@ -1,10 +1,10 @@
-import { useState } from '@forge/ui';
-import type { ClusterLine } from '../api.ts';
-import { confirmSuspect, rejectSuspect, splitCluster } from '../api.ts';
-import { errorMessage } from '../async.ts';
-import { formatInt } from '../format.ts';
-import type { Locale } from '../i18n/index.ts';
-import { t } from '../i18n/index.ts';
+import { useState } from 'react';
+import type { ClusterLine } from '../api';
+import { confirmSuspect, rejectSuspect, splitCluster } from '../api';
+import { errorMessage } from '../async';
+import { formatInt } from '../format';
+import type { Locale } from '../i18n/index';
+import { t } from '../i18n/index';
 
 /** Décisions humaines sur une grappe suspecte (§7.1, PC-09). */
 export interface QueueActions {

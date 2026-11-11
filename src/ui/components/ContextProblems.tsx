@@ -1,8 +1,9 @@
-import { Fragment, Heading, StatusLozenge, Text } from '@forge/ui';
-import type { IssueContextData } from '../api.ts';
-import { formatInt, stateLabel } from '../format.ts';
-import type { Locale } from '../i18n/index.ts';
-import { t } from '../i18n/index.ts';
+import { Fragment } from 'react';
+import { Heading, Lozenge, Text } from '@forge/react';
+import type { IssueContextData } from '../api';
+import { formatInt, stateLabel } from '../format';
+import type { Locale } from '../i18n/index';
+import { t } from '../i18n/index';
 
 /**
  * Problèmes liés au bug (§13 écran 4). Aucun indicateur par personne :
@@ -26,7 +27,7 @@ export function ContextProblems({
               key: entry.problem.issueKey ?? entry.problem.id,
             })}
           </Text>
-          <StatusLozenge text={stateLabel(locale, entry.problem.state)} />
+          <Lozenge text={stateLabel(locale, entry.problem.state)} />
           {entry.bill ? (
             <Text>
               {t(locale, 'common.perMonth', {

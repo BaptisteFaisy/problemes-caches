@@ -1,11 +1,11 @@
-import { render } from '@forge/ui';
-import { getAgentPanel } from './api.ts';
-import { useResolver } from './async.ts';
-import { AsyncView } from './components/AsyncView.tsx';
-import { usePanelActions } from './components/PanelActions.tsx';
-import { PanelContent } from './components/PanelContent.tsx';
-import { ScreenShell } from './components/ScreenShell.tsx';
-import type { ScreenContext } from './context.ts';
+import ForgeReconciler from '@forge/react';
+import { getAgentPanel } from './api';
+import { useResolver } from './async';
+import { AsyncView } from './components/AsyncView';
+import { usePanelActions } from './components/PanelActions';
+import { PanelContent } from './components/PanelContent';
+import { ScreenShell } from './components/ScreenShell';
+import type { ScreenContext } from './context';
 
 /**
  * Écran 1 — le panneau de l'agent sur un ticket (§13, §7.2, PC-08).
@@ -19,7 +19,7 @@ export default function App(): JSX.Element {
   return <ScreenShell>{(context) => <PanelScreen context={context} />}</ScreenShell>;
 }
 
-render(<App />);
+ForgeReconciler.render(<App />);
 
 /** Chargement du panneau et branchement des actions (rattacher, retirer). */
 function PanelScreen({ context }: { context: ScreenContext }): JSX.Element {

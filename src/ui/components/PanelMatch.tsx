@@ -1,8 +1,9 @@
-import { Fragment, Heading, SectionMessage, Text } from '@forge/ui';
-import type { Cluster, MatchResult, Membership } from '../../core/types.ts';
-import { basisLabel, confidenceLabel, formatInt } from '../format.ts';
-import type { Locale } from '../i18n/index.ts';
-import { t } from '../i18n/index.ts';
+import { Fragment } from 'react';
+import { Heading, SectionMessage, Text } from '@forge/react';
+import type { Cluster, MatchResult, Membership } from '../../core/types';
+import { basisLabel, confidenceLabel, formatInt } from '../format';
+import type { Locale } from '../i18n/index';
+import { t } from '../i18n/index';
 
 /**
  * Ce que le panneau sait du ticket (§7.2, PC-08) : problème connu ou grappe

@@ -16,7 +16,7 @@ import type {
   ThresholdHit,
   Trend,
   Vocabulary,
-} from '../core/types.ts';
+} from '../core/types';
 
 /**
  * Passerelle typée vers les resolvers (§13, §14). Chaque écran appelle une

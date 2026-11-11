@@ -8,9 +8,9 @@
  * les signatures restent en place, la chaîne `merged_into` fait le lien.
  */
 
-import type { DataQuality, Settings, Term, Vocabulary } from '../core/types.ts';
-import { defaultSettings } from '../core/types.ts';
-import { planMerge, planSplit, renamePlan } from '../core/vocabulary.ts';
+import type { DataQuality, Settings, Term, Vocabulary } from '../core/types';
+import { defaultSettings } from '../core/types';
+import { planMerge, planSplit, renamePlan } from '../core/vocabulary';
 import {
   applyTermMerge,
   getSettings as readSettings,
@@ -21,8 +21,8 @@ import {
   upsertSettings,
   upsertSignature,
   upsertTerm,
-} from '../platform/db/repos.ts';
-import type { VocabularyResult } from '../ui/api.ts';
+} from '../platform/db/repos';
+import type { VocabularyResult } from '../ui/api';
 import {
   asRecord,
   buildDataQuality,
@@ -33,7 +33,7 @@ import {
   readStringArray,
   readThresholds,
   type JsonRecord,
-} from './helpers.ts';
+} from './helpers';
 
 type ResolverReq = { payload?: unknown; context?: unknown };
 

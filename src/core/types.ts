@@ -6,7 +6,7 @@
  * (§15), soit un payload d'écran (§13) ou d'action MCP (§12).
  */
 
-export * from './constants.ts';
+export * from './constants';
 
 // ---------------------------------------------------------------------------
 // Vocabulaire (§8.3)

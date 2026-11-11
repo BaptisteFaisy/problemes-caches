@@ -1,4 +1,4 @@
-import { useEffect, useState } from '@forge/ui';
+import { useEffect, useState } from 'react';
 
 /**
  * Chargement d'une donnée distante, sans page blanche : tout écran affiche

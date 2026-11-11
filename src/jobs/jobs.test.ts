@@ -12,13 +12,13 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
 
-import { BOOTSTRAP_BATCH, BOOTSTRAP_DAYS } from '../core/constants.ts';
-import { defaultSettings } from '../core/types.ts';
-import type { MatchResult, Problem, Settings, TicketFact, TicketSignature } from '../core/types.ts';
-import { chunkArray } from '../platform/field.ts';
-import type { JiraIssue } from '../platform/jira-types.ts';
-import { attachedFor, membershipOf, parseBootstrapPayload } from './consumer.ts';
-import { billForPeriod, nightlyRecalc } from './scheduled.ts';
+import { BOOTSTRAP_BATCH, BOOTSTRAP_DAYS } from '../core/constants';
+import { defaultSettings } from '../core/types';
+import type { MatchResult, Problem, Settings, TicketFact, TicketSignature } from '../core/types';
+import { chunkArray } from '../platform/field';
+import type { JiraIssue } from '../platform/jira-types';
+import { attachedFor, membershipOf, parseBootstrapPayload } from './consumer';
+import { billForPeriod, nightlyRecalc } from './scheduled';
 import {
   billTicketOf,
   extractTicketText,
@@ -28,8 +28,8 @@ import {
   registerFollowedProject,
   ticketHours,
   windowTicketsOf,
-} from './sync.ts';
-import { issueIdOf, issueKeyOf, issueCommented, issueCreated, issueUpdated, shouldResubmit } from './triggers.ts';
+} from './sync';
+import { issueIdOf, issueKeyOf, issueCommented, issueCreated, issueUpdated, shouldResubmit } from './triggers';
 
 /** Réglages de test : durée moyenne d'intervention de 10 minutes (§9). */
 const SETTINGS: Settings = defaultSettings('proj-1', 'SUP');

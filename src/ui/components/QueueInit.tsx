@@ -1,7 +1,7 @@
-import { loadSampleData, startBootstrap } from '../api.ts';
-import { formatInt } from '../format.ts';
-import type { Locale } from '../i18n/index.ts';
-import { t } from '../i18n/index.ts';
+import { loadSampleData, startBootstrap } from '../api';
+import { formatInt } from '../format';
+import type { Locale } from '../i18n/index';
+import { t } from '../i18n/index';
 
 /** Initialisation de l'historique et jeu d'exemple (PC-10, PC-12). */
 export interface QueueInitActions {

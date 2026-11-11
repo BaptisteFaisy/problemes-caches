@@ -1,8 +1,9 @@
-import { Button, Fragment, Heading, Text } from '@forge/ui';
-import type { BootstrapProgress } from '../../core/types.ts';
-import { formatInt } from '../format.ts';
-import type { Locale } from '../i18n/index.ts';
-import { t } from '../i18n/index.ts';
+import { Fragment } from 'react';
+import { Button, Heading, Text } from '@forge/react';
+import type { BootstrapProgress } from '../../core/types';
+import { formatInt } from '../format';
+import type { Locale } from '../i18n/index';
+import { t } from '../i18n/index';
 
 /**
  * Initialisation de l'historique (PC-10) et jeu d'exemple (PC-12) : 90 jours

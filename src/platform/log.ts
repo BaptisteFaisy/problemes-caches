@@ -7,7 +7,7 @@
  * type d'erreur (§18, vie privée).
  */
 
-const PREFIX = '[laddition]';
+const PREFIX = '[problemes-caches]';
 
 /** Journalise un message court ; ne jette jamais. */
 export function logShort(message: string): void {

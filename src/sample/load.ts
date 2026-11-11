@@ -11,15 +11,15 @@
  * supprimé.
  */
 
-import { sourceHash } from '../core/signature.ts';
-import type { Settings, TicketFact, TicketSignature } from '../core/types.ts';
-import { defaultSettings } from '../core/types.ts';
-import { runStatement } from '../platform/db/query.ts';
-import { getSettings, upsertSettings } from '../platform/db/repos/settings.ts';
-import { upsertSignature } from '../platform/db/repos/signatures.ts';
-import { upsertTicketFacts } from '../platform/db/repos/tickets.ts';
-import { buildDataset } from './build.ts';
-import { SAMPLE_ID_PREFIX, SAMPLE_PROJECT_KEY } from './dataset.ts';
+import { sourceHash } from '../core/signature';
+import type { Settings, TicketFact, TicketSignature } from '../core/types';
+import { defaultSettings } from '../core/types';
+import { runStatement } from '../platform/db/query';
+import { getSettings, upsertSettings } from '../platform/db/repos/settings';
+import { upsertSignature } from '../platform/db/repos/signatures';
+import { upsertTicketFacts } from '../platform/db/repos/tickets';
+import { buildDataset } from './build';
+import { SAMPLE_ID_PREFIX, SAMPLE_PROJECT_KEY } from './dataset';
 
 /** Projets de service fictif du jeu d'exemple (§20). */
 export const SAMPLE_PROJECTS = [SAMPLE_PROJECT_KEY] as const;

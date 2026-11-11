@@ -1,10 +1,11 @@
-import { Button, ButtonSet, Fragment, Heading, Text } from '@forge/ui';
-import type { ClusterLine } from '../api.ts';
-import { formatInt } from '../format.ts';
-import type { Locale } from '../i18n/index.ts';
-import { t } from '../i18n/index.ts';
-import { QueueBillLine } from './QueueBillLine.tsx';
-import { QueueTrend } from './QueueTrend.tsx';
+import { Fragment } from 'react';
+import { Button, ButtonGroup, Heading, Text } from '@forge/react';
+import type { ClusterLine } from '../api';
+import { formatInt } from '../format';
+import type { Locale } from '../i18n/index';
+import { t } from '../i18n/index';
+import { QueueBillLine } from './QueueBillLine';
+import { QueueTrend } from './QueueTrend';
 
 /** Ce qu'il faut pour décider d'une grappe suspecte (§7.1, PC-09). */
 export interface QueueSuspectsProps {
@@ -54,7 +55,7 @@ function QueueSuspectRow({
       />
       <Text>{thresholdOf(locale, line, windowDays)}</Text>
       <QueueTrend locale={locale} trend={line.trend} />
-      <ButtonSet>
+      <ButtonGroup>
         <Button
           appearance="primary"
           text={t(locale, 'problems.confirm')}
@@ -71,7 +72,7 @@ function QueueSuspectRow({
           disabled={busy}
           onClick={() => onSplit(line)}
         />
-      </ButtonSet>
+      </ButtonGroup>
     </Fragment>
   );
 }

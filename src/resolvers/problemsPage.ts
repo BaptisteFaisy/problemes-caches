@@ -9,17 +9,17 @@
  * un geste humain qui change les rattachements (§19.6), via `recalc.ts`.
  */
 
-import { mergeBills } from '../core/bill.ts';
-import { clusterIdOf } from '../core/cluster.ts';
-import { canTransition, startWatching } from '../core/lifecycle.ts';
+import { mergeBills } from '../core/bill';
+import { clusterIdOf } from '../core/cluster';
+import { canTransition, startWatching } from '../core/lifecycle';
 import type {
   Cluster,
   Problem,
   ProblemBill,
   ProblemState,
   TicketSignature,
-} from '../core/types.ts';
-import { signatureKey } from '../core/types.ts';
+} from '../core/types';
+import { signatureKey } from '../core/types';
 import {
   detachMembership,
   getBill,
@@ -40,11 +40,11 @@ import {
   upsertMembership,
   upsertProblem,
   upsertSignature,
-} from '../platform/db/repos.ts';
-import { createProblemIssue, currentAccountId, linkIssues } from '../platform/jira.ts';
-import type { ClusterLine, ProblemPatch, ProblemsPageData } from '../ui/api.ts';
-import { asRecord, buildDataQuality, readString, readStringArray } from './helpers.ts';
-import { getBillAndTrend, loadProjectSettings, recalculateAllBills } from './recalc.ts';
+} from '../platform/db/repos';
+import { createProblemIssue, currentAccountId, linkIssues } from '../platform/jira';
+import type { ClusterLine, ProblemPatch, ProblemsPageData } from '../ui/api';
+import { asRecord, buildDataQuality, readString, readStringArray } from './helpers';
+import { getBillAndTrend, loadProjectSettings, recalculateAllBills } from './recalc';
 
 type ResolverReq = { payload?: unknown; context?: unknown };
 

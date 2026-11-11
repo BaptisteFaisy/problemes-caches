@@ -1,7 +1,8 @@
-import { Fragment, Heading, Text } from '@forge/ui';
-import type { ProblemsPageData } from '../api.ts';
-import type { Locale } from '../i18n/index.ts';
-import { t } from '../i18n/index.ts';
+import { Fragment } from 'react';
+import { Heading, Text } from '@forge/react';
+import type { ProblemsPageData } from '../api';
+import type { Locale } from '../i18n/index';
+import { t } from '../i18n/index';
 
 /**
  * Tickets sans rattachement (§13 écran 2) : ce qui n'a encore été rapproché

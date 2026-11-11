@@ -1,11 +1,12 @@
-import { Fragment, render } from '@forge/ui';
-import { getIssueContext } from './api.ts';
-import { useResolver } from './async.ts';
-import { AsyncView } from './components/AsyncView.tsx';
-import { ContextCost } from './components/ContextCost.tsx';
-import { ContextProblems } from './components/ContextProblems.tsx';
-import { ScreenShell } from './components/ScreenShell.tsx';
-import type { ScreenContext } from './context.ts';
+import { Fragment } from 'react';
+import ForgeReconciler from '@forge/react';
+import { getIssueContext } from './api';
+import { useResolver } from './async';
+import { AsyncView } from './components/AsyncView';
+import { ContextCost } from './components/ContextCost';
+import { ContextProblems } from './components/ContextProblems';
+import { ScreenShell } from './components/ScreenShell';
+import type { ScreenContext } from './context';
 
 /**
  * Écran 4 — encart sur le ticket de l'équipe qui corrige (§13, PC-20) :
@@ -16,7 +17,7 @@ export default function App(): JSX.Element {
   return <ScreenShell>{(context) => <ContextScreen context={context} />}</ScreenShell>;
 }
 
-render(<App />);
+ForgeReconciler.render(<App />);
 
 /** Chargement de l'addition du bug : un seul appel resolver, aucun calcul (§17). */
 function ContextScreen({ context }: { context: ScreenContext }): JSX.Element {

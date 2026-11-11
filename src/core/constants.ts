@@ -14,7 +14,7 @@ import type {
   ProblemState,
   TermKind,
   ThresholdHit,
-} from './types.ts';
+} from './types';
 
 /** Fenêtre glissante de détection d'un suspect, en jours (§8.5). */
 export const SUSPECT_WINDOW_DAYS = 30;

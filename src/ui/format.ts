@@ -5,9 +5,9 @@
  * une valeur nulle ou douteuse.
  */
 
-import type { Confidence, HoursMethod, MembershipBasis, ProblemState } from '../core/types.ts';
-import type { Locale, MessageKey } from './i18n/index.ts';
-import { t } from './i18n/index.ts';
+import type { Confidence, HoursMethod, MembershipBasis, ProblemState } from '../core/types';
+import type { Locale, MessageKey } from './i18n/index';
+import { t } from './i18n/index';
 
 /** Nombre entier formaté selon la langue (« 1 200 » en fr, « 1,200 » en en). */
 export function formatInt(locale: Locale, value: number | null | undefined): string {

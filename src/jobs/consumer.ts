@@ -14,12 +14,12 @@
  * viennent de `sync.ts`, les calculs de `src/core/*` (règle « zéro duplication »).
  */
 
-import { clusterIdOf, computeCluster } from '../core/cluster.ts';
-import { detectRegression } from '../core/lifecycle.ts';
-import { matchTicket } from '../core/matching.ts';
-import { buildSignature, extractHardClues, sourceHash } from '../core/signature.ts';
-import { detectSurge } from '../core/surge.ts';
-import { defaultSettings } from '../core/types.ts';
+import { clusterIdOf, computeCluster } from '../core/cluster';
+import { detectRegression } from '../core/lifecycle';
+import { matchTicket } from '../core/matching';
+import { buildSignature, extractHardClues, sourceHash } from '../core/signature';
+import { detectSurge } from '../core/surge';
+import { defaultSettings } from '../core/types';
 import type {
   BootstrapProgress,
   Cluster,
@@ -31,7 +31,7 @@ import type {
   TicketFact,
   TicketSignature,
   Vocabulary,
-} from '../core/types.ts';
+} from '../core/types';
 import {
   findByHash,
   getBootstrapProgress,
@@ -49,14 +49,14 @@ import {
   upsertSignature,
   upsertSurge,
   upsertTicketFact,
-} from '../platform/db/repos.ts';
-import { organizationOf, requestTypeOf, serviceOf } from '../platform/field.ts';
-import { enrichClues } from '../platform/graph.ts';
-import { fetchIssue } from '../platform/jira.ts';
-import type { JiraIssue } from '../platform/jira-types.ts';
-import { compareTicketToProblem, extractSignature } from '../platform/llm.ts';
-import { logShort, shortError } from '../platform/log.ts';
-import { nextBootstrapBatch } from './bootstrap.ts';
+} from '../platform/db/repos';
+import { organizationOf, requestTypeOf, serviceOf } from '../platform/field';
+import { enrichClues } from '../platform/graph';
+import { fetchIssue } from '../platform/jira';
+import type { JiraIssue } from '../platform/jira-types';
+import { compareTicketToProblem, extractSignature } from '../platform/llm';
+import { logShort, shortError } from '../platform/log';
+import { nextBootstrapBatch } from './bootstrap';
 import {
   extractTicketText,
   keyOf,
@@ -65,7 +65,7 @@ import {
   splitSurgeDates,
   ticketsForSignature,
   windowTicketsOf,
-} from './sync.ts';
+} from './sync';
 
 /** Lot d'amorçage reçu par le consommateur (§14, PC-10). */
 export interface BootstrapPayload {

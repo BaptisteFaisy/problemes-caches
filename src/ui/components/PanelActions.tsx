@@ -1,9 +1,10 @@
-import { Button, ButtonSet, useState } from '@forge/ui';
-import type { AttachResult } from '../api.ts';
-import { attachAndDraft, detachTicket } from '../api.ts';
-import { errorMessage } from '../async.ts';
-import type { Locale } from '../i18n/index.ts';
-import { t } from '../i18n/index.ts';
+import { useState } from 'react';
+import { Button, ButtonGroup } from '@forge/react';
+import type { AttachResult } from '../api';
+import { attachAndDraft, detachTicket } from '../api';
+import { errorMessage } from '../async';
+import type { Locale } from '../i18n/index';
+import { t } from '../i18n/index';
 
 /**
  * Actions du panneau (§7.2) : rattacher et préparer la réponse, ou retirer le
@@ -27,7 +28,7 @@ export function PanelActions({
 }): JSX.Element | null {
   if (!canAttach && !attached) return null;
   return (
-    <ButtonSet>
+    <ButtonGroup>
       {canAttach ? (
         <Button
           appearance="primary"
@@ -39,7 +40,7 @@ export function PanelActions({
       {attached ? (
         <Button text={t(locale, 'panel.detach')} disabled={busy} onClick={onDetach} />
       ) : null}
-    </ButtonSet>
+    </ButtonGroup>
   );
 }
 

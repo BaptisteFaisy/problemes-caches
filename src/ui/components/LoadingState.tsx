@@ -1,6 +1,6 @@
-import { SectionMessage, Text } from '@forge/ui';
-import type { Locale } from '../i18n/index.ts';
-import { t } from '../i18n/index.ts';
+import { SectionMessage, Text } from '@forge/react';
+import type { Locale } from '../i18n/index';
+import { t } from '../i18n/index';
 
 /** État de chargement : jamais une page blanche (§14). */
 export function LoadingState({ locale }: { locale: Locale }): JSX.Element {

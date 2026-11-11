@@ -8,8 +8,8 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 
-import type { HardClues, Problem, Term, Vocabulary } from '../core/types.ts';
-import type { ChatOptions, DraftStats, LlmChat, LlmSignatureInput, PromptMessage } from './jira-types.ts';
+import type { HardClues, Problem, Term, Vocabulary } from '../core/types';
+import type { ChatOptions, DraftStats, LlmChat, LlmSignatureInput, PromptMessage } from './jira-types';
 import {
   buildSignaturePrompt,
   cacheKeyFor,
@@ -26,7 +26,7 @@ import {
   parseCompareJson,
   parseCustomerUpdateJson,
   parseSignatureJson,
-} from './llm.ts';
+} from './llm';
 
 /** Terme du vocabulaire (§8.3). */
 function term(id: string, kind: 'system' | 'symptom', label: string): Term {

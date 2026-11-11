@@ -15,13 +15,13 @@
  * court et la fonction rend la main (§14, budget de 30 s).
  */
 
-import { sourceHash } from '../core/signature.ts';
-import type { TicketFact } from '../core/types.ts';
-import { getSignature, getTicketFact, upsertTicketFact } from '../platform/db/repos.ts';
-import { fetchIssue, readLoggedSeconds } from '../platform/jira.ts';
-import { logShort, shortError } from '../platform/log.ts';
-import { processTicket } from './consumer.ts';
-import { extractTicketText } from './sync.ts';
+import { sourceHash } from '../core/signature';
+import type { TicketFact } from '../core/types';
+import { getSignature, getTicketFact, upsertTicketFact } from '../platform/db/repos';
+import { fetchIssue, readLoggedSeconds } from '../platform/jira';
+import { logShort, shortError } from '../platform/log';
+import { processTicket } from './consumer';
+import { extractTicketText } from './sync';
 
 /** Événement Jira reçu par un déclencheur Forge (§14). */
 export interface JiraEventPayload {

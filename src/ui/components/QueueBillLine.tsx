@@ -1,7 +1,7 @@
-import { Tag, TagGroup } from '@forge/ui';
-import { formatHours, formatInt } from '../format.ts';
-import type { Locale } from '../i18n/index.ts';
-import { t } from '../i18n/index.ts';
+import { Tag, TagGroup } from '@forge/react';
+import { formatHours, formatInt } from '../format';
+import type { Locale } from '../i18n/index';
+import { t } from '../i18n/index';
 
 /**
  * Ligne d'addition d'une grappe ou d'un problème (§9) : tickets, heures,

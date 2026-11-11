@@ -8,14 +8,14 @@
  * problèmes les plus actifs (repli prévu au §16) et indique le service s'il le connaît.
  */
 
-import { PortalSubheader, useProductContext } from '@forge/ui';
-import type { PortalBannerData } from './api.ts';
-import { getPortalBanner } from './api.ts';
-import { useResolver } from './async.ts';
-import { AsyncView } from './components/AsyncView.tsx';
-import { PortalBanner } from './components/PortalBanner.tsx';
-import { ScreenShell } from './components/ScreenShell.tsx';
-import type { ScreenContext } from './context.ts';
+import { useProductContext } from '@forge/react';
+import type { PortalBannerData } from './api';
+import { getPortalBanner } from './api';
+import { useResolver } from './async';
+import { AsyncView } from './components/AsyncView';
+import { PortalBanner } from './components/PortalBanner';
+import { ScreenShell } from './components/ScreenShell';
+import type { ScreenContext } from './context';
 
 /** Contexte produit Forge (non exporté par `@forge/ui` : on le déduit du hook). */
 type ProductContextValue = ReturnType<typeof useProductContext>;
@@ -23,9 +23,7 @@ type ProductContextValue = ReturnType<typeof useProductContext>;
 /** Point d'entrée de la ressource `portal-subheader`. */
 export default function App(): JSX.Element {
   return (
-    <PortalSubheader>
       <ScreenShell>{(ctx) => <PortalBannerScreen ctx={ctx} />}</ScreenShell>
-    </PortalSubheader>
   );
 }
 

@@ -7,7 +7,7 @@
 import assert from 'node:assert/strict';
 import { test } from 'node:test';
 
-import { UNDETERMINED_ID } from './constants.ts';
+import { UNDETERMINED_ID } from './constants';
 import {
   buildSignature,
   detectOs,
@@ -16,8 +16,8 @@ import {
   extractHardClues,
   isUndetermined,
   sourceHash,
-} from './signature.ts';
-import type { HardClues } from './types.ts';
+} from './signature';
+import type { HardClues } from './types';
 
 const EMPTY_CLUES: HardClues = {
   requestType: null,

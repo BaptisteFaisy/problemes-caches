@@ -3,17 +3,18 @@
  * Ressource Forge `settings-page` (`jira:projectSettingsPage`).
  */
 
-import { Fragment, Heading, ProjectSettingsPage } from '@forge/ui';
-import type { DataQuality, Settings, Vocabulary } from '../core/types.ts';
-import { getDataQuality, getSettings, listVocabulary } from './api.ts';
-import { useResolver } from './async.ts';
-import { AsyncView } from './components/AsyncView.tsx';
-import { ScreenShell } from './components/ScreenShell.tsx';
-import { SettingsBootstrap } from './components/SettingsBootstrap.tsx';
-import { SettingsForm } from './components/SettingsForm.tsx';
-import { SettingsVocabulary } from './components/SettingsVocabulary.tsx';
-import type { ScreenContext } from './context.ts';
-import { t } from './i18n/index.ts';
+import { Fragment } from 'react';
+import { Heading } from '@forge/react';
+import type { DataQuality, Settings, Vocabulary } from '../core/types';
+import { getDataQuality, getSettings, listVocabulary } from './api';
+import { useResolver } from './async';
+import { AsyncView } from './components/AsyncView';
+import { ScreenShell } from './components/ScreenShell';
+import { SettingsBootstrap } from './components/SettingsBootstrap';
+import { SettingsForm } from './components/SettingsForm';
+import { SettingsVocabulary } from './components/SettingsVocabulary';
+import type { ScreenContext } from './context';
+import { t } from './i18n/index';
 
 type SettingsBundle = {
   settings: Settings;
@@ -24,9 +25,7 @@ type SettingsBundle = {
 /** Point d'entrée de la ressource `settings-page`. */
 export default function App(): JSX.Element {
   return (
-    <ProjectSettingsPage>
       <ScreenShell>{(ctx) => <SettingsBody ctx={ctx} />}</ScreenShell>
-    </ProjectSettingsPage>
   );
 }
 

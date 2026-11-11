@@ -5,10 +5,10 @@
  * avec la justification, l'indice de confiance et le statut de validation.
  */
 
-import type { Membership } from '../../../core/types.ts';
-import { toMembership, type Row } from '../mappers.ts';
-import { insertRows, onDuplicateUpdate, runStatement, selectRows } from '../query.ts';
-import { toDbBool, toDbDate, toDbDateRequired, type SqlParams } from '../rows.ts';
+import type { Membership } from '../../../core/types';
+import { toMembership, type Row } from '../mappers';
+import { insertRows, onDuplicateUpdate, runStatement, selectRows } from '../query';
+import { toDbBool, toDbDate, toDbDateRequired, type SqlParams } from '../rows';
 
 const MEMBERSHIP_COLUMNS = [
   'issue_id',

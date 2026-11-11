@@ -6,10 +6,10 @@
 import { strict as assert } from 'node:assert';
 import test from 'node:test';
 
-import { computeBill, computeTrend, hoursOf, mergeBills } from './bill.ts';
-import type { BillInput, BillMeToo, BillTicket } from './bill.ts';
-import { DEFAULT_MINUTES_PER_TOUCH } from './constants.ts';
-import type { ProblemBill } from './types.ts';
+import { computeBill, computeTrend, hoursOf, mergeBills } from './bill';
+import type { BillInput, BillMeToo, BillTicket } from './bill';
+import { DEFAULT_MINUTES_PER_TOUCH } from './constants';
+import type { ProblemBill } from './types';
 
 const NOW = '2026-11-11T09:00:00.000Z';
 

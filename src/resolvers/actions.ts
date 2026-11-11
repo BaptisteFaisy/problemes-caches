@@ -5,10 +5,10 @@
  * `startBootstrap`, `bootstrapProgress`, `loadSampleData`, `clearSampleData`.
  */
 
-import { matchTicket } from '../core/matching.ts';
-import { buildSignature, extractHardClues } from '../core/signature.ts';
-import type { BootstrapProgress, CustomerUpdateDraft, TicketSignature } from '../core/types.ts';
-import { defaultSettings } from '../core/types.ts';
+import { matchTicket } from '../core/matching';
+import { buildSignature, extractHardClues } from '../core/signature';
+import type { BootstrapProgress, CustomerUpdateDraft, TicketSignature } from '../core/types';
+import { defaultSettings } from '../core/types';
 import {
   countMeToo,
   getBill,
@@ -23,20 +23,20 @@ import {
   upsertSettings,
   upsertSignature,
   upsertTicketFacts,
-} from '../platform/db/repos.ts';
-import { fetchIssue, searchTickets } from '../platform/jira.ts';
-import { clearSample, loadSample } from '../sample/load.ts';
+} from '../platform/db/repos';
+import { fetchIssue, searchTickets } from '../platform/jira';
+import { clearSample, loadSample } from '../sample/load';
 import {
   compareTicketToProblem,
   draftCustomerUpdate as llmDraftCustomerUpdate,
   extractSignature,
-} from '../platform/llm.ts';
-import { logShort, shortError } from '../platform/log.ts';
-import type { IssueContextData } from '../ui/api.ts';
-import type { MatchResult } from '../core/types.ts';
-import type { Locale } from '../ui/i18n/index.ts';
-import { asRecord, extractLocale, readString } from './helpers.ts';
-import { loadProjectSettings } from './recalc.ts';
+} from '../platform/llm';
+import { logShort, shortError } from '../platform/log';
+import type { IssueContextData } from '../ui/api';
+import type { MatchResult } from '../core/types';
+import type { Locale } from '../ui/i18n/index';
+import { asRecord, extractLocale, readString } from './helpers';
+import { loadProjectSettings } from './recalc';
 
 type ResolverReq = { payload?: unknown; context?: unknown };
 

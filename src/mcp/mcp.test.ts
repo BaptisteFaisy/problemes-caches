@@ -18,7 +18,7 @@ import {
   actionListSuspects,
   actionListTopProblems,
   actionMatchKnownProblem,
-} from './actions.ts';
+} from './actions';
 import {
   optionalNumber,
   optionalText,
@@ -26,15 +26,15 @@ import {
   requireText,
   run,
   messageOf,
-} from './result.ts';
+} from './result';
 import {
   agentContext,
   formatProblemSummary,
   otherPeriod,
   periodOfDays,
   rankByCost,
-} from './agent.ts';
-import { defaultSettings, type Problem, type ProblemBill } from '../core/types.ts';
+} from './agent';
+import { defaultSettings, type Problem, type ProblemBill } from '../core/types';
 
 describe('mcp/agent.ts — contexte, période, tri par coût et gabarits (§12)', () => {
   it('periodOfDays convertit days → période (30 ou 90, défaut 30)', () => {

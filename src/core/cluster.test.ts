@@ -13,11 +13,11 @@ import {
   isOverThreshold,
   RECURRING_MIN_TICKETS,
   RECURRING_REQUEST_TYPES,
-} from './cluster.ts';
-import type { ClusterInput, TicketInWindow } from './cluster.ts';
-import { DEFAULT_THRESHOLDS } from './constants.ts';
-import { addDays } from './time.ts';
-import type { Thresholds } from './types.ts';
+} from './cluster';
+import type { ClusterInput, TicketInWindow } from './cluster';
+import { DEFAULT_THRESHOLDS } from './constants';
+import { addDays } from './time';
+import type { Thresholds } from './types';
 
 /** Instant de référence : tout le temps relatif part de là. */
 const NOW = '2026-03-01T12:00:00.000Z';

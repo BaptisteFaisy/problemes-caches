@@ -14,9 +14,9 @@
  * - §19.6 : retirer un ticket diminue l'addition d'autant, rien de plus.
  */
 
-import { DEFAULT_MINUTES_PER_TOUCH } from './constants.ts';
-import { clamp, round2 } from './time.ts';
-import type { BillPeriod, HoursMethod, ProblemBill, Trend } from './types.ts';
+import { DEFAULT_MINUTES_PER_TOUCH } from './constants';
+import { clamp, round2 } from './time';
+import type { BillPeriod, HoursMethod, ProblemBill, Trend } from './types';
 
 /** Ticket réduit à ce qu'il faut pour chiffrer (§9). */
 export interface BillTicket {

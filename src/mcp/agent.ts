@@ -8,12 +8,12 @@
  * de `core/types.ts` et `ui/format.ts`.
  */
 
-import { DEFAULT_THRESHOLDS, SUSPECT_WINDOW_DAYS } from '../core/constants.ts';
-import type { BillPeriod, Problem, ProblemBill, Settings, Thresholds } from '../core/types.ts';
-import { defaultSettings } from '../core/types.ts';
-import type { Locale } from '../ui/i18n/index.ts';
-import { localeFrom } from '../ui/i18n/index.ts';
-import { formatHours, formatInt, stateLabel } from '../ui/format.ts';
+import { DEFAULT_THRESHOLDS, SUSPECT_WINDOW_DAYS } from '../core/constants';
+import type { BillPeriod, Problem, ProblemBill, Settings, Thresholds } from '../core/types';
+import { defaultSettings } from '../core/types';
+import type { Locale } from '../ui/i18n/index';
+import { localeFrom } from '../ui/i18n/index';
+import { formatHours, formatInt, stateLabel } from '../ui/format';
 
 /** Résumé de contexte que chaque action partage (§12) : projet, langue, seuils. */
 export interface AgentContext {

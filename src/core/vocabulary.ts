@@ -9,7 +9,7 @@
 
 import { createHash } from 'node:crypto';
 
-import { normalizeTrigger, type Term, type TermKind, type Vocabulary } from './types.ts';
+import { normalizeTrigger, type Term, type TermKind, type Vocabulary } from './types';
 
 // ---------------------------------------------------------------------------
 // Aides internes

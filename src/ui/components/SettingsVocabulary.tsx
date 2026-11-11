@@ -3,30 +3,14 @@
  * Permet de renommer, fusionner (regroupement sans rien recalculer) et scinder un terme.
  */
 
-import {
-  Button,
-  ButtonSet,
-  Cell,
-  Form,
-  Fragment,
-  Head,
-  Heading,
-  ModalDialog,
-  Option,
-  Row,
-  SectionMessage,
-  Select,
-  Table,
-  Text,
-  TextField,
-  useState,
-} from '@forge/ui';
-import type { Term, Vocabulary } from '../../core/types.ts';
-import { mergeTerms, renameTerm, splitTerm } from '../api.ts';
-import { errorMessage } from '../async.ts';
-import type { Locale } from '../i18n/index.ts';
-import { t } from '../i18n/index.ts';
-import { splitCsvList } from './SettingsHelpers.ts';
+import { Fragment, useState } from 'react';
+import { Button, ButtonGroup, Cell, Form, Head, Heading, ModalDialog, Option, Row, SectionMessage, Select, Table, Text, Textfield } from '@forge/react';
+import type { Term, Vocabulary } from '../../core/types';
+import { mergeTerms, renameTerm, splitTerm } from '../api';
+import { errorMessage } from '../async';
+import type { Locale } from '../i18n/index';
+import { t } from '../i18n/index';
+import { splitCsvList } from './SettingsHelpers';
 
 type VocabModal =
   | { kind: 'rename'; term: Term }
@@ -140,10 +124,10 @@ function TermSection({
                 <Text>{term.label}</Text>
               </Cell>
               <Cell>
-                <ButtonSet>
+                <ButtonGroup>
                   <Button text={t(locale, 'settings.rename')} onClick={() => onAction({ kind: 'rename', term })} />
                   <Button text={t(locale, 'settings.split')} onClick={() => onAction({ kind: 'split', term })} />
-                </ButtonSet>
+                </ButtonGroup>
               </Cell>
             </Row>
           ))}
@@ -202,7 +186,7 @@ function RenameModal({
   return (
     <ModalDialog header={t(locale, 'settings.rename')} onClose={onClose} closeButtonText={t(locale, 'common.cancel')}>
       <Form onSubmit={onSubmit} submitButtonText={t(locale, 'common.confirm')}>
-        <TextField name="label" label={term.label} defaultValue={term.label} isRequired />
+        <Textfield name="label" label={term.label} defaultValue={term.label} isRequired />
       </Form>
     </ModalDialog>
   );
@@ -234,8 +218,8 @@ function SplitModal({
   return (
     <ModalDialog header={t(locale, 'settings.split')} onClose={onClose} closeButtonText={t(locale, 'common.cancel')}>
       <Form onSubmit={onSubmit} submitButtonText={t(locale, 'common.confirm')}>
-        <TextField name="label" label={term.label} isRequired />
-        <TextField name="issueIds" label={t(locale, 'problem.attachedTickets')} />
+        <Textfield name="label" label={term.label} isRequired />
+        <Textfield name="issueIds" label={t(locale, 'problem.attachedTickets')} />
       </Form>
     </ModalDialog>
   );

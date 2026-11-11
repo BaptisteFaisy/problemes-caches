@@ -1,15 +1,16 @@
-import { Fragment, Heading, SectionMessage, Text } from '@forge/ui';
-import type { ClusterLine, ProblemsPageData } from '../api.ts';
-import type { Locale } from '../i18n/index.ts';
-import { t } from '../i18n/index.ts';
-import { QueueBootstrap } from './QueueBootstrap.tsx';
-import { QueueByCost } from './QueueByCost.tsx';
-import { QueueQuality } from './QueueQuality.tsx';
-import { QueueRecurring } from './QueueRecurring.tsx';
-import { QueueSplit } from './QueueSplit.tsx';
-import { QueueSurges } from './QueueSurges.tsx';
-import { QueueSuspects } from './QueueSuspects.tsx';
-import { QueueUnattached } from './QueueUnattached.tsx';
+import { Fragment } from 'react';
+import { Heading, SectionMessage, Text } from '@forge/react';
+import type { ClusterLine, ProblemsPageData } from '../api';
+import type { Locale } from '../i18n/index';
+import { t } from '../i18n/index';
+import { QueueBootstrap } from './QueueBootstrap';
+import { QueueByCost } from './QueueByCost';
+import { QueueQuality } from './QueueQuality';
+import { QueueRecurring } from './QueueRecurring';
+import { QueueSplit } from './QueueSplit';
+import { QueueSurges } from './QueueSurges';
+import { QueueSuspects } from './QueueSuspects';
+import { QueueUnattached } from './QueueUnattached';
 
 /** Tout ce que la page « Problèmes » sait faire (§7.1, PC-09). */
 export interface QueueContentProps {

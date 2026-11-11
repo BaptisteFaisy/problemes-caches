@@ -5,25 +5,17 @@
  * L'enregistrement passe par `saveSettings` avec un retour visuel (§13.5).
  */
 
-import {
-  Checkbox,
-  CheckboxGroup,
-  Form,
-  Fragment,
-  SectionMessage,
-  Text,
-  TextField,
-  useState,
-} from '@forge/ui';
-import { BILL_LINE_KEYS } from '../../core/constants.ts';
-import type { BillLineKey, Settings } from '../../core/types.ts';
-import { saveSettings } from '../api.ts';
-import { errorMessage } from '../async.ts';
-import type { Locale, MessageKey } from '../i18n/index.ts';
-import { t } from '../i18n/index.ts';
-import type { SettingsFormData } from './SettingsHelpers.ts';
-import { buildSettingsFromForm } from './SettingsHelpers.ts';
-import { SettingsThresholds } from './SettingsThresholds.tsx';
+import { Fragment, useState } from 'react';
+import { Checkbox, CheckboxGroup, Form, SectionMessage, Text, Textfield } from '@forge/react';
+import { BILL_LINE_KEYS } from '../../core/constants';
+import type { BillLineKey, Settings } from '../../core/types';
+import { saveSettings } from '../api';
+import { errorMessage } from '../async';
+import type { Locale, MessageKey } from '../i18n/index';
+import { t } from '../i18n/index';
+import type { SettingsFormData } from './SettingsHelpers';
+import { buildSettingsFromForm } from './SettingsHelpers';
+import { SettingsThresholds } from './SettingsThresholds';
 
 /** Libellés des huit postes de l'addition, une seule table de correspondance (§9). */
 const LINE_LABEL_KEYS: Record<BillLineKey, MessageKey> = {
@@ -74,7 +66,7 @@ export function SettingsForm({ locale, initial, projectKey, onSaved }: SettingsF
           projectKey={initial.projectKey || projectKey}
         />
         <SettingsThresholds locale={locale} settings={initial} />
-        <TextField
+        <Textfield
           name="portalServices"
           label={t(locale, 'settings.portalServices')}
           defaultValue={initial.portalServices.join(', ')}
@@ -116,7 +108,7 @@ function SaveFeedback({
  */
 function WatchedProjectField({ locale, projectKey }: { locale: Locale; projectKey: string }): JSX.Element {
   return (
-    <TextField
+    <Textfield
       name="watchedProject"
       label={t(locale, 'settings.projects')}
       defaultValue={projectKey}

@@ -5,12 +5,12 @@
  * Une ligne par projet (`PRIMARY KEY (project_id)`).
  */
 
-import type { BootstrapProgress } from '../../../core/types.ts';
-import type { Row } from '../mappers.ts';
-import { toBootstrap } from '../mappers.ts';
-import { insertRows, onDuplicateUpdate, selectRows } from '../query.ts';
-import type { SqlParam } from '../rows.ts';
-import { toDbBool, toDbDateRequired } from '../rows.ts';
+import type { BootstrapProgress } from '../../../core/types';
+import type { Row } from '../mappers';
+import { toBootstrap } from '../mappers';
+import { insertRows, onDuplicateUpdate, selectRows } from '../query';
+import type { SqlParam } from '../rows';
+import { toDbBool, toDbDateRequired } from '../rows';
 
 const TABLE = 'bootstrap_progress';
 

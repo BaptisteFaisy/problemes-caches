@@ -7,8 +7,8 @@
  * inchangé plutôt que d'inventer un raccourci.
  */
 
-import { addDays, parseIso } from './time.ts';
-import type { Problem, ProblemState, Settings } from './types.ts';
+import { addDays, parseIso } from './time';
+import type { Problem, ProblemState, Settings } from './types';
 
 /** Événements qui font avancer un problème (§5). */
 export type LifecycleEvent =

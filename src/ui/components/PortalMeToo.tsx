@@ -5,11 +5,12 @@
  * pas compter la personne (aucune clé i18n dédiée n'existe : on affiche la plus proche).
  */
 
-import { Button, Fragment, ModalDialog, Text, useState } from '@forge/ui';
-import { meToo } from '../api.ts';
-import { errorMessage } from '../async.ts';
-import type { Locale } from '../i18n/index.ts';
-import { t } from '../i18n/index.ts';
+import { Fragment, useState } from 'react';
+import { Button, ModalDialog, Text } from '@forge/react';
+import { meToo } from '../api';
+import { errorMessage } from '../async';
+import type { Locale } from '../i18n/index';
+import { t } from '../i18n/index';
 
 export interface PortalMeTooProps {
   locale: Locale;

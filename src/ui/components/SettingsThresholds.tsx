@@ -3,10 +3,11 @@
  * Aucun calcul métier (§17) : affiche et collecte uniquement les paramètres saisis.
  */
 
-import { Fragment, Heading, TextField } from '@forge/ui';
-import type { Settings } from '../../core/types.ts';
-import type { Locale } from '../i18n/index.ts';
-import { t } from '../i18n/index.ts';
+import { Fragment } from 'react';
+import { Heading, Textfield } from '@forge/react';
+import type { Settings } from '../../core/types';
+import type { Locale } from '../i18n/index';
+import { t } from '../i18n/index';
 
 export interface SettingsThresholdsProps {
   locale: Locale;
@@ -18,35 +19,35 @@ export function SettingsThresholds({ locale, settings }: SettingsThresholdsProps
   return (
     <Fragment>
       <Heading size="medium">{t(locale, 'settings.thresholds')}</Heading>
-      <TextField
+      <Textfield
         name="thresholdTickets"
         type="number"
         label={t(locale, 'settings.thresholdTickets')}
         defaultValue={String(settings.thresholds.tickets)}
         isRequired
       />
-      <TextField
+      <Textfield
         name="thresholdHours"
         type="number"
         label={t(locale, 'settings.thresholdHours')}
         defaultValue={String(settings.thresholds.hours)}
         isRequired
       />
-      <TextField
+      <Textfield
         name="thresholdPeople"
         type="number"
         label={t(locale, 'settings.thresholdPeople')}
         defaultValue={String(settings.thresholds.people)}
         isRequired
       />
-      <TextField
+      <Textfield
         name="minutesPerTouch"
         type="number"
         label={t(locale, 'settings.minutesPerTouch')}
         defaultValue={String(settings.minutesPerTouch)}
         isRequired
       />
-      <TextField
+      <Textfield
         name="hourRateEur"
         type="number"
         label={t(locale, 'settings.hourRate')}
@@ -66,7 +67,7 @@ function ProblemTypeField({
   problemIssueType: string | null;
 }): JSX.Element {
   return (
-    <TextField
+    <Textfield
       name="problemIssueType"
       label={t(locale, 'settings.problemType')}
       description={t(locale, 'settings.problemTypeHelp')}
@@ -79,21 +80,21 @@ function SurgeFields({ locale, settings }: { locale: Locale; settings: Settings 
   return (
     <Fragment>
       <Heading size="medium">{t(locale, 'settings.surge')}</Heading>
-      <TextField
+      <Textfield
         name="surgeFactor"
         type="number"
         label={t(locale, 'settings.surgeFactor')}
         defaultValue={String(settings.surgeFactor)}
         isRequired
       />
-      <TextField
+      <Textfield
         name="surgeWindowMinutes"
         type="number"
         label={t(locale, 'settings.surgeWindow')}
         defaultValue={String(settings.surgeWindowMinutes)}
         isRequired
       />
-      <TextField
+      <Textfield
         name="watchDays"
         type="number"
         label={t(locale, 'settings.watchDays')}

@@ -3,13 +3,14 @@
  * Aucun calcul côté UI (§17) : affiche les compteurs et la progression fournis par le backend.
  */
 
-import { Button, ButtonSet, Fragment, Heading, Range, SectionMessage, Text, useState } from '@forge/ui';
-import type { BootstrapProgress, DataQuality } from '../../core/types.ts';
-import { bootstrapProgress, clearSampleData, loadSampleData, startBootstrap } from '../api.ts';
-import { errorMessage } from '../async.ts';
-import { formatDate } from '../format.ts';
-import type { Locale } from '../i18n/index.ts';
-import { t } from '../i18n/index.ts';
+import { Fragment, useState } from 'react';
+import { Button, ButtonGroup, Heading, Range, SectionMessage, Text } from '@forge/react';
+import type { BootstrapProgress, DataQuality } from '../../core/types';
+import { bootstrapProgress, clearSampleData, loadSampleData, startBootstrap } from '../api';
+import { errorMessage } from '../async';
+import { formatDate } from '../format';
+import type { Locale } from '../i18n/index';
+import { t } from '../i18n/index';
 
 export interface SettingsBootstrapProps {
   locale: Locale;
@@ -119,10 +120,10 @@ function BootstrapSection({
   return (
     <Fragment>
       <Heading size="medium">{t(locale, 'settings.bootstrap')}</Heading>
-      <ButtonSet>
+      <ButtonGroup>
         <Button text={t(locale, 'settings.bootstrapRun')} onClick={handleStart} />
         <Button text={t(locale, 'common.retry')} onClick={handleCheck} />
-      </ButtonSet>
+      </ButtonGroup>
       <BootstrapBar locale={locale} progress={progress} />
     </Fragment>
   );
@@ -192,10 +193,10 @@ function SampleSection({
   return (
     <Fragment>
       <Heading size="medium">{t(locale, 'settings.sample')}</Heading>
-      <ButtonSet>
+      <ButtonGroup>
         <Button text={t(locale, 'settings.loadSample')} onClick={handleLoad} />
         {demoData ? <Button appearance="warning" text={t(locale, 'settings.clearSample')} onClick={handleClear} /> : null}
-      </ButtonSet>
+      </ButtonGroup>
     </Fragment>
   );
 }

@@ -8,7 +8,7 @@
 import assert from 'node:assert/strict';
 import { test } from 'node:test';
 
-import type { Term, TermKind, Vocabulary } from './types.ts';
+import type { Term, TermKind, Vocabulary } from './types';
 import {
   followMerge,
   normalizeLabel,
@@ -18,7 +18,7 @@ import {
   resolveTermId,
   suggestNewTerm,
   termLabel,
-} from './vocabulary.ts';
+} from './vocabulary';
 
 const NOW = '2026-11-11T08:00:00.000Z';
 const PROJECT = 'PRJ-1';

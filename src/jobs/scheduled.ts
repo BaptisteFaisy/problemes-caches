@@ -15,12 +15,12 @@
  *   - relance l'amorçage restant (§14, PC-10).
  */
 
-import { computeBill } from '../core/bill.ts';
-import type { BillTicket } from '../core/bill.ts';
-import { computeCluster } from '../core/cluster.ts';
-import { watchElapsed } from '../core/lifecycle.ts';
-import { addDays } from '../core/time.ts';
-import type { BillPeriod, Problem, ProblemBill, Settings, TicketFact } from '../core/types.ts';
+import { computeBill } from '../core/bill';
+import type { BillTicket } from '../core/bill';
+import { computeCluster } from '../core/cluster';
+import { watchElapsed } from '../core/lifecycle';
+import { addDays } from '../core/time';
+import type { BillPeriod, Problem, ProblemBill, Settings, TicketFact } from '../core/types';
 import {
   getSettings,
   listClusters,
@@ -33,10 +33,10 @@ import {
   replaceBill,
   updateProblemState,
   upsertCluster,
-} from '../platform/db/repos.ts';
-import { publishDailySummary, setProblemProperty } from '../platform/jira.ts';
-import { logShort, shortError } from '../platform/log.ts';
-import { nextBootstrapBatch } from './bootstrap.ts';
+} from '../platform/db/repos';
+import { publishDailySummary, setProblemProperty } from '../platform/jira';
+import { logShort, shortError } from '../platform/log';
+import { nextBootstrapBatch } from './bootstrap';
 import {
   billTicketOf,
   followedProjectIds,
@@ -44,7 +44,7 @@ import {
   keyOf,
   registerFollowedProject,
   windowTicketsOf,
-} from './sync.ts';
+} from './sync';
 
 /**
  * Recalcul nocturne complet (§14).

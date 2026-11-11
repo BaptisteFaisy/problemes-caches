@@ -18,10 +18,10 @@ import {
   loadSampleData,
   matchFreeText,
   startBootstrap,
-} from './actions.ts';
-import { attachAndDraft, detachTicket, getAgentPanel } from './agentPanel.ts';
-import { getPortalBanner, getRequestDetail, meToo } from './portal.ts';
-import { getProblemPanel } from './problemPanel.ts';
+} from './actions';
+import { attachAndDraft, detachTicket, getAgentPanel } from './agentPanel';
+import { getPortalBanner, getRequestDetail, meToo } from './portal';
+import { getProblemPanel } from './problemPanel';
 import {
   confirmSuspect,
   getProblemsPage,
@@ -29,7 +29,7 @@ import {
   rejectSuspect,
   splitCluster,
   updateProblem,
-} from './problemsPage.ts';
+} from './problemsPage';
 import {
   getDataQuality,
   getSettings,
@@ -38,7 +38,7 @@ import {
   renameTerm,
   saveSettings,
   splitTerm,
-} from './settings.ts';
+} from './settings';
 
 export const handlers = {
   getAgentPanel,
