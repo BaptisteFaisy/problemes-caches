@@ -2,13 +2,24 @@
 
 ## Ce dépôt démarre avec
 
-- **5 workers** self-hosted sur le serveur R630 (Debian 13, 80 cœurs) :
-  `r630-problemes-caches-01` … `r630-problemes-caches-05`, labels
-  `self-hosted, problemes-caches-worker, ci-node, Linux, X64`,
-  services systemd utilisateur `actions-runner-problemes-caches-0N.service`.
-- **CI réelle** (`.github/workflows/ci.yml`) : `npm ci` (cache npm du runner),
-  `tsc --noEmit`, puis les tests du domaine (`node --test`). Node 22 est déjà
-  installé sur le worker (`~/node-current`), avec repli `actions/setup-node`.
+- **CI sur runners hébergés GitHub** (`ubuntu-latest`) pour `ci`, `couche0`,
+  `ci-budget`, `stale-base-guard` et le balayeur `file-mergify` : le dépôt est
+  **public**, ces minutes sont gratuites. Décision du 2026-11-11, mesurée : les
+  workers self-hosted du R630 sont devenus sourds (jobs `queued` > 40 min,
+  `startup_failure`, `npm ci` tué en exit 137) avec le canal broker cassé en
+  boucle dans `_diag/Runner_*.log` — `ambre`, `suture` et `jauge` stagnaient au
+  même moment, la machine portant ~105 listeners runner en long-polling derrière
+  une seule adresse IP.
+- **3 workers** self-hosted subsistent pour le **gate hermes** uniquement :
+  `r630-problemes-caches-01…03` (déplacés depuis `ambre`, `near_tidewater` avec
+  `hermes-port/repo-bootstrap/deplace-runner.sh`), labels
+  `self-hosted, problemes-caches-worker, ci-node, Linux, X64`, dossiers de
+  travail `_work01/02/03`, services systemd utilisateur. Ils ne portent **aucun
+  check requis** : un R630 sourd ne bloque plus aucun merge.
+- **CI réelle** (`.github/workflows/ci.yml`) : `npm ci` (cache npm de
+  `actions/setup-node`), `tsc --noEmit`, puis les tests du domaine
+  (`node --test` via `tools/strip_ts_loader.mjs`, qui résout les imports sans
+  extension comme le fait le bundler Forge).
 - **Couche 0** (`.github/workflows/couche0.yml`) : fichiers < 500 lignes,
   fonctions < 50 lignes (`tools/check_limits.py`), tests du gate hermes, et
   `manifest.yml` validé contre le schéma Forge officiel
