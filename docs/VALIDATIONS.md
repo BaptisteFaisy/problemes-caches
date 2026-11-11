@@ -54,3 +54,24 @@ $$\text{Taux d'erreur d'office} = \frac{\text{Rattachements automatiques à un m
   1. `confidence === 'high'` (uniquement la marche 1 — même signature stricte — ou la marche 3 — code d'erreur / asset identique) ;
   2. `undetermined === false` (les textes trop courts ou vagues sont systématiquement exclus du rattachement automatique, §18).
 - **La marche 2 reste sous contrôle humain** : dès que le modèle intervient sur une proximité sémantique (marche 2), la confiance est plafonnée à `medium` et le rattachement est **uniquement proposé** à l'agent (`auto: false`), éliminant ainsi le risque d'erreur d'office.
+
+---
+
+## 3. Résultats mesurés sur le site de démonstration (2026-11-11)
+
+Sonde : `python3 tools/valide_site_demo.py --ecrire --json resultats.json` (lecture seule par défaut ; `--ecrire` autorise l'unique test écrit, qui crée une demande, y pose un commentaire public puis **la supprime**).
+
+Site : `https://one-atlas-cndz.atlassian.net` · 66 appels REST.
+
+| # | Point | Verdict | Mesure | Conséquence pour l'app |
+|---|---|---|---|---|
+| 1 | Volume et variété des tickets d’exemple du site de démo | **PARTIEL** | 11 bureaux de services, 2824 tickets au total mais 1 sur les 90 derniers jours ; ITO=1000, ITS=1000, INV=291, FAC=266, SECOPS=149 | **Fenêtre d'amorçage élargie** : 90 j → 365 j → tout l'historique tant qu'il y a moins de 10 tickets (`BOOTSTRAP_WINDOWS_DAYS`). Sans cela l'app restait vide sur ce site. |
+| 2 | Type « Problème » présent pour porter le ticket unique (§10) | **OK** | types globaux contenant « Problem » : ['Problem', '[System] Problem'] ; projets où le type est créable : aucun | Le type « Problem » existe au niveau du site mais n'est créable dans aucun projet testé → l'écran de réglages choisit le type (`settings.problemIssueType`), comme prévu au §10. |
+| 3 | Lecture des délais de service et de leur dépassement (§9) | **OK** | CLSD-5 : 1 délai(s) ['Time to resolution'], dépassé(s)=[None] | Poste « engagements rompus » lisible : le lot S reste activable dans les réglages. |
+| 4 | Inventaire (Assets) lisible pour l’indice « même équipement » (§8.2) | **OK** | assets/workspace → 200, 1 espace(s) ; espace 77aea180-a0a9-4f0f-8bf7-625ce74d3a65 : objet/nav → 404 | Espace Assets visible, navigation par objet refusée (404) → l'indice « même équipement » passe par les champs du ticket et le graphe, jamais par l'API Assets directe. |
+| 5 | Bandeau du portail dynamique selon le service consulté (§13) | **PARTIEL** | CLSD : 12 types de demande, 0 groupe(s) de services, 6 file(s) ; aucun groupe → bandeau global | Aucun groupe de services sur les types de demande → le bandeau du portail est **global**, limité aux trois problèmes les plus actifs (repli déjà codé). |
+| 6 | Commentaire public sur une demande au nom de l’agent (§7.4) | **OK** | demande CLSD-7 créée, commentaire public → 201, puis supprimée (204) | Le commentaire public au nom de l'agent fonctionne : le message groupé de correction (§7.4) peut être envoyé après relecture humaine. |
+| 7 | Coût et durée du modèle à l’initialisation (§14) | **OK** | 1 tickets sur 90 jours (6 premiers bureaux) → ~1 min de modèle | Peu de tickets récents : l'initialisation coûte quelques appels modèle seulement ; le cache par empreinte borne le reste. |
+| 8 | Événements de création / modification / commentaire (§14) | **OK** | 3/3 événements déclarés : avi:jira:created:issue, avi:jira:updated:issue, avi:jira:commented:issue | Les trois événements sont déclarés et validés par `forge lint`. |
+
+Bilan : 6 OK, 2 partiel(s), 0 échec(s).
