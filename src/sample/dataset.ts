@@ -97,6 +97,8 @@ export interface SampleGroupSpec {
   systemId: string;
   symptomId: string;
   triggerText: string;
+  /** Libellé lisible du groupe (bruit) : sert aux écrans et aux tests. */
+  label?: string;
   requestType: string;
   service?: string | null;
   component?: string | null;
@@ -393,7 +395,7 @@ export function interleave(): { spec: SampleGroupSpec; index: number }[] {
 
 /** Deux tickets par jour, puis flambée et réparation des jours vides (§8.6). */
 export function toSlots(order: readonly { spec: SampleGroupSpec; index: number }[]): Slot[] {
-  const slots = order.map((entry, index) => {
+  const slots: Slot[] = order.map((entry, index) => {
     const french = entry.index < entry.spec.fr.length;
     return {
       spec: entry.spec,
