@@ -75,3 +75,67 @@ Site : `https://one-atlas-cndz.atlassian.net` · 66 appels REST.
 | 8 | Événements de création / modification / commentaire (§14) | **OK** | 3/3 événements déclarés : avi:jira:created:issue, avi:jira:updated:issue, avi:jira:commented:issue | Les trois événements sont déclarés et validés par `forge lint`. |
 
 Bilan : 6 OK, 2 partiel(s), 0 échec(s).
+
+---
+
+## 4. Déploiement et test en direct (2026-11-11)
+
+Ce qui a été fait réellement, pas seulement vérifié hors ligne :
+
+| Étape | Commande | Résultat |
+|---|---|---|
+| Lint officiel | `forge lint` | **No issues found** |
+| Build | `forge build` | **Build successful** (tag `2074cc10-edda-491b-b541-1708869639eb`) |
+| Déploiement | `forge deploy` | **Deployed** — `Hidden Problems`, environnement `development`, version 2.1.0, éligible *Runs on Atlassian* |
+| Installation | `forge install --site one-atlas-cndz.atlassian.net --product jira` | **Install in Jira complete** (8 scopes acceptés) |
+| Test en direct | 17 demandes JSM créées par l'API puis **supprimées** (204) | triggers déclenchés, pipeline complet exécuté |
+
+### Ce que les logs ont prouvé
+
+```
+[problemes-caches] llm : changement de modèle
+[problemes-caches] rattachement none (low) sur 131 caractères
+[problemes-caches] grappe ca224153 : 2 tickets, 0 h, 1 personnes, statut watching
+[problemes-caches] issueCreated CLSD-24 (CLSD) : none
+```
+
+Trois demandes « imprimante du 3ᵉ étage » rédigées différemment : deux tombent
+dans la **même grappe** (`ca224153`, 2 tickets), la troisième dans une autre.
+Le regroupement fonctionne donc en réel ; l'écart restant est exactement le
+risque §16 point 5 (stabilité des signatures), réduit par le vocabulaire
+persistant et à mesurer sur le jeu étiqueté de 200 tickets (§17).
+
+Délai observé entre la création de la demande et la fin du traitement :
+**2 à 9 secondes** — très en dessous des 30 secondes de PC-07.
+
+### Quatre défauts trouvés uniquement grâce au déploiement
+
+Aucun n'était détectable par `tsc`, les 200 tests ou `forge lint` :
+
+1. **Le schéma n'était jamais créé** — `ensureSchema()` existait mais personne ne
+   l'appelait ; toute lecture échouait en `SQL_EXECUTION_ERROR`. Corrigé par le
+   `migrationRunner` officiel accroché à la couche d'accès (`schema-init.ts`).
+2. **DDL non portable** — clause `ENGINE=InnoDB DEFAULT CHARSET=…` et `KEY …`
+   inline refusées ; index déplacés en `CREATE INDEX` séparés.
+3. **Teamwork Graph appelé sans utilisateur** — `401 AUTH_TYPE_UNAVAILABLE` sur
+   chaque trigger (§14 : le graphe ne s'appelle qu'au nom d'un utilisateur).
+   Déplacé dans le panneau de l'agent, là où un utilisateur existe.
+4. **Le vocabulaire n'était jamais enregistré (§8.3)** — les libellés du modèle
+   servaient d'identifiants, le vocabulaire restait vide, le modèle réinventait
+   à chaque ticket et **aucune grappe ne se formait**. Corrigé par `ensureTerm()`
+   (`resolveTermId` → `suggestNewTerm` → `upsertTerm`).
+
+Leçon : pour une app Forge, `forge lint` + tests + typage ne remplacent pas un
+déploiement et un ticket réel. Les logs applicatifs (`forge logs`) font partie de
+la recette, d'où le journal de grappe ajouté (compteurs et identifiant tronqué,
+jamais de texte de ticket ni nom d'agent, §17).
+
+### À faire côté humain
+
+- `forge deploy -e production` puis `forge install --upgrade` pour la version
+  soumise aux juges (le développement installé ici sert aux tests).
+- Les scopes `read:graph:*` exigent un **administrateur d'organisation** : sans
+  eux le graphe omet silencieusement les objets, et l'indice « même équipement »
+  repose alors sur les champs du ticket (repli déjà codé).
+- Le jeu d'exemple (§21) se charge depuis l'écran de réglages : bouton
+  « Charger 60 jours de tickets d'exemple ».
