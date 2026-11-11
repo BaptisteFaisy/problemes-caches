@@ -261,8 +261,19 @@ export function renderDetail(state: DemoState, cluster: DemoCluster): void {
 
   const message = zone('detail-message');
   if (message) message.textContent = '';
+  ouvrirDialogue();
+}
+
+/**
+ * Ouvre la boîte de dialogue du détail. `showModal` n'existe pas partout
+ * (jsdom, navigateurs anciens) : on retombe sur l'attribut `open` plutôt que de
+ * casser le clic de l'utilisateur.
+ */
+function ouvrirDialogue(): void {
   const dialogue = document.getElementById('detail-grappe') as HTMLDialogElement | null;
-  dialogue?.showModal();
+  if (!dialogue) return;
+  if (typeof dialogue.showModal === 'function') dialogue.showModal();
+  else dialogue.setAttribute('open', '');
 }
 
 /** Message court après une action (confirmation, rejet, retrait, moi aussi). */
