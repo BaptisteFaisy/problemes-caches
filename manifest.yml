@@ -1,0 +1,298 @@
+app:
+  id: ari:cloud:ecosystem::app/REPLACE_WITH_APP_ID
+  runtime:
+    name: nodejs22.x
+  # L'app ne fait aucune sortie réseau : seules les API Atlassian sont appelées (§17).
+  licensing:
+    enabled: false
+
+modules:
+  # ---------------------------------------------------------------- fonctions
+  function:
+    - key: resolver
+      handler: index.resolver
+    - key: issue-created
+      handler: index.issueCreated
+    - key: issue-updated
+      handler: index.issueUpdated
+    - key: issue-commented
+      handler: index.issueCommented
+    - key: nightly-recalc
+      handler: index.nightlyRecalc
+      timeoutSeconds: 900
+    - key: bootstrap-batch
+      handler: index.bootstrapBatch
+      timeoutSeconds: 900
+    - key: match-known-problem
+      handler: index.actionMatchKnownProblem
+    - key: list-top-problems
+      handler: index.actionListTopProblems
+    - key: get-problem
+      handler: index.actionGetProblem
+    - key: list-suspects
+      handler: index.actionListSuspects
+    - key: get-surges
+      handler: index.actionGetSurges
+    - key: draft-customer-update
+      handler: index.actionDraftCustomerUpdate
+    - key: confirm-membership
+      handler: index.actionConfirmMembership
+
+  # -------------------------------------------------------- écrans agents (§13)
+  jira:issuePanel:
+    - key: problemes-caches-issue-panel
+      title: Problèmes cachés
+      icon: https://developer.atlassian.com/platform/forge/images/icons/issue-panel-icon.svg
+      resource: issue-panel
+      resolver:
+        function: resolver
+
+  jiraServiceManagement:queuePage:
+    - key: problemes-caches-queue-page
+      title: Problèmes
+      resource: queue-page
+      resolver:
+        function: resolver
+
+  jira:projectSettingsPage:
+    - key: problemes-caches-settings-page
+      title: Problèmes cachés
+      resource: settings-page
+      resolver:
+        function: resolver
+
+  jira:issueContext:
+    - key: problemes-caches-issue-context
+      title: Ce que ce bug coûte
+      label: Problèmes cachés
+      resource: issue-context
+      resolver:
+        function: resolver
+
+  # ------------------------------------------------------- écrans clients (§13)
+  jiraServiceManagement:portalSubheader:
+    - key: problemes-caches-portal-subheader
+      title: Problèmes connus
+      resource: portal-subheader
+      resolver:
+        function: resolver
+
+  jiraServiceManagement:portalRequestDetailPanel:
+    - key: problemes-caches-portal-request-detail
+      title: Problème connu rattaché
+      resource: portal-request-detail
+      resolver:
+        function: resolver
+
+  # -------------------------------------------------------------- événements
+  trigger:
+    - key: problemes-caches-issue-created
+      events:
+        - avi:jira:created:issue
+      function: issue-created
+    - key: problemes-caches-issue-updated
+      events:
+        - avi:jira:updated:issue
+      function: issue-updated
+    - key: problemes-caches-issue-commented
+      events:
+        - avi:jira:commented:issue
+      function: issue-commented
+
+  scheduledTrigger:
+    - key: problemes-caches-nightly
+      interval: day
+      function: nightly-recalc
+
+  consumer:
+    - key: problemes-caches-bootstrap-consumer
+      queue: problemes-caches-bootstrap
+      resolver:
+        function: bootstrap-batch
+        method: bootstrapBatch
+
+  # ------------------------------------------------------------- stockage
+  sql:
+    - key: problemes-caches-sql
+      engine: mysql
+
+  llm:
+    - key: problemes-caches-llm
+      model:
+        - claude
+
+  # --------------------------------------------------------- actions & Rovo (§12)
+  action:
+    - key: match-known-problem
+      name: Match known problem
+      description: Vérifie si un texte ou un ticket correspond à un problème connu, renvoie le contournement et la confiance.
+      actionVerb: GET
+      function: match-known-problem
+      inputs:
+        projectKey:
+          type: string
+          required: false
+          title: Project key
+          description: Clé du projet Jira Service Management (ex. SUP).
+        text:
+          type: string
+          required: false
+          title: Text
+          description: Question ou description libre de l'incident.
+        issueKey:
+          type: string
+          required: false
+          title: Issue key
+          description: Clé du ticket Jira à analyser (ex. SUP-104).
+
+    - key: list-top-problems
+      name: List top problems
+      description: Renvoie les problèmes classés par coût (tickets, heures, personnes touchées), avec tendance.
+      actionVerb: GET
+      function: list-top-problems
+      inputs:
+        projectKey:
+          type: string
+          required: true
+          title: Project key
+          description: Clé du projet Jira.
+        days:
+          type: number
+          required: false
+          title: Days
+          description: Fenêtre glissante (30 ou 90 jours, 30 par défaut).
+
+    - key: get-problem
+      name: Get problem
+      description: Renvoie la fiche complète d'un problème (signature, état, addition, cause, contournement, tickets liés).
+      actionVerb: GET
+      function: get-problem
+      inputs:
+        problemKey:
+          type: string
+          required: true
+          title: Problem key
+          description: Clé du ticket de problème (ex. PRB-12) ou identifiant interne.
+
+    - key: list-suspects
+      name: List suspects
+      description: Renvoie les grappes de tickets qui dépassent les seuils et attendent une confirmation humaine.
+      actionVerb: GET
+      function: list-suspects
+      inputs:
+        projectKey:
+          type: string
+          required: true
+          title: Project key
+          description: Clé du projet Jira.
+
+    - key: get-surges
+      name: Get surges
+      description: Renvoie les flambées en cours (montée brutale des tickets d'une même signature).
+      actionVerb: GET
+      function: get-surges
+      inputs:
+        projectKey:
+          type: string
+          required: true
+          title: Project key
+          description: Clé du projet Jira.
+
+    - key: draft-customer-update
+      name: Draft customer update
+      description: Rédige un brouillon de message groupé pour les personnes touchées par un problème.
+      actionVerb: GET
+      function: draft-customer-update
+      inputs:
+        problemKey:
+          type: string
+          required: true
+          title: Problem key
+          description: Clé du ticket de problème (ex. PRB-12).
+
+    - key: confirm-membership
+      name: Confirm membership
+      description: Confirme ou rejette le rattachement d'un ticket à un problème.
+      actionVerb: UPDATE
+      function: confirm-membership
+      inputs:
+        issueKey:
+          type: string
+          required: true
+          title: Issue key
+          description: Clé du ticket concerné (ex. SUP-104).
+        problemKey:
+          type: string
+          required: true
+          title: Problem key
+          description: Clé du ticket de problème (ex. PRB-12).
+        confirmed:
+          type: boolean
+          required: true
+          title: Confirmed
+          description: true pour confirmer le rattachement, false pour le rejeter.
+
+  rovo:agent:
+    - key: problemes-caches-agent
+      name: Problèmes cachés
+      description: Regroupe les incidents JSM de même origine, chiffre ce qu'ils coûtent et propose le contournement.
+      prompt: >-
+        Tu es l'agent « Problèmes cachés ». Tu réponds aux questions sur les problèmes
+        récurrents des projets Jira Service Management, leur addition (tickets, heures de
+        support, personnes touchées), leurs contournements validés et les flambées en cours.
+        Tu ne calcules jamais toi-même : tu appelles les actions disponibles
+        (match-known-problem, list-top-problems, get-problem, list-suspects, get-surges,
+        draft-customer-update) et tu restitues leurs chiffres. Tu donnes toujours la
+        méthode (temps saisi ou interventions × durée moyenne) et tu ne classes jamais les
+        agents de support : l'unité est le problème ou le projet. Si une donnée manque,
+        tu le dis au lieu de l'inventer.
+      conversationStarters:
+        - Quels problèmes nous coûtent le plus ce mois-ci ?
+        - Ce ticket ressemble-t-il à un problème connu ?
+        - Qu'est-ce qui monte depuis la semaine dernière ?
+        - Rédige le message pour les personnes touchées par PRB-12.
+        - Combien a coûté le problème d'impression du 3e étage ?
+      actions:
+        - match-known-problem
+        - list-top-problems
+        - get-problem
+        - list-suspects
+        - get-surges
+        - draft-customer-update
+
+  rovo:mcp:
+    - key: problemes-caches-mcp
+      name: Problèmes cachés
+      tools:
+        - match-known-problem
+        - list-top-problems
+        - get-problem
+        - list-suspects
+        - get-surges
+        - draft-customer-update
+        - confirm-membership
+
+resources:
+  - key: issue-panel
+    path: src/ui/issue-panel.tsx
+  - key: queue-page
+    path: src/ui/queue-page.tsx
+  - key: settings-page
+    path: src/ui/settings-page.tsx
+  - key: issue-context
+    path: src/ui/issue-context.tsx
+  - key: portal-subheader
+    path: src/ui/portal-subheader.tsx
+  - key: portal-request-detail
+    path: src/ui/portal-request-detail.tsx
+
+permissions:
+  scopes:
+    - read:jira-work
+    - write:jira-work
+    - read:jira-user
+    - read:servicedesk-request
+    - storage:app
+    - read:graph:component:compass
+    - read:graph:team:atlassian
+    - read:graph:issue:jira
