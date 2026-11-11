@@ -7,6 +7,36 @@ Bonus visés : Teamwork Graph, Agents Rovo, MCP, Marketplace.
 
 ---
 
+## 0. Voir l'app sans Jira : le site de démonstration
+
+**https://baptistefaisy.github.io/problemes-caches/**
+
+Le site publié sur GitHub Pages n'est **pas une maquette** : il embarque le vrai
+domaine (`src/core`) et le vrai jeu d'exemple (`src/sample`), bundlés par esbuild
+pour le navigateur. Les grappes, les additions, les tendances et les flambées
+affichées sont calculées par exactement le même code que celui qui tourne dans
+Jira — y compris les identifiants de grappe, le SHA-256 navigateur
+(`site/src/sha256.ts`) étant vérifié identique à celui de Node par
+`site/src/sha256.test.ts`.
+
+On y trouve : la page « Problèmes » (suspects classés par coût, flambées,
+demandes récurrentes à part), le panneau de l'agent (reconnaissance d'un texte
+libre, confiance, justification, contournement, réponse à relire), le bandeau du
+portail avec son « Moi aussi », le vocabulaire tenu, l'architecture et les sept
+outils MCP. Deux écarts assumés avec l'app, et affichés à l'écran : la signature
+vient du jeu d'exemple plutôt que du modèle, et la comparaison de la marche 2
+(§8.4) utilise un comparateur lexical déterministe — aucun modèle n'est joignable
+depuis un navigateur.
+
+```bash
+npm run site:build        # bundle autonome dans site/dist (aucun CDN)
+```
+
+La publication est automatique à chaque changement du site **ou du domaine**
+(`.github/workflows/pages.yml`), car le site embarque le domaine.
+
+---
+
 ## 1. Ce que fait l'app
 
 Un centre de services résout des tickets un par un. Cent tickets résolus peuvent être cent fois la même panne. Chaque agent voit passer 3 ou 4 cas, applique le contournement, et personne ne voit les 100.
