@@ -27,7 +27,10 @@ export function ContextProblems({
               key: entry.problem.issueKey ?? entry.problem.id,
             })}
           </Text>
-          <Lozenge text={stateLabel(locale, entry.problem.state)} />
+          {/* UI Kit 2 : libellé en children. Aucun `appearance` avant ni après :
+              l'état est déjà rendu par son libellé, l'apparence reste `default`
+              (pas de déduction d'état côté UI, §17). */}
+          <Lozenge>{stateLabel(locale, entry.problem.state)}</Lozenge>
           {entry.bill ? (
             <Text>
               {t(locale, 'common.perMonth', {

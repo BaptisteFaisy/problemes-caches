@@ -29,16 +29,16 @@ export function PanelActions({
   if (!canAttach && !attached) return null;
   return (
     <ButtonGroup>
+      {/* UI Kit 2 : plus de prop `text` (libellé en children), `disabled` → `isDisabled`. */}
       {canAttach ? (
-        <Button
-          appearance="primary"
-          text={t(locale, 'panel.attachAndDraft')}
-          disabled={busy}
-          onClick={onAttach}
-        />
+        <Button appearance="primary" isDisabled={busy} onClick={onAttach}>
+          {t(locale, 'panel.attachAndDraft')}
+        </Button>
       ) : null}
       {attached ? (
-        <Button text={t(locale, 'panel.detach')} disabled={busy} onClick={onDetach} />
+        <Button isDisabled={busy} onClick={onDetach}>
+          {t(locale, 'panel.detach')}
+        </Button>
       ) : null}
     </ButtonGroup>
   );
