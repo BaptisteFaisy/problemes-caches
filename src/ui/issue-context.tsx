@@ -13,7 +13,7 @@ import type { ScreenContext } from './context';
  * « Ce bug coûte 31 heures de support par mois à 212 personnes. »
  * Ressource `issue-context` du manifeste (`jira:issueContext`).
  */
-export default function App(): JSX.Element {
+function App(): JSX.Element {
   return <ScreenShell>{(context) => <ContextScreen context={context} />}</ScreenShell>;
 }
 

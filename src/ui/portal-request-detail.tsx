@@ -5,6 +5,7 @@
  */
 
 import { Fragment } from 'react';
+import ForgeReconciler from '@forge/react';
 import type { RequestDetailData } from './api';
 import { getRequestDetail } from './api';
 import { useResolver } from './async';
@@ -14,11 +15,13 @@ import { ScreenShell } from './components/ScreenShell';
 import type { ScreenContext } from './context';
 
 /** Point d'entrée de la ressource `portal-request-detail`. */
-export default function App(): JSX.Element {
+function App(): JSX.Element {
   return (
-      <ScreenShell>{(ctx) => <RequestDetailBody ctx={ctx} />}</ScreenShell>
+    <ScreenShell>{(ctx) => <RequestDetailBody ctx={ctx} />}</ScreenShell>
   );
 }
+
+ForgeReconciler.render(<App />);
 
 function RequestDetailBody({ ctx }: { ctx: ScreenContext }): JSX.Element {
   // La demande du portail porte le ticket Jira sous-jacent : son identifiant suffit (§13.7).

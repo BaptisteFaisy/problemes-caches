@@ -4,7 +4,7 @@
  */
 
 import { Fragment } from 'react';
-import { Heading } from '@forge/react';
+import ForgeReconciler, { Heading } from '@forge/react';
 import type { DataQuality, Settings, Vocabulary } from '../core/types';
 import { getDataQuality, getSettings, listVocabulary } from './api';
 import { useResolver } from './async';
@@ -23,11 +23,13 @@ type SettingsBundle = {
 };
 
 /** Point d'entrée de la ressource `settings-page`. */
-export default function App(): JSX.Element {
+function App(): JSX.Element {
   return (
-      <ScreenShell>{(ctx) => <SettingsBody ctx={ctx} />}</ScreenShell>
+    <ScreenShell>{(ctx) => <SettingsBody ctx={ctx} />}</ScreenShell>
   );
 }
+
+ForgeReconciler.render(<App />);
 
 function SettingsBody({ ctx }: { ctx: ScreenContext }): JSX.Element {
   const { state, reload } = useResolver<SettingsBundle>(

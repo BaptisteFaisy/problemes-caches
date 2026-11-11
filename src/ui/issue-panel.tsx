@@ -15,7 +15,7 @@ import type { ScreenContext } from './context';
  * le problème reconnu, la confiance, la justification, l'addition et les
  * propositions (§17).
  */
-export default function App(): JSX.Element {
+function App(): JSX.Element {
   return <ScreenShell>{(context) => <PanelScreen context={context} />}</ScreenShell>;
 }
 
