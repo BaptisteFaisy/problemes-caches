@@ -34,7 +34,7 @@ import { billFor, buildCluster, buildDemoState, buildSurges, buildTotals, trendF
 /** Reconstruit les grappes après un changement (statut, tickets retirés). */
 function rebuild(state: DemoState, clusters: DemoCluster[]): DemoState {
   const base = { ...state, clusters };
-  return { ...base, surges: buildSurges(clusters, state.settings, state.now), totals: buildTotals(base) };
+  return { ...base, surges: buildSurges(clusters, state.settings), totals: buildTotals(base) };
 }
 
 /** Recalcule une grappe après retrait d'un ticket (§19.6). */

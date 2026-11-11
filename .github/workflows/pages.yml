@@ -1,0 +1,80 @@
+name: pages
+
+# Publication du site de démonstration sur GitHub Pages.
+#
+# Le site est construit à la demande (bundle esbuild autonome, aucun CDN) à
+# partir du **vrai domaine** : `site/src/build.ts` exécute `src/core` sur
+# `src/sample`. Toute modification du moteur de l'app change donc le site, d'où
+# les filtres de chemins qui incluent `src/core/**` et `src/sample/**`.
+#
+# Budget CI 5 min (règle user 2026-10-24) : chaque job est borné, un groupe de
+# concurrence empêche deux publications simultanées, et `cancel-in-progress`
+# reste à false pour ne pas couper un déploiement en cours.
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'site/**'
+      - 'src/core/**'
+      - 'src/sample/**'
+      - 'src/ui/i18n/**'
+      - 'src/ui/format.ts'
+      - 'package.json'
+      - 'package-lock.json'
+      - '.github/workflows/pages.yml'
+  workflow_dispatch: {}
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  build:
+    name: Construire le site
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+          persist-credentials: false
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Dépendances
+        run: npm ci --prefer-offline --no-audit --no-fund
+
+      - name: Moteur de la démo (types + tests)
+        run: |
+          npx tsc -p site/tsconfig.json --noEmit
+          node --test --experimental-strip-types --import ./tools/strip_ts_loader.mjs "site/src/*.test.ts"
+
+      - name: Bundle du site
+        run: npm run site:build
+
+      - name: Artefact Pages
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: site/dist
+
+  deploy:
+    name: Publier sur GitHub Pages
+    needs: build
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Déploiement
+        id: deployment
+        uses: actions/deploy-pages@v4

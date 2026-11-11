@@ -59,6 +59,34 @@ const PERIOD_DAYS: Record<BillPeriod, number> = { '30d': 30, '90d': 90 };
 /** Durée moyenne d'une intervention, réglable (§9). */
 const MINUTES_PER_TOUCH = 10;
 
+/**
+ * Libellés lisibles des termes du jeu d'exemple, en français et en anglais.
+ *
+ * Dans l'app, ces libellés viennent du modèle et du vocabulaire tenu (§8.2,
+ * §8.3) ; le jeu d'exemple ne fournit que des identifiants stables. Ce tableau
+ * est donc de la présentation, pas du métier — et il est la seule source des
+ * libellés affichés par le site.
+ */
+const LABELS: Record<string, { fr: string; en: string }> = {
+  'sys-remote-access': { fr: 'Accès distant', en: 'Remote access' },
+  'sym-connection-drop': { fr: 'déconnexion', en: 'connection drop' },
+  'sys-printer': { fr: 'Imprimante', en: 'Printer' },
+  'sym-offline': { fr: 'hors service', en: 'offline' },
+  'sys-billing': { fr: 'Facturation', en: 'Billing' },
+  'sym-duplicate-invoice': { fr: 'facture en double', en: 'duplicate invoice' },
+  'sys-accounts': { fr: 'Comptes', en: 'Accounts' },
+  'sym-password-reset': { fr: 'réinitialisation de mot de passe', en: 'password reset' },
+  'sys-mail': { fr: 'Messagerie', en: 'Mail' },
+  'sym-error-signature': { fr: 'signature refusée', en: 'signature rejected' },
+  'sym-attachment-refused': { fr: 'pièce jointe refusée', en: 'attachment refused' },
+  'sys-network': { fr: 'Réseau', en: 'Network' },
+  'sym-slow': { fr: 'lenteur', en: 'slow' },
+  'sym-cut': { fr: 'coupure', en: 'outage' },
+  'sys-workstation': { fr: 'Poste de travail', en: 'Workstation' },
+  'sym-software': { fr: 'erreur logicielle', en: 'software error' },
+  'undetermined': { fr: 'indéterminée', en: 'undetermined' },
+};
+
 /** Contournement validé du problème de démonstration (§7.2). */
 const SEEDED_WORKAROUND = {
   en: 'Reinstall the VPN profile, then reconnect. Validated on 41 tickets.',
@@ -187,16 +215,18 @@ function buildVocabulary(tickets: readonly DemoTicket[], projectId: string, now:
       if (vus.has(`${kind}:${id}`)) continue;
       vus.add(`${kind}:${id}`);
       const known = resolveTermId({ systems, symptoms }, kind, label);
-      bucket.push(known ? { ...suggestNewTerm(projectId, kind, label, now), id: known } : suggestNewTerm(projectId, kind, label, now));
+      const created = suggestNewTerm(projectId, kind, LABELS[label]?.fr ?? label, now);
+      bucket.push({ ...created, id: known ?? label });
     }
   }
   return { systems, symptoms };
 }
 
-/** Libellé lisible d'un terme du vocabulaire (§8.3). */
-function labelOf(vocabulary: Vocabulary, kind: 'system' | 'symptom', id: string): string {
+/** Libellé lisible d'un terme, dans la langue du site (§8.3, §17). */
+function labelOf(vocabulary: Vocabulary, kind: 'system' | 'symptom', id: string, locale: DemoLocale): string {
   const terms = kind === 'system' ? vocabulary.systems : vocabulary.symptoms;
-  return terms.find((term) => term.id === id)?.label ?? id;
+  const label = terms.find((term) => term.id === id)?.label ?? id;
+  return LABELS[label]?.[locale] ?? label;
 }
 
 /** Le problème déjà confirmé de la démo (§7.1) : état, cause, contournement. */
@@ -253,9 +283,9 @@ export function buildCluster(
   });
   return {
     id,
-    signature: `${labelOf(vocabulary, 'system', first.systemId)} · ${labelOf(vocabulary, 'symptom', first.symptomId)} · ${first.triggerText}`,
-    systemLabel: labelOf(vocabulary, 'system', first.systemId),
-    symptomLabel: labelOf(vocabulary, 'symptom', first.symptomId),
+    signature: `${labelOf(vocabulary, 'system', first.systemId, locale)} · ${labelOf(vocabulary, 'symptom', first.symptomId, locale)} · ${first.triggerText}`,
+    systemLabel: labelOf(vocabulary, 'system', first.systemId, locale),
+    symptomLabel: labelOf(vocabulary, 'symptom', first.symptomId, locale),
     triggerText: first.triggerText,
     status: cluster.status,
     kind: first.kind,
@@ -269,22 +299,30 @@ export function buildCluster(
   };
 }
 
-/** Flambées du jeu : le groupe « accès distant » monte en moins de deux heures (§8.6). */
-export function buildSurges(clusters: readonly DemoCluster[], settings: Settings, now: string): DemoSurge[] {
-  const surges: DemoSurge[] = [];
-  for (const cluster of clusters) {
-    const dates = cluster.tickets.map((ticket) => ({ at: ticket.createdAt }));
+/**
+ * Flambée d'une grappe, détectée **au moment où elle se produit** (§8.6).
+ *
+ * L'app évalue le seuil à chaque arrivée de ticket, pas à la fin de la fenêtre :
+ * le site rejoue donc la chronologie de la grappe et garde la première alerte.
+ * Évaluer seulement à `now` ne verrait jamais la flambée du jeu d'exemple, qui
+ * a eu lieu 19 jours avant la fin de la fenêtre.
+ */
+function findSurge(cluster: DemoCluster, settings: Settings): DemoSurge | null {
+  const dates = cluster.tickets.map((ticket) => ticket.createdAt).sort();
+  for (let i = 0; i < dates.length; i += 1) {
+    const now = dates[i]!;
+    const vus = dates.slice(0, i + 1).map((at) => ({ at }));
     const surge = detectSurge({
       clusterId: cluster.id,
       projectId: settings.projectId,
-      recent: dates,
-      history: dates,
+      recent: vus,
+      history: vus,
       windowMinutes: settings.surgeWindowMinutes,
       factor: settings.surgeFactor,
       now,
     });
     if (surge) {
-      surges.push({
+      return {
         clusterId: cluster.id,
         signature: cluster.signature,
         rate: surge.rate,
@@ -292,22 +330,46 @@ export function buildSurges(clusters: readonly DemoCluster[], settings: Settings
         factor: surge.factor,
         startedAt: surge.startedAt,
         expected: surge.expected,
-      });
+      };
     }
   }
-  return surges;
+  return null;
 }
 
-/** Totaux affichés en tête du site (§9 : l'addition globale). */
+/** Flambées de toutes les grappes, triées par facteur décroissant (§8.6). */
+export function buildSurges(clusters: readonly DemoCluster[], settings: Settings): DemoSurge[] {
+  const surges: DemoSurge[] = [];
+  for (const cluster of clusters) {
+    const surge = findSurge(cluster, settings);
+    if (surge) surges.push(surge);
+  }
+  return surges.sort((a, b) => b.factor - a.factor);
+}
+
+/**
+ * Totaux affichés en tête du site (§9).
+ *
+ * Les personnes touchées sont comptées **une fois** toutes grappes confondues :
+ * additionner les compteurs par grappe compterait deux fois quelqu'un touché par
+ * deux problèmes (§18 : « moi aussi » de quelqu'un qui a aussi un ticket).
+ */
 export function buildTotals(state: Omit<DemoState, 'totals'>): DemoTotals {
   const active = state.clusters.filter((cluster) => cluster.status !== 'dismissed');
+  const depuis = Date.parse(state.now) - PERIOD_DAYS['30d'] * 86_400_000;
+  const personnes = new Set<string>();
+  for (const cluster of active) {
+    for (const ticket of cluster.tickets) {
+      if (Date.parse(ticket.createdAt) >= depuis) personnes.add(ticket.reporter);
+    }
+    for (const entry of cluster.problem?.meToo ?? []) personnes.add(entry.name);
+  }
   return {
     tickets: state.tickets.length,
     clusters: active.length,
     suspects: active.filter((cluster) => cluster.status === 'suspect').length,
     problems: active.filter((cluster) => cluster.problem !== null).length,
     hours30: Math.round(active.reduce((sum, cluster) => sum + cluster.bill30.hours, 0)),
-    people30: active.reduce((sum, cluster) => sum + cluster.bill30.people, 0),
+    people30: personnes.size,
     undetermined: state.tickets.filter((ticket) => ticket.undetermined).length,
   };
 }
@@ -339,6 +401,6 @@ export function buildDemoState(locale: DemoLocale, seed: number = SAMPLE_DEFAULT
     surges: [] as DemoSurge[],
     vocabulary,
   };
-  return { ...base, surges: buildSurges(clusters, settings, now), totals: buildTotals(base) };
+  return { ...base, surges: buildSurges(clusters, settings), totals: buildTotals(base) };
 }
 
