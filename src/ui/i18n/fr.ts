@@ -1,4 +1,4 @@
-import type { Messages } from './types.ts';
+import type { Messages } from './types';
 
 /**
  * Messages français (§17 : interface en anglais et en français). Mêmes clés

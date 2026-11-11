@@ -6,13 +6,13 @@
  * addition passe par `replaceRows` (`DELETE` sur la clé composite + `INSERT`).
  */
 
-import type { BillPeriod, ProblemBill } from '../../../core/types.ts';
-import { addDays } from '../../../core/time.ts';
-import type { Row } from '../mappers.ts';
-import { toBill } from '../mappers.ts';
-import { replaceRows, selectRows } from '../query.ts';
-import type { SqlParam } from '../rows.ts';
-import { toDbBool, toDbDateRequired, toNumber, toNumberOrNull, toText } from '../rows.ts';
+import type { BillPeriod, ProblemBill } from '../../../core/types';
+import { addDays } from '../../../core/time';
+import type { Row } from '../mappers';
+import { toBill } from '../mappers';
+import { replaceRows, selectRows } from '../query';
+import type { SqlParam } from '../rows';
+import { toDbBool, toDbDateRequired, toNumber, toNumberOrNull, toText } from '../rows';
 
 const TABLE = 'problem_bill';
 

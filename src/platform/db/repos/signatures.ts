@@ -6,10 +6,10 @@
  * nouvel appel modèle inutile (§8.2, §17).
  */
 
-import type { TicketSignature } from '../../../core/types.ts';
-import { insertRows, onDuplicateUpdate, selectRows } from '../query.ts';
-import { toDbBool, toDbDateRequired, toJson, toNumber, type SqlParams } from '../rows.ts';
-import { toSignature, type Row } from '../mappers.ts';
+import type { TicketSignature } from '../../../core/types';
+import { insertRows, onDuplicateUpdate, selectRows } from '../query';
+import { toDbBool, toDbDateRequired, toJson, toNumber, type SqlParams } from '../rows';
+import { toSignature, type Row } from '../mappers';
 
 const TABLE = 'signature';
 const ID_CHUNK = 200;

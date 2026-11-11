@@ -17,7 +17,7 @@
  * probable, l'autre est proposé à l'écran (`rankCandidates`).
  */
 
-import { signatureKey } from './types.ts';
+import { signatureKey } from './types';
 import type {
   Cluster,
   MatchResult,
@@ -26,7 +26,7 @@ import type {
   Settings,
   TicketFact,
   TicketSignature,
-} from './types.ts';
+} from './types';
 
 /** Comparateur à modèle, injecté par l'appelant (contrat WP-E). */
 export type CompareFn = (

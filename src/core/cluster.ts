@@ -12,10 +12,10 @@
 
 import { createHash } from 'node:crypto';
 
-import { SUSPECT_WINDOW_DAYS } from './constants.ts';
-import { addDays, parseIso, round2 } from './time.ts';
-import type { Cluster, ClusterStatus, Thresholds, ThresholdHit } from './types.ts';
-import { signatureKey } from './types.ts';
+import { SUSPECT_WINDOW_DAYS } from './constants';
+import { addDays, parseIso, round2 } from './time';
+import type { Cluster, ClusterStatus, Thresholds, ThresholdHit } from './types';
+import { signatureKey } from './types';
 
 // ---------------------------------------------------------------------------
 // Contrats du lot WP-C (§8.5, §18)

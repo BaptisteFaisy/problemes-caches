@@ -1,8 +1,9 @@
-import { Fragment, Text } from '@forge/ui';
-import type { ProblemBill } from '../../core/types.ts';
-import { formatInt } from '../format.ts';
-import type { Locale } from '../i18n/index.ts';
-import { t } from '../i18n/index.ts';
+import { Fragment } from 'react';
+import { Text } from '@forge/react';
+import type { ProblemBill } from '../../core/types';
+import { formatInt } from '../format';
+import type { Locale } from '../i18n/index';
+import { t } from '../i18n/index';
 
 /**
  * L'addition du problème reconnu (§9) : heures, personnes, tickets déjà

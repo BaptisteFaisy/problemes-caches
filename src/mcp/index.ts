@@ -13,4 +13,4 @@ export {
   actionGetSurges,
   actionDraftCustomerUpdate,
   actionConfirmMembership,
-} from './actions.ts';
+} from './actions';

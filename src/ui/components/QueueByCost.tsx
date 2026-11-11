@@ -1,10 +1,11 @@
-import { Fragment, Heading, StatusLozenge, Text } from '@forge/ui';
-import type { ClusterLine } from '../api.ts';
-import { formatInt, stateLabel } from '../format.ts';
-import type { Locale } from '../i18n/index.ts';
-import { t } from '../i18n/index.ts';
-import { QueueBillLine } from './QueueBillLine.tsx';
-import { QueueTrend } from './QueueTrend.tsx';
+import { Fragment } from 'react';
+import { Heading, Lozenge, Text } from '@forge/react';
+import type { ClusterLine } from '../api';
+import { formatInt, stateLabel } from '../format';
+import type { Locale } from '../i18n/index';
+import { t } from '../i18n/index';
+import { QueueBillLine } from './QueueBillLine';
+import { QueueTrend } from './QueueTrend';
 
 /**
  * Problèmes classés par coût (§7.1, PC-09). L'ordre vient du resolver : l'UI
@@ -49,7 +50,7 @@ function QueueByCostRow({
   return (
     <Fragment>
       <Text>{title}</Text>
-      {problem ? <StatusLozenge text={stateLabel(locale, problem.state)} /> : null}
+      {problem ? <Lozenge>{stateLabel(locale, problem.state)}</Lozenge> : null}
       <QueueBillLine
         locale={locale}
         tickets={line.bill?.tickets}

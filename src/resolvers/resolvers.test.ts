@@ -10,7 +10,7 @@
 
 import assert from 'node:assert/strict';
 import test from 'node:test';
-import { handlers } from './handlers.ts';
+import { handlers } from './handlers';
 import {
   asRecord,
   extractLocale,
@@ -20,8 +20,8 @@ import {
   readString,
   readStringArray,
   readThresholds,
-} from './helpers.ts';
-import { DEFAULT_THRESHOLDS, MVP_BILL_LINES } from '../core/types.ts';
+} from './helpers';
+import { DEFAULT_THRESHOLDS, MVP_BILL_LINES } from '../core/types';
 
 /** Les clés que `src/ui/api.ts` appelle : le contrat, recopié ici volontairement. */
 const EXPECTED_KEYS = [

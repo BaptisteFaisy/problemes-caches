@@ -7,8 +7,8 @@
  * (`src/core/types.ts`) ; `field.ts` sait en extraire l'information utile.
  */
 
-import type { HardClues, ProblemBill, Vocabulary } from '../core/types.ts';
-import type { Locale } from '../ui/i18n/index.ts';
+import type { HardClues, ProblemBill, Vocabulary } from '../core/types';
+import type { Locale } from '../ui/i18n/index';
 
 /** Utilisateur Jira (personne ou application). */
 export interface JiraUser {

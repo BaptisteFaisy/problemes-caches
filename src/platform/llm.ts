@@ -18,10 +18,10 @@
 
 import type { Prompt } from '@forge/llm';
 
-import type { CustomerUpdateDraft, HardClues, Problem } from '../core/types.ts';
-import { normalizeTrigger } from '../core/types.ts';
-import type { Locale } from '../ui/i18n/index.ts';
-import { logShort, shortError } from './log.ts';
+import type { CustomerUpdateDraft, HardClues, Problem } from '../core/types';
+import { normalizeTrigger } from '../core/types';
+import type { Locale } from '../ui/i18n/index';
+import { logShort, shortError } from './log';
 import {
   MAX_SIGNATURE_CHARS,
   buildComparePrompt,
@@ -30,7 +30,7 @@ import {
   buildSignaturePrompt,
   fallbackCustomerUpdate,
   fallbackDraftAnswer,
-} from './field.ts';
+} from './field';
 import type {
   ChatOptions,
   DraftStats,
@@ -39,7 +39,7 @@ import type {
   LlmSignature,
   LlmSignatureInput,
   PromptMessage,
-} from './jira-types.ts';
+} from './jira-types';
 
 /** Messages et gabarits du modèle : réexportés pour la couche appelante. */
 export type {
@@ -50,9 +50,9 @@ export type {
   LlmSignature,
   LlmSignatureInput,
   PromptMessage as LlmMessage,
-} from './jira-types.ts';
+} from './jira-types';
 /** Constantes et fabriques du modèle : réexportées depuis `field.ts`. */
-export { MAX_SIGNATURE_CHARS } from './field.ts';
+export { MAX_SIGNATURE_CHARS } from './field';
 export {
   buildComparePrompt,
   buildCustomerUpdatePrompt,
@@ -60,7 +60,7 @@ export {
   buildSignaturePrompt,
   fallbackCustomerUpdate,
   fallbackDraftAnswer,
-} from './field.ts';
+} from './field';
 
 /** Modèle Forge déclaré dans le manifeste (`llm` de `manifest.yml`). */
 export const DEFAULT_MODEL = 'claude';

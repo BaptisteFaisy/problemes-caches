@@ -6,9 +6,9 @@
 import assert from 'node:assert/strict';
 import { test } from 'node:test';
 
-import { baselineFor, detectSurge, surgeFactor } from './surge.ts';
-import type { SurgeInput } from './surge.ts';
-import type { Surge } from './types.ts';
+import { baselineFor, detectSurge, surgeFactor } from './surge';
+import type { SurgeInput } from './surge';
+import type { Surge } from './types';
 
 /** Instant de référence : tout le temps relatif part de là. */
 const NOW = '2026-03-01T12:00:00.000Z';

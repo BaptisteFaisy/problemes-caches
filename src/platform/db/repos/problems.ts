@@ -4,10 +4,10 @@
  * Un problème représente une grappe confirmée et son ticket de suivi Jira.
  */
 
-import type { Problem, ProblemState } from '../../../core/types.ts';
-import { toProblem, type Row } from '../mappers.ts';
-import { insertRows, onDuplicateUpdate, runStatement, selectRows } from '../query.ts';
-import { toDbBool, toDbDate, toDbDateRequired, toNumber, type SqlParams } from '../rows.ts';
+import type { Problem, ProblemState } from '../../../core/types';
+import { toProblem, type Row } from '../mappers';
+import { insertRows, onDuplicateUpdate, runStatement, selectRows } from '../query';
+import { toDbBool, toDbDate, toDbDateRequired, toNumber, type SqlParams } from '../rows';
 
 const PROBLEM_COLUMNS = [
   'problem_id',

@@ -6,10 +6,10 @@
  * (§8.3).
  */
 
-import type { Term, TermKind } from '../../../core/types.ts';
-import { insertRows, onDuplicateUpdate, selectRows } from '../query.ts';
-import { toDbDateRequired, toJson, type SqlParams } from '../rows.ts';
-import { toTerm, type Row } from '../mappers.ts';
+import type { Term, TermKind } from '../../../core/types';
+import { insertRows, onDuplicateUpdate, selectRows } from '../query';
+import { toDbDateRequired, toJson, type SqlParams } from '../rows';
+import { toTerm, type Row } from '../mappers';
 
 const TABLE = 'term';
 

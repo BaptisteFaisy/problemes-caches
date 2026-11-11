@@ -1,8 +1,9 @@
-import { Fragment, Heading, Text } from '@forge/ui';
-import type { IssueContextData } from '../api.ts';
-import { formatInt } from '../format.ts';
-import type { Locale } from '../i18n/index.ts';
-import { t } from '../i18n/index.ts';
+import { Fragment } from 'react';
+import { Heading, Text } from '@forge/react';
+import type { IssueContextData } from '../api';
+import { formatInt } from '../format';
+import type { Locale } from '../i18n/index';
+import { t } from '../i18n/index';
 
 /**
  * Encart sur le ticket de l'équipe qui corrige (§13 écran 4, PC-20) :

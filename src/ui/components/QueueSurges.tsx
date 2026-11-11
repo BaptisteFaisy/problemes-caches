@@ -1,8 +1,9 @@
-import { Button, Fragment, Heading, StatusLozenge, Text } from '@forge/ui';
-import type { Surge } from '../../core/types.ts';
-import { formatInt } from '../format.ts';
-import type { Locale } from '../i18n/index.ts';
-import { t } from '../i18n/index.ts';
+import { Fragment } from 'react';
+import { Button, Heading, Lozenge, Text } from '@forge/react';
+import type { Surge } from '../../core/types';
+import { formatInt } from '../format';
+import type { Locale } from '../i18n/index';
+import { t } from '../i18n/index';
 
 /**
  * Flambées en cours (§8.6, PC-14) : le rythme observé contre le rythme
@@ -31,7 +32,7 @@ export function QueueSurges({
             })}
           </Text>
           {surge.expected ? (
-            <StatusLozenge text={t(locale, 'problems.surgeExpected')} />
+            <Lozenge>{t(locale, 'problems.surgeExpected')}</Lozenge>
           ) : (
             <MarkExpectedButton locale={locale} />
           )}
@@ -48,6 +49,6 @@ export function QueueSurges({
  */
 function MarkExpectedButton({ locale }: { locale: Locale }): JSX.Element {
   return (
-    <Button text={t(locale, 'problems.markExpected')} disabled onClick={() => undefined} />
+    <Button isDisabled onClick={() => undefined}>{t(locale, 'problems.markExpected')}</Button>
   );
 }

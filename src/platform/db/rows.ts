@@ -6,9 +6,9 @@
  * valeur illisible retombe sur son défaut, comme dans `core/`.
  */
 
-import type { BillPeriod, Confidence, MembershipBasis } from '../../core/types.ts';
-import { BILL_PERIODS, CONFIDENCES, MEMBERSHIP_BASES } from '../../core/types.ts';
-import { parseIso } from '../../core/time.ts';
+import type { BillPeriod, Confidence, MembershipBasis } from '../../core/types';
+import { BILL_PERIODS, CONFIDENCES, MEMBERSHIP_BASES } from '../../core/types';
+import { parseIso } from '../../core/time';
 
 /** Valeur liée à une requête : jamais de chaîne concaténée dans le SQL. */
 export type SqlParam = string | number | boolean | null;

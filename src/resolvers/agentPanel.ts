@@ -9,7 +9,7 @@
  * (§19.6) via le module partagé `recalc.ts`.
  */
 
-import { matchTicket, rankCandidates } from '../core/matching.ts';
+import { matchTicket, rankCandidates } from '../core/matching';
 import type {
   Cluster,
   MatchResult,
@@ -18,7 +18,7 @@ import type {
   Settings,
   TicketFact,
   TicketSignature,
-} from '../core/types.ts';
+} from '../core/types';
 import {
   getBill,
   getProblem,
@@ -29,13 +29,13 @@ import {
   listOpenProblems,
   upsertMembership,
   detachMembership,
-} from '../platform/db/repos.ts';
-import { currentAccountId, linkIssues } from '../platform/jira.ts';
-import { compareTicketToProblem, draftAnswer } from '../platform/llm.ts';
-import { logShort, shortError } from '../platform/log.ts';
-import type { AgentPanelData, AttachResult } from '../ui/api.ts';
-import { asRecord, extractLocale, readString } from './helpers.ts';
-import { loadProjectSettings, recalculateAllBills } from './recalc.ts';
+} from '../platform/db/repos';
+import { currentAccountId, linkIssues } from '../platform/jira';
+import { compareTicketToProblem, draftAnswer } from '../platform/llm';
+import { logShort, shortError } from '../platform/log';
+import type { AgentPanelData, AttachResult } from '../ui/api';
+import { asRecord, extractLocale, readString } from './helpers';
+import { loadProjectSettings, recalculateAllBills } from './recalc';
 
 type ResolverReq = { payload?: unknown; context?: unknown };
 

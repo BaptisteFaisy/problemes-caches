@@ -14,8 +14,8 @@
 
 import { asUser } from '@forge/api';
 
-import type { HardClues } from '../core/types.ts';
-import { logShort, shortError } from './log.ts';
+import type { HardClues } from '../core/types';
+import { logShort, shortError } from './log';
 
 /** Durée de vie du cache par défaut (courte : §14). */
 export const DEFAULT_GRAPH_TTL_MS = 5 * 60_000;

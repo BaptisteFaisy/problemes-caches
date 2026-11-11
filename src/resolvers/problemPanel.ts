@@ -4,8 +4,8 @@
  * Expose : `getProblemPanel`.
  */
 
-import { computeTrend } from '../core/bill.ts';
-import type { BillPeriod, ProblemBill, Term, Trend } from '../core/types.ts';
+import { computeTrend } from '../core/bill';
+import type { BillPeriod, ProblemBill, Term, Trend } from '../core/types';
 import {
   countTicketsByDay,
   getBill,
@@ -13,10 +13,10 @@ import {
   getTerm,
   listMembershipsByProblem,
   listMeTooByProblem,
-} from '../platform/db/repos.ts';
-import { visibleToCurrentUser } from '../platform/jira.ts';
-import type { ProblemPanelData, TicketPoint } from '../ui/api.ts';
-import { asRecord, readString } from './helpers.ts';
+} from '../platform/db/repos';
+import { visibleToCurrentUser } from '../platform/jira';
+import type { ProblemPanelData, TicketPoint } from '../ui/api';
+import { asRecord, readString } from './helpers';
 
 type ResolverReq = { payload?: unknown; context?: unknown };
 

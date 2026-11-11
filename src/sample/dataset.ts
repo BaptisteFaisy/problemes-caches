@@ -15,9 +15,9 @@
  * une seule signature attendue.
  */
 
-import { UNDETERMINED_ID, normalizeTrigger, signatureKey } from '../core/types.ts';
-import type { HardClues, TicketFact } from '../core/types.ts';
-import { DAY_MS, addDays, round2 } from '../core/time.ts';
+import { UNDETERMINED_ID, normalizeTrigger, signatureKey } from '../core/types';
+import type { HardClues, TicketFact } from '../core/types';
+import { DAY_MS, addDays, round2 } from '../core/time';
 
 // ---------------------------------------------------------------------------
 // Types

@@ -1,10 +1,11 @@
-import { Button, ButtonSet, Fragment, Heading, Text } from '@forge/ui';
-import type { ClusterLine } from '../api.ts';
-import { formatInt } from '../format.ts';
-import type { Locale } from '../i18n/index.ts';
-import { t } from '../i18n/index.ts';
-import { QueueBillLine } from './QueueBillLine.tsx';
-import { QueueTrend } from './QueueTrend.tsx';
+import { Fragment } from 'react';
+import { Button, ButtonGroup, Heading, Text } from '@forge/react';
+import type { ClusterLine } from '../api';
+import { formatInt } from '../format';
+import type { Locale } from '../i18n/index';
+import { t } from '../i18n/index';
+import { QueueBillLine } from './QueueBillLine';
+import { QueueTrend } from './QueueTrend';
 
 /** Ce qu'il faut pour décider d'une grappe suspecte (§7.1, PC-09). */
 export interface QueueSuspectsProps {
@@ -54,24 +55,21 @@ function QueueSuspectRow({
       />
       <Text>{thresholdOf(locale, line, windowDays)}</Text>
       <QueueTrend locale={locale} trend={line.trend} />
-      <ButtonSet>
+      <ButtonGroup>
         <Button
-          appearance="primary"
-          text={t(locale, 'problems.confirm')}
-          disabled={busy}
-          onClick={() => onConfirm(line)}
-        />
+     appearance="primary"
+     
+     isDisabled={busy}
+     onClick={() => onConfirm(line)}>{t(locale, 'problems.confirm')}</Button>
         <Button
-          text={t(locale, 'problems.reject')}
-          disabled={busy}
-          onClick={() => onReject(line.cluster.id)}
-        />
+     
+     isDisabled={busy}
+     onClick={() => onReject(line.cluster.id)}>{t(locale, 'problems.reject')}</Button>
         <Button
-          text={t(locale, 'problems.split')}
-          disabled={busy}
-          onClick={() => onSplit(line)}
-        />
-      </ButtonSet>
+     
+     isDisabled={busy}
+     onClick={() => onSplit(line)}>{t(locale, 'problems.split')}</Button>
+      </ButtonGroup>
     </Fragment>
   );
 }

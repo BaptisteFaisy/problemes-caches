@@ -5,10 +5,10 @@
  * (système, symptôme, déclencheur) et suit ses compteurs sur 30 jours glissants.
  */
 
-import type { Cluster, ClusterStatus } from '../../../core/types.ts';
-import { toCluster, type Row } from '../mappers.ts';
-import { insertRows, onDuplicateUpdate, runStatement, selectRows } from '../query.ts';
-import { toDbDateRequired, toNumber } from '../rows.ts';
+import type { Cluster, ClusterStatus } from '../../../core/types';
+import { toCluster, type Row } from '../mappers';
+import { insertRows, onDuplicateUpdate, runStatement, selectRows } from '../query';
+import { toDbDateRequired, toNumber } from '../rows';
 
 const CLUSTER_COLUMNS = [
   'cluster_id',

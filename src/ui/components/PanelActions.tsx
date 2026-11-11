@@ -1,9 +1,10 @@
-import { Button, ButtonSet, useState } from '@forge/ui';
-import type { AttachResult } from '../api.ts';
-import { attachAndDraft, detachTicket } from '../api.ts';
-import { errorMessage } from '../async.ts';
-import type { Locale } from '../i18n/index.ts';
-import { t } from '../i18n/index.ts';
+import { useState } from 'react';
+import { Button, ButtonGroup } from '@forge/react';
+import type { AttachResult } from '../api';
+import { attachAndDraft, detachTicket } from '../api';
+import { errorMessage } from '../async';
+import type { Locale } from '../i18n/index';
+import { t } from '../i18n/index';
 
 /**
  * Actions du panneau (§7.2) : rattacher et préparer la réponse, ou retirer le
@@ -27,19 +28,19 @@ export function PanelActions({
 }): JSX.Element | null {
   if (!canAttach && !attached) return null;
   return (
-    <ButtonSet>
+    <ButtonGroup>
+      {/* UI Kit 2 : plus de prop `text` (libellé en children), `disabled` → `isDisabled`. */}
       {canAttach ? (
-        <Button
-          appearance="primary"
-          text={t(locale, 'panel.attachAndDraft')}
-          disabled={busy}
-          onClick={onAttach}
-        />
+        <Button appearance="primary" isDisabled={busy} onClick={onAttach}>
+          {t(locale, 'panel.attachAndDraft')}
+        </Button>
       ) : null}
       {attached ? (
-        <Button text={t(locale, 'panel.detach')} disabled={busy} onClick={onDetach} />
+        <Button isDisabled={busy} onClick={onDetach}>
+          {t(locale, 'panel.detach')}
+        </Button>
       ) : null}
-    </ButtonSet>
+    </ButtonGroup>
   );
 }
 

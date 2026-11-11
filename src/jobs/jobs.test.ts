@@ -12,13 +12,14 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
 
-import { BOOTSTRAP_BATCH, BOOTSTRAP_DAYS } from '../core/constants.ts';
-import { defaultSettings } from '../core/types.ts';
-import type { MatchResult, Problem, Settings, TicketFact, TicketSignature } from '../core/types.ts';
-import { chunkArray } from '../platform/field.ts';
-import type { JiraIssue } from '../platform/jira-types.ts';
-import { attachedFor, membershipOf, parseBootstrapPayload } from './consumer.ts';
-import { billForPeriod, nightlyRecalc } from './scheduled.ts';
+import { BOOTSTRAP_BATCH, BOOTSTRAP_DAYS } from '../core/constants';
+import { defaultSettings } from '../core/types';
+import type { MatchResult, Problem, Settings, TicketFact, TicketSignature } from '../core/types';
+import { chunkArray } from '../platform/field';
+import type { JiraIssue } from '../platform/jira-types';
+import { BOOTSTRAP_WINDOWS_DAYS, historyIssueIds } from './bootstrap';
+import { attachedFor, membershipOf, parseBootstrapPayload } from './consumer';
+import { billForPeriod, nightlyRecalc } from './scheduled';
 import {
   billTicketOf,
   extractTicketText,
@@ -28,8 +29,8 @@ import {
   registerFollowedProject,
   ticketHours,
   windowTicketsOf,
-} from './sync.ts';
-import { issueIdOf, issueKeyOf, issueCommented, issueCreated, issueUpdated, shouldResubmit } from './triggers.ts';
+} from './sync';
+import { issueIdOf, issueKeyOf, issueCommented, issueCreated, issueUpdated, shouldResubmit } from './triggers';
 
 /** Réglages de test : durée moyenne d'intervention de 10 minutes (§9). */
 const SETTINGS: Settings = defaultSettings('proj-1', 'SUP');
@@ -292,4 +293,44 @@ test('§14 registres et replis : projets suivis, lot suivant, liste vide', async
   registerFollowedProject('  ');
   assert.deepEqual(followedProjectIds(), ['proj-1', 'proj-2']);
   assert.equal(await syncTicketFacts('proj-1', []), 0);
+});
+
+// ---------------------------------------------------------------------------
+// Amorçage : fenêtre élargie quand les 90 jours sont vides (PC-10, mesuré sur
+// le site de démo le 2026-11-11 : 2 824 tickets, 1 seul sur 90 jours).
+// ---------------------------------------------------------------------------
+
+test('historyIssueIds garde la fenêtre de 90 jours quand elle est assez fournie', async () => {
+  const vus: number[] = [];
+  const resultat = await historyIssueIds('SUP', '2026-11-11T00:00:00.000Z', async (_p, _n, days) => {
+    vus.push(days);
+    return days === BOOTSTRAP_DAYS ? ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10'] : [];
+  });
+  assert.deepEqual(vus, [BOOTSTRAP_DAYS], 'une seule fenêtre suffit');
+  assert.equal(resultat.windowDays, BOOTSTRAP_DAYS);
+  assert.equal(resultat.issueIds.length, 10);
+});
+
+test('historyIssueIds élargit à 365 jours quand les 90 jours sont presque vides', async () => {
+  const vus: number[] = [];
+  const resultat = await historyIssueIds('SUP', '2026-11-11T00:00:00.000Z', async (_p, _n, days) => {
+    vus.push(days);
+    if (days === BOOTSTRAP_DAYS) return ['1'];
+    if (days === 365) return Array.from({ length: 40 }, (_v, i) => `id-${i}`);
+    return [];
+  });
+  assert.deepEqual(vus, [BOOTSTRAP_DAYS, 365]);
+  assert.equal(resultat.windowDays, 365);
+  assert.equal(resultat.issueIds.length, 40);
+});
+
+test('historyIssueIds finit sur tout l’historique si le site dort depuis des années', async () => {
+  const vus: number[] = [];
+  const resultat = await historyIssueIds('SUP', '2026-11-11T00:00:00.000Z', async (_p, _n, days) => {
+    vus.push(days);
+    return days === 0 ? ['a', 'b'] : [];
+  });
+  assert.deepEqual(vus, [BOOTSTRAP_DAYS, 365, 0], 'les trois fenêtres sont essayées');
+  assert.equal(resultat.windowDays, 0, '0 = tout l’historique');
+  assert.deepEqual(resultat.issueIds, ['a', 'b']);
 });

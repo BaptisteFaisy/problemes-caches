@@ -1,7 +1,7 @@
-import { Text } from '@forge/ui';
-import type { Trend } from '../../core/types.ts';
-import type { Locale, MessageKey } from '../i18n/index.ts';
-import { t } from '../i18n/index.ts';
+import { Text } from '@forge/react';
+import type { Trend } from '../../core/types';
+import type { Locale, MessageKey } from '../i18n/index';
+import { t } from '../i18n/index';
 
 /** Direction d'une tendance vers son libellé (§9). */
 const TREND_KEYS: Record<Trend['direction'], MessageKey> = {

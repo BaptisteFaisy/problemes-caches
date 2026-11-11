@@ -10,9 +10,9 @@
  * d'interface dans `src/ui/format.ts`.
  */
 
-import type { CustomerUpdateDraft, HardClues, Problem, Vocabulary } from '../core/types.ts';
-import type { Locale } from '../ui/i18n/index.ts';
-import { formatHours, formatInt } from '../ui/format.ts';
+import type { CustomerUpdateDraft, HardClues, Problem, Vocabulary } from '../core/types';
+import type { Locale } from '../ui/i18n/index';
+import { formatHours, formatInt } from '../ui/format';
 import type {
   DraftStats,
   JiraIssue,
@@ -22,7 +22,7 @@ import type {
   JsmSlaCycle,
   LlmSignatureInput,
   PromptMessage,
-} from './jira-types.ts';
+} from './jira-types';
 
 // ---- Champs Jira et JSM ----
 

@@ -4,12 +4,12 @@
  * Toutes les valeurs transitent par paramètres liés (`?`).
  */
 
-import type { Surge } from '../../../core/types.ts';
-import type { Row } from '../mappers.ts';
-import { toSurge } from '../mappers.ts';
-import { insertRows, onDuplicateUpdate, runStatement, selectRows } from '../query.ts';
-import type { SqlParam } from '../rows.ts';
-import { toDbBool, toDbDateRequired, toTextOrNull } from '../rows.ts';
+import type { Surge } from '../../../core/types';
+import type { Row } from '../mappers';
+import { toSurge } from '../mappers';
+import { insertRows, onDuplicateUpdate, runStatement, selectRows } from '../query';
+import type { SqlParam } from '../rows';
+import { toDbBool, toDbDateRequired, toTextOrNull } from '../rows';
 
 const TABLE = 'surge';
 

@@ -1,8 +1,9 @@
-import { Button, Fragment, Heading, Text } from '@forge/ui';
-import type { MatchResult } from '../../core/types.ts';
-import { confidenceLabel } from '../format.ts';
-import type { Locale } from '../i18n/index.ts';
-import { t } from '../i18n/index.ts';
+import { Fragment } from 'react';
+import { Button, Heading, Text } from '@forge/react';
+import type { MatchResult } from '../../core/types';
+import { confidenceLabel } from '../format';
+import type { Locale } from '../i18n/index';
+import { t } from '../i18n/index';
 
 /**
  * Autres problèmes plausibles, proposés sans rattachement d'office (§18) :
@@ -57,7 +58,10 @@ function PanelAlternativeItem({
       <Text>{title} · {confidenceLabel(locale, match.confidence)}</Text>
       <Text>{t(locale, 'panel.justification', { rationale: match.rationale })}</Text>
       {problem ? (
-        <Button text={t(locale, 'panel.attachAndDraft')} onClick={() => onAttach(problem.id)} />
+        // UI Kit 2 : libellé du bouton en children.
+        <Button onClick={() => onAttach(problem.id)}>
+          {t(locale, 'panel.attachAndDraft')}
+        </Button>
       ) : null}
     </Fragment>
   );

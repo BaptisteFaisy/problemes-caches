@@ -5,12 +5,13 @@
  * ni heures, ni nom d'agent, ni tickets d'autres clients.
  */
 
-import { Fragment, SectionMessage, StatusLozenge, Text } from '@forge/ui';
-import type { ProblemState } from '../../core/types.ts';
-import { formatDate, stateLabel } from '../format.ts';
-import type { RequestDetailData } from '../api.ts';
-import type { Locale } from '../i18n/index.ts';
-import { t } from '../i18n/index.ts';
+import { Fragment } from 'react';
+import { Lozenge, SectionMessage, Text } from '@forge/react';
+import type { ProblemState } from '../../core/types';
+import { formatDate, stateLabel } from '../format';
+import type { RequestDetailData } from '../api';
+import type { Locale } from '../i18n/index';
+import { t } from '../i18n/index';
 
 export interface RequestLinkProps {
   locale: Locale;
@@ -28,8 +29,8 @@ export function RequestLink({ locale, detail }: RequestLinkProps): JSX.Element {
   const fixTarget = detail.fixIssueKey ?? detail.fixedAt;
 
   return (
-    <SectionMessage appearance="info" title={t(locale, 'portal.request.attached')}>
-      <StatusLozenge text={stateText} appearance={stateAppearance(state)} />
+    <SectionMessage appearance="information" title={t(locale, 'portal.request.attached')}>
+      <Lozenge appearance={stateAppearance(state)}>{stateText}</Lozenge>
       <Text>{t(locale, 'portal.request.state', { state: stateText })}</Text>
       {detail.workaround ? <Text>{detail.workaround}</Text> : null}
       {fixTarget ? (

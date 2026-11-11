@@ -12,12 +12,12 @@
  * - §6, §17 : les brouillons clients ne sont jamais envoyés automatiquement.
  */
 
-import { computeBill, computeTrend } from '../core/bill.ts';
-import { matchTicket, rankCandidates } from '../core/matching.ts';
-import { buildSignature, extractHardClues } from '../core/signature.ts';
-import { type BillPeriod, type Problem, type ProblemBill, type TicketSignature } from '../core/types.ts';
-import { compareTicketToProblem, draftCustomerUpdate } from '../platform/llm.ts';
-import { fetchIssue, visibleToCurrentUser } from '../platform/jira.ts';
+import { computeBill, computeTrend } from '../core/bill';
+import { matchTicket, rankCandidates } from '../core/matching';
+import { buildSignature, extractHardClues } from '../core/signature';
+import { type BillPeriod, type Problem, type ProblemBill, type TicketSignature } from '../core/types';
+import { compareTicketToProblem, draftCustomerUpdate } from '../platform/llm';
+import { fetchIssue, visibleToCurrentUser } from '../platform/jira';
 import {
   countMeToo,
   getBill,
@@ -38,7 +38,7 @@ import {
   rejectMembership,
   replaceBill,
   confirmMembership as repoConfirmMembership,
-} from '../platform/db/repos.ts';
+} from '../platform/db/repos';
 import {
   optionalNumber,
   optionalText,
@@ -47,8 +47,8 @@ import {
   run,
   type ActionEnvelope,
   type JsonPayload,
-} from './result.ts';
-import { agentContext, formatProblemSummary, otherPeriod, periodOfDays, rankByCost } from './agent.ts';
+} from './result';
+import { agentContext, formatProblemSummary, otherPeriod, periodOfDays, rankByCost } from './agent';
 
 // ---------------------------------------------------------------------------
 // Helpers internes

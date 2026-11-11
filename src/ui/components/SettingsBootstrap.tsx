@@ -3,13 +3,14 @@
  * Aucun calcul côté UI (§17) : affiche les compteurs et la progression fournis par le backend.
  */
 
-import { Button, ButtonSet, Fragment, Heading, Range, SectionMessage, Text, useState } from '@forge/ui';
-import type { BootstrapProgress, DataQuality } from '../../core/types.ts';
-import { bootstrapProgress, clearSampleData, loadSampleData, startBootstrap } from '../api.ts';
-import { errorMessage } from '../async.ts';
-import { formatDate } from '../format.ts';
-import type { Locale } from '../i18n/index.ts';
-import { t } from '../i18n/index.ts';
+import { Fragment, useState } from 'react';
+import { Button, ButtonGroup, Heading, Label, Range, SectionMessage, Text } from '@forge/react';
+import type { BootstrapProgress, DataQuality } from '../../core/types';
+import { bootstrapProgress, clearSampleData, loadSampleData, startBootstrap } from '../api';
+import { errorMessage } from '../async';
+import { formatDate } from '../format';
+import type { Locale } from '../i18n/index';
+import { t } from '../i18n/index';
 
 export interface SettingsBootstrapProps {
   locale: Locale;
@@ -66,7 +67,7 @@ function OperationFeedback({
   return (
     <Fragment>
       {notice ? (
-        <SectionMessage appearance="confirmation">
+        <SectionMessage appearance="success">
           <Text>{notice}</Text>
         </SectionMessage>
       ) : null}
@@ -119,10 +120,10 @@ function BootstrapSection({
   return (
     <Fragment>
       <Heading size="medium">{t(locale, 'settings.bootstrap')}</Heading>
-      <ButtonSet>
-        <Button text={t(locale, 'settings.bootstrapRun')} onClick={handleStart} />
-        <Button text={t(locale, 'common.retry')} onClick={handleCheck} />
-      </ButtonSet>
+      <ButtonGroup>
+        <Button onClick={handleStart}>{t(locale, 'settings.bootstrapRun')}</Button>
+        <Button onClick={handleCheck}>{t(locale, 'common.retry')}</Button>
+      </ButtonGroup>
       <BootstrapBar locale={locale} progress={progress} />
     </Fragment>
   );
@@ -143,13 +144,16 @@ function BootstrapBar({
   if (!progress) return null;
   return (
     <Fragment>
-      <Range
-        name="bootstrapProgressBar"
-        label={t(locale, 'settings.bootstrapProgress', {
+      <Label labelFor="bootstrapProgressBar">
+        {t(locale, 'settings.bootstrapProgress', {
           done: progress.done,
           total: progress.total,
           failed: progress.failed,
         })}
+      </Label>
+      <Range
+        id="bootstrapProgressBar"
+        name="bootstrapProgressBar"
         min={0}
         max={progress.total > 0 ? progress.total : 1}
         defaultValue={progress.done}
@@ -192,10 +196,10 @@ function SampleSection({
   return (
     <Fragment>
       <Heading size="medium">{t(locale, 'settings.sample')}</Heading>
-      <ButtonSet>
-        <Button text={t(locale, 'settings.loadSample')} onClick={handleLoad} />
-        {demoData ? <Button appearance="warning" text={t(locale, 'settings.clearSample')} onClick={handleClear} /> : null}
-      </ButtonSet>
+      <ButtonGroup>
+        <Button onClick={handleLoad}>{t(locale, 'settings.loadSample')}</Button>
+        {demoData ? <Button appearance="warning" onClick={handleClear}>{t(locale, 'settings.clearSample')}</Button> : null}
+      </ButtonGroup>
     </Fragment>
   );
 }

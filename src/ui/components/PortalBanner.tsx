@@ -6,11 +6,12 @@
  * (un problème vérifié n'est plus publié) ; l'UI ne filtre et ne calcule rien (§17).
  */
 
-import { Fragment, SectionMessage, Strong, Text } from '@forge/ui';
-import type { PortalBannerData } from '../api.ts';
-import type { Locale } from '../i18n/index.ts';
-import { t } from '../i18n/index.ts';
-import { PortalMeToo } from './PortalMeToo.tsx';
+import { Fragment } from 'react';
+import { SectionMessage, Strong, Text } from '@forge/react';
+import type { PortalBannerData } from '../api';
+import type { Locale } from '../i18n/index';
+import { t } from '../i18n/index';
+import { PortalMeToo } from './PortalMeToo';
 
 /** Une ligne du bandeau : un problème publié sur le portail (§13.6). */
 type BannerProblem = PortalBannerData['problems'][number];

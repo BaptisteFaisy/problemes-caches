@@ -32,7 +32,7 @@ import type {
   Thresholds,
   TicketFact,
   TicketSignature,
-} from '../../core/types.ts';
+} from '../../core/types';
 import {
   BILL_LINE_KEYS,
   CLUSTER_STATUSES,
@@ -46,7 +46,7 @@ import {
   SURGE_WINDOW_MINUTES,
   TERM_KINDS,
   UNDETERMINED_ID,
-} from '../../core/types.ts';
+} from '../../core/types';
 import {
   parseJson,
   pickOne,
@@ -60,7 +60,7 @@ import {
   toText,
   toTextOrNull,
   DB_EPOCH,
-} from './rows.ts';
+} from './rows';
 
 /** Ligne SQL brute : les colonnes arrivent typées `unknown` du pilote. */
 export type Row = Record<string, unknown>;

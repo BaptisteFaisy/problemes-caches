@@ -10,9 +10,9 @@
 import assert from 'node:assert/strict';
 import { createHash } from 'node:crypto';
 import test from 'node:test';
-import { DAY_MS } from '../core/time.ts';
-import { signatureKey } from '../core/types.ts';
-import { buildDataset } from './build.ts';
+import { DAY_MS } from '../core/time';
+import { signatureKey } from '../core/types';
+import { buildDataset } from './build';
 import {
   SAMPLE_ANCHOR_ISO,
   SAMPLE_ID_PREFIX,
@@ -20,7 +20,7 @@ import {
   SAMPLE_SURGE_DAY,
   SAMPLE_TICKET_COUNT,
   SAMPLE_WINDOW_DAYS,
-} from './dataset.ts';
+} from './dataset';
 
 const dataset = buildDataset();
 const tickets = dataset.tickets;

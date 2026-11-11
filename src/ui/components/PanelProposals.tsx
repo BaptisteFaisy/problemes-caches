@@ -1,8 +1,9 @@
-import { Button, Fragment, Heading, Text } from '@forge/ui';
-import type { Membership } from '../../core/types.ts';
-import { basisLabel, confidenceLabel } from '../format.ts';
-import type { Locale } from '../i18n/index.ts';
-import { t } from '../i18n/index.ts';
+import { Fragment } from 'react';
+import { Button, Heading, Text } from '@forge/react';
+import type { Membership } from '../../core/types';
+import { basisLabel, confidenceLabel } from '../format';
+import type { Locale } from '../i18n/index';
+import { t } from '../i18n/index';
 
 /**
  * Propositions de rattachement en attente (§8.4) : la confiance moyenne ne
@@ -32,10 +33,10 @@ export function PanelProposals({
           </Text>
           <Text>{t(locale, 'panel.justification', { rationale: proposal.rationale })}</Text>
           {proposal.issueId === issueId ? (
-            <Button
-              text={t(locale, 'panel.attachAndDraft')}
-              onClick={() => onAttach(proposal.problemId)}
-            />
+            // UI Kit 2 : libellé du bouton en children.
+            <Button onClick={() => onAttach(proposal.problemId)}>
+              {t(locale, 'panel.attachAndDraft')}
+            </Button>
           ) : null}
         </Fragment>
       ))}

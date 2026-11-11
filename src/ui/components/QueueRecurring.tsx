@@ -1,8 +1,9 @@
-import { Fragment, Heading, Text } from '@forge/ui';
-import type { ClusterLine } from '../api.ts';
-import type { Locale } from '../i18n/index.ts';
-import { t } from '../i18n/index.ts';
-import { QueueBillLine } from './QueueBillLine.tsx';
+import { Fragment } from 'react';
+import { Heading, Text } from '@forge/react';
+import type { ClusterLine } from '../api';
+import type { Locale } from '../i18n/index';
+import { t } from '../i18n/index';
+import { QueueBillLine } from './QueueBillLine';
 
 /**
  * Demandes récurrentes (§18) : ce qui se répète sans défaut — une grappe

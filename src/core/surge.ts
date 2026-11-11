@@ -11,10 +11,10 @@
  * arrondi à deux décimales (`round2` de `src/core/time.ts`).
  */
 
-import { shortHash } from './cluster.ts';
-import { SURGE_FACTOR, SURGE_WINDOW_MINUTES } from './constants.ts';
-import { parseIso, round2 } from './time.ts';
-import type { Surge } from './types.ts';
+import { shortHash } from './cluster';
+import { SURGE_FACTOR, SURGE_WINDOW_MINUTES } from './constants';
+import { parseIso, round2 } from './time';
+import type { Surge } from './types';
 
 /** Entrée du calcul d'une flambée (§8.6). */
 export interface SurgeInput {

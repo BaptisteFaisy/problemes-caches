@@ -1,7 +1,7 @@
-import { SectionMessage, Text } from '@forge/ui';
-import type { AttachResult } from '../api.ts';
-import type { Locale } from '../i18n/index.ts';
-import { t } from '../i18n/index.ts';
+import { SectionMessage, Text } from '@forge/react';
+import type { AttachResult } from '../api';
+import type { Locale } from '../i18n/index';
+import { t } from '../i18n/index';
 
 /**
  * Réponse proposée après « Rattacher et préparer la réponse » (§7.2) : elle

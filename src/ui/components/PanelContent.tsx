@@ -1,14 +1,15 @@
-import { Fragment, Heading, SectionMessage, Text } from '@forge/ui';
-import type { AgentPanelData, AttachResult } from '../api.ts';
-import type { Locale } from '../i18n/index.ts';
-import { t } from '../i18n/index.ts';
-import { PanelActions } from './PanelActions.tsx';
-import { PanelAlternatives } from './PanelAlternatives.tsx';
-import { PanelAnswer } from './PanelAnswer.tsx';
-import { PanelBill } from './PanelBill.tsx';
-import { PanelMatch } from './PanelMatch.tsx';
-import { PanelProposals } from './PanelProposals.tsx';
-import { PanelWorkaround } from './PanelWorkaround.tsx';
+import { Fragment } from 'react';
+import { Heading, SectionMessage, Text } from '@forge/react';
+import type { AgentPanelData, AttachResult } from '../api';
+import type { Locale } from '../i18n/index';
+import { t } from '../i18n/index';
+import { PanelActions } from './PanelActions';
+import { PanelAlternatives } from './PanelAlternatives';
+import { PanelAnswer } from './PanelAnswer';
+import { PanelBill } from './PanelBill';
+import { PanelMatch } from './PanelMatch';
+import { PanelProposals } from './PanelProposals';
+import { PanelWorkaround } from './PanelWorkaround';
 
 /**
  * Corps du panneau de l'agent (§13 écran 1, §7.2, PC-08). Tout vient de
@@ -51,7 +52,7 @@ export function PanelContent({
         onAttach={() => onAttach(matchProblemId)}
         onDetach={() => onDetach(membership?.problemId ?? '')}
       />
-      {notice ? <SectionMessage appearance="info"><Text>{notice}</Text></SectionMessage> : null}
+      {notice ? <PanelNotice notice={notice} /> : null}
       <PanelAnswer locale={locale} draft={draft} />
       <PanelAlternatives locale={locale} alternatives={data.alternatives} onAttach={onAttach} />
       <PanelProposals
@@ -61,5 +62,17 @@ export function PanelContent({
         onAttach={onAttach}
       />
     </Fragment>
+  );
+}
+
+/**
+ * Avis d'une action du panneau (rattachement, retrait, erreur). UI Kit 2 :
+ * `appearance="information"`, l'ancienne valeur `info` n'existe plus.
+ */
+function PanelNotice({ notice }: { notice: string }): JSX.Element {
+  return (
+    <SectionMessage appearance="information">
+      <Text>{notice}</Text>
+    </SectionMessage>
   );
 }

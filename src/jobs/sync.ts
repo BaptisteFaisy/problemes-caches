@@ -14,16 +14,16 @@
  * durée moyenne réglable (§9).
  */
 
-import { hoursOf } from '../core/bill.ts';
-import type { BillTicket } from '../core/bill.ts';
-import type { TicketInWindow } from '../core/cluster.ts';
-import { signatureKey } from '../core/types.ts';
-import type { Settings, TicketFact, TicketSignature } from '../core/types.ts';
+import { hoursOf } from '../core/bill';
+import type { BillTicket } from '../core/bill';
+import type { TicketInWindow } from '../core/cluster';
+import { signatureKey } from '../core/types';
+import type { Settings, TicketFact, TicketSignature } from '../core/types';
 import {
   listFactsByIds,
   listSignatures,
   upsertTicketFacts,
-} from '../platform/db/repos.ts';
+} from '../platform/db/repos';
 import {
   adfToText,
   mapWithLimit,
@@ -31,14 +31,14 @@ import {
   requestTypeOf,
   serviceOf,
   worklogSeconds,
-} from '../platform/field.ts';
+} from '../platform/field';
 import {
   fetchIssue,
   readLoggedSeconds,
   readRequestDetails,
   readSlaBreaches,
-} from '../platform/jira.ts';
-import type { JiraIssue } from '../platform/jira-types.ts';
+} from '../platform/jira';
+import type { JiraIssue } from '../platform/jira-types';
 
 /** Limite d'appels simultanés lors de la synchronisation (débit borné, §16). */
 const SYNC_CONCURRENCY = 8;

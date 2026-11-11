@@ -3,8 +3,8 @@
  * aucune règle métier, aucun calcul de coût ou d'addition n'est fait côté UI (§17).
  */
 
-import { BILL_LINE_KEYS, SUSPECT_WINDOW_DAYS } from '../../core/constants.ts';
-import type { BillLineKey, Settings } from '../../core/types.ts';
+import { BILL_LINE_KEYS, SUSPECT_WINDOW_DAYS } from '../../core/constants';
+import type { BillLineKey, Settings } from '../../core/types';
 
 /** Contenu brut du `Form` Forge : une valeur par `name` de champ. */
 export type SettingsFormData = Record<string, unknown>;
@@ -94,4 +94,26 @@ function toFiniteNumber(raw: unknown): number | null {
   if (!text) return null;
   const value = Number(text);
   return Number.isFinite(value) ? value : null;
+}
+
+/**
+ * Valeurs initiales du formulaire, dérivées des réglages enregistrés (§13.5).
+ * Fonction pure : testable sans rendu, et seule source de l'état initial —
+ * l'écran ne recalcule jamais ces valeurs par lui-même (§17).
+ */
+export function formValuesFromSettings(settings: Settings, projectKey: string): SettingsFormData {
+  return {
+    watchedProject: settings.projectKey || projectKey,
+    thresholdTickets: String(settings.thresholds.tickets),
+    thresholdHours: String(settings.thresholds.hours),
+    thresholdPeople: String(settings.thresholds.people),
+    minutesPerTouch: String(settings.minutesPerTouch),
+    hourRateEur: settings.hourRateEur === null ? '' : String(settings.hourRateEur),
+    problemIssueType: settings.problemIssueType ?? '',
+    portalServices: settings.portalServices.join(', '),
+    surgeFactor: String(settings.surgeFactor),
+    surgeWindowMinutes: String(settings.surgeWindowMinutes),
+    watchDays: String(settings.watchDays),
+    enabledLines: [...settings.enabledLines],
+  };
 }

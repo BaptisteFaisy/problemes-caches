@@ -6,16 +6,16 @@
  * 512 caractères est stocké, jamais le corps du ticket.
  */
 
-import type { TicketFact } from '../../../core/types.ts';
-import { insertRows, onDuplicateUpdate, selectRows } from '../query.ts';
+import type { TicketFact } from '../../../core/types';
+import { insertRows, onDuplicateUpdate, selectRows } from '../query';
 import {
   toDbBool,
   toDbDate,
   toDbDateRequired,
   toNumber,
   type SqlParams,
-} from '../rows.ts';
-import { toTicketFact, type Row } from '../mappers.ts';
+} from '../rows';
+import { toTicketFact, type Row } from '../mappers';
 
 const TABLE = 'ticket_fact';
 const ID_CHUNK = 200;

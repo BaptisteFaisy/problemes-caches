@@ -8,8 +8,8 @@
 
 import { createHash } from 'node:crypto';
 
-import { UNDETERMINED_ID } from './constants.ts';
-import { normalizeTrigger, type HardClues, type TicketSignature } from './types.ts';
+import { UNDETERMINED_ID } from './constants';
+import { normalizeTrigger, type HardClues, type TicketSignature } from './types';
 
 // ---------------------------------------------------------------------------
 // Entrées du lot (contrats WP-A)
