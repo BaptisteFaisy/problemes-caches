@@ -6,9 +6,9 @@ name: couche0
 #   - tests du gate hermes (résolution de conflits)
 # Budget CI 5 min (règle user 2026-10-24).
 #
-# Dépendances : même dispositif que `ci.yml` (cache hors workspace, installation
-# seulement si `package-lock.json` a changé) — `@forge/manifest` et le validateur
-# tirent un arbre lourd, une installation à froid ne tient pas dans le budget.
+# Runners hébergés par GitHub, même motif et même raison que `ci.yml`
+# (dépôt public = minutes gratuites ; workers self-hosted du r630 devenus sourds
+# le 2026-11-11, canal broker cassé).
 
 on:
   pull_request:
@@ -33,20 +33,13 @@ permissions:
 jobs:
   couche0:
     name: couche0
-    runs-on: [self-hosted, problemes-caches-worker]
+    runs-on: ubuntu-latest
     timeout-minutes: 5
     steps:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 1
           persist-credentials: false
-          clean: false
-
-      - name: Nettoyage du workspace (node_modules conservé)
-        shell: bash
-        run: |
-          git clean -ffdx -e /node_modules -e /dist -e /build
-          git checkout -- .
 
       - name: Tailles (fichiers < 500, fonctions < 50)
         run: python3 tools/check_limits.py
@@ -54,33 +47,13 @@ jobs:
       - name: Tests du gate hermes (conflits)
         run: python3 .github/hermes/test_gate.py
 
-      - name: Node 22 et dépendances (cache hors workspace)
-        shell: bash
-        run: |
-          echo "$HOME/node-current/bin" >> "$GITHUB_PATH"
-          echo "$HOME/bin" >> "$GITHUB_PATH"
-          export PATH="$HOME/node-current/bin:$HOME/bin:$PATH"
-          export NPM_CONFIG_CACHE="$HOME/.npm-ci-cache"
-          STATE="$HOME/.cache/problemes-caches-ci"
-          KEY="$(printf '%s' "$PWD" | sha256sum | cut -c1-12)"
-          mkdir -p "$STATE"
-          MARKER="$STATE/$KEY.lock-hash"
-          CACHE="$STATE/$KEY.node_modules"
-          LOCK_HASH="$(sha256sum package-lock.json | cut -d' ' -f1)"
-          if [ ! -d node_modules ] && [ -d "$CACHE" ]; then
-            cp -al "$CACHE" node_modules 2>/dev/null || cp -a "$CACHE" node_modules
-            echo "node_modules restaure depuis le cache hors workspace"
-          fi
-          if [ -d node_modules ] && [ "$LOCK_HASH" = "$(cat "$MARKER" 2>/dev/null)" ]; then
-            echo "dependances a jour - installation sautee"
-          else
-            echo "installation des dependances..."
-            npm ci --prefer-offline --no-audit --no-fund
-            printf '%s' "$LOCK_HASH" > "$MARKER"
-            rm -rf "$CACHE"
-            cp -al node_modules "$CACHE" 2>/dev/null || true
-          fi
-          node -v
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Dépendances du validateur de manifeste
+        run: npm ci --prefer-offline --no-audit --no-fund
 
       - name: manifest.yml contre le schéma Forge
         run: node tools/validate_manifest.mjs manifest.yml

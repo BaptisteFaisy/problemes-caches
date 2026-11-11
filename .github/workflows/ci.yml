@@ -1,16 +1,20 @@
 name: ci
 
-# Budget CI 5 min (règle user 2026-10-24) : typage, tests.
+# Budget CI 5 min (règle user 2026-10-24) : typage strict + tests du domaine.
 # Le build Forge (`forge build`) et le déploiement restent hors PR.
 #
-# Dépendances : `@forge/react` tire tout Atlaskit (404 paquets, ~1,5 Go). Une
-# installation à froid dépasse le budget — mesuré le 2026-11-11 : `ci` tué par
-# son propre `timeout-minutes: 5` sur des runners neufs. Les runners étant
-# persistants, `node_modules` est conservé d'un run à l'autre et l'installation
-# ne tourne que si `package-lock.json` a changé. Le cache vit HORS du workspace
-# (les branches spéculatives de la file Mergify partent d'un checkout frais) et
-# se restaure par liens durs : quelques secondes. Motif repris de
-# BaptisteFaisy/rayon-impact, où il est éprouvé.
+# Runners : **hébergés par GitHub** (`ubuntu-latest`). Le dépôt est public, donc
+# ces minutes sont gratuites. Choix du 2026-11-11, mesuré : les 5 workers
+# self-hosted du r630 étaient « online » mais n'acquerraient plus aucun job —
+# `_diag/Runner_*.log` montrait le canal broker cassé en boucle
+# (`BrokerServer … SocketException (125): Operation canceled`, `Back off …
+# 4 attempt left`). Cause probable : ~105 listeners runner long-pollent GitHub
+# depuis la même adresse IP sur cette machine. Le gate hermes reste self-hosted
+# (il a besoin du daemon ZeroClaw local) mais n'est pas un check requis.
+#
+# Conséquence acceptée : `@forge/react` tire Atlaskit (404 paquets), donc
+# `npm ci` repart du cache npm de GitHub à chaque run (~1 à 2 min), ce qui tient
+# dans le budget de 5 minutes.
 
 on:
   pull_request:
@@ -35,51 +39,21 @@ permissions:
 jobs:
   ci:
     name: ci
-    runs-on: [self-hosted, problemes-caches-worker]
+    runs-on: ubuntu-latest
     timeout-minutes: 5
     steps:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 1
           persist-credentials: false
-          clean: false
 
-      # `git clean -ffdx` sans exclusion jetterait `node_modules` et ferait
-      # exploser le budget : on conserve les dépendances, on jette le reste.
-      # `git checkout -- .` rend les fichiers suivis qu'un run aurait modifiés.
-      - name: Nettoyage du workspace (node_modules conservé)
-        shell: bash
-        run: |
-          git clean -ffdx -e /node_modules -e /dist -e /build
-          git checkout -- .
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
 
-      - name: Node 22 et dépendances (cache hors workspace)
-        shell: bash
-        run: |
-          echo "$HOME/node-current/bin" >> "$GITHUB_PATH"
-          echo "$HOME/bin" >> "$GITHUB_PATH"
-          export PATH="$HOME/node-current/bin:$HOME/bin:$PATH"
-          export NPM_CONFIG_CACHE="$HOME/.npm-ci-cache"
-          STATE="$HOME/.cache/problemes-caches-ci"
-          KEY="$(printf '%s' "$PWD" | sha256sum | cut -c1-12)"
-          mkdir -p "$STATE"
-          MARKER="$STATE/$KEY.lock-hash"
-          CACHE="$STATE/$KEY.node_modules"
-          LOCK_HASH="$(sha256sum package-lock.json | cut -d' ' -f1)"
-          if [ ! -d node_modules ] && [ -d "$CACHE" ]; then
-            cp -al "$CACHE" node_modules 2>/dev/null || cp -a "$CACHE" node_modules
-            echo "node_modules restaure depuis le cache hors workspace"
-          fi
-          if [ -d node_modules ] && [ "$LOCK_HASH" = "$(cat "$MARKER" 2>/dev/null)" ]; then
-            echo "dependances a jour - installation sautee"
-          else
-            echo "installation des dependances..."
-            npm ci --prefer-offline --no-audit --no-fund
-            printf '%s' "$LOCK_HASH" > "$MARKER"
-            rm -rf "$CACHE"
-            cp -al node_modules "$CACHE" 2>/dev/null || true
-          fi
-          node -v
+      - name: Dépendances
+        run: npm ci --prefer-offline --no-audit --no-fund
 
       - name: Typage strict
         run: npm run typecheck
