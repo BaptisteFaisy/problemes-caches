@@ -20,7 +20,6 @@ import type { BillTicket } from '../core/bill.ts';
 import { computeCluster } from '../core/cluster.ts';
 import { watchElapsed } from '../core/lifecycle.ts';
 import { addDays } from '../core/time.ts';
-import { signatureKey } from '../core/types.ts';
 import type { BillPeriod, Problem, ProblemBill, Settings, TicketFact } from '../core/types.ts';
 import {
   getSettings,
@@ -38,7 +37,14 @@ import {
 import { publishDailySummary, setProblemProperty } from '../platform/jira.ts';
 import { logShort, shortError } from '../platform/log.ts';
 import { nextBootstrapBatch } from './bootstrap.ts';
-import { billTicketOf, followedProjectIds, registerFollowedProject, windowTicketsOf } from './sync.ts';
+import {
+  billTicketOf,
+  followedProjectIds,
+  issueIdsOfSignature,
+  keyOf,
+  registerFollowedProject,
+  windowTicketsOf,
+} from './sync.ts';
 
 /**
  * Recalcul nocturne complet (§14).
@@ -83,12 +89,7 @@ async function recalcProjectClusters(settings: Settings, now: string): Promise<v
   const facts = await listTicketFacts(settings.projectId, since);
   const signatures = await listSignatures(settings.projectId);
   for (const cluster of await listClusters(settings.projectId)) {
-    const key = signatureKey(cluster.systemId, cluster.symptomId, cluster.triggerText);
-    const issueIds = new Set(
-      signatures
-        .filter((sig) => signatureKey(sig.systemId, sig.symptomId, sig.triggerText) === key)
-        .map((sig) => sig.issueId),
-    );
+    const issueIds = new Set(issueIdsOfSignature(signatures, keyOf(cluster)));
     const clusterFacts = facts.filter((fact) => issueIds.has(fact.issueId));
     const updated = computeCluster({
       projectId: settings.projectId,

@@ -18,7 +18,7 @@ import { hoursOf } from '../core/bill.ts';
 import type { BillTicket } from '../core/bill.ts';
 import type { TicketInWindow } from '../core/cluster.ts';
 import { signatureKey } from '../core/types.ts';
-import type { Settings, TicketFact } from '../core/types.ts';
+import type { Settings, TicketFact, TicketSignature } from '../core/types.ts';
 import {
   listFactsByIds,
   listSignatures,
@@ -112,15 +112,22 @@ export function windowTicketsOf(
   }));
 }
 
-/** Faits des tickets d'une seule signature : c'est la grappe, rien d'autre (§8.5). */
-export async function ticketsForSignature(
-  projectId: string,
+/** Clé de signature d'un ticket ou d'une grappe (§8.5). */
+export function keyOf(item: { systemId: string; symptomId: string; triggerText: string }): string {
+  return signatureKey(item.systemId, item.symptomId, item.triggerText);
+}
+
+/** Identifiants des tickets portant une signature donnée (§8.5). */
+export function issueIdsOfSignature(
+  signatures: readonly TicketSignature[],
   key: string,
-): Promise<TicketFact[]> {
-  const signatures = await listSignatures(projectId);
-  const issueIds = signatures
-    .filter((sig) => signatureKey(sig.systemId, sig.symptomId, sig.triggerText) === key)
-    .map((sig) => sig.issueId);
+): string[] {
+  return signatures.filter((sig) => keyOf(sig) === key).map((sig) => sig.issueId);
+}
+
+/** Faits des tickets d'une seule signature : c'est la grappe, rien d'autre (§8.5). */
+export async function ticketsForSignature(projectId: string, key: string): Promise<TicketFact[]> {
+  const issueIds = issueIdsOfSignature(await listSignatures(projectId), key);
   return issueIds.length > 0 ? listFactsByIds(issueIds) : [];
 }
 

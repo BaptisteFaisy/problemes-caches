@@ -19,7 +19,7 @@ import { detectRegression } from '../core/lifecycle.ts';
 import { matchTicket } from '../core/matching.ts';
 import { buildSignature, extractHardClues, sourceHash } from '../core/signature.ts';
 import { detectSurge } from '../core/surge.ts';
-import { defaultSettings, signatureKey } from '../core/types.ts';
+import { defaultSettings } from '../core/types.ts';
 import type {
   BootstrapProgress,
   Cluster,
@@ -59,6 +59,7 @@ import { logShort, shortError } from '../platform/log.ts';
 import { nextBootstrapBatch } from './bootstrap.ts';
 import {
   extractTicketText,
+  keyOf,
   readTicketFact,
   registerFollowedProject,
   splitSurgeDates,
@@ -234,8 +235,7 @@ async function matchAndAttach(
 
 /** Recalcule la seule grappe du ticket, puis vérifie le seuil de flambée. */
 async function updateClusterAndSurge(sig: TicketSignature, settings: Settings, now: string): Promise<void> {
-  const key = signatureKey(sig.systemId, sig.symptomId, sig.triggerText);
-  const facts = await ticketsForSignature(settings.projectId, key);
+  const facts = await ticketsForSignature(settings.projectId, keyOf(sig));
   const clusterId = clusterIdOf(settings.projectId, sig.systemId, sig.symptomId, sig.triggerText);
   const previous = await getCluster(clusterId);
   const cluster = computeCluster({
@@ -283,10 +283,10 @@ async function checkSurge(
 
 /** Un ticket de même signature sur un problème corrigé ou vérifié = régression. */
 async function checkRegression(projectId: string, sig: TicketSignature, now: string): Promise<void> {
-  const key = signatureKey(sig.systemId, sig.symptomId, sig.triggerText);
+  const key = keyOf(sig);
   for (const problem of await listProblems(projectId)) {
     if (problem.state !== 'fixed' && problem.state !== 'verified') continue;
-    if (signatureKey(problem.systemId, problem.symptomId, problem.triggerText) !== key) continue;
+    if (keyOf(problem) !== key) continue;
     if (!detectRegression(problem, now)) continue;
     await updateProblemState(problem.id, 'regression', { regression: true, updatedAt: now });
     logShort(`régression sur le problème ${problem.issueKey ?? problem.id}`);
