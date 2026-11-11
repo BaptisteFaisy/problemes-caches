@@ -1,0 +1,56 @@
+# Validations & Mesures — Problèmes cachés dans les tickets
+
+> **Codegeist 2026** · Catégorie **Apps for Business Teams**  
+> Référence du cahier des charges : **§16, §17**  
+> Calendrier : validations semaine 1 (11–17 novembre 2026) · Évaluation de justesse (§17)
+
+Ce document rassemble le suivi technique des huit points à valider la première semaine sur la plateforme Atlassian (§16) ainsi que le protocole de mesure de justesse des rattachements sur jeu étiqueté (§17).
+
+---
+
+## 1. Les 8 points à valider la première semaine (§16)
+
+| # | Point à valider | Pourquoi | Comment tester concrètement sur le site de démo | Ce qu'on observe dans le code actuel | Solution de repli (§16) |
+|---|---|---|---|---|---|
+| **1** | Volume et variété des tickets d'exemple du site de démonstration | Sans répétition réelle, aucune grappe naturelle ne peut émerger pour les tests des juges. | Ouvrir le projet JSM du site de démonstration fourni aux participants Codegeist. Vérifier si les tickets couvrent au moins 3 récurrences distinctes. | Le code anticipe l'absence de répétition par le module de données d'exemple (`loadSampleData` dans [src/ui/api.ts](../src/ui/api.ts), contrat WP-O dans [docs/CONTRATS.md](CONTRATS.md)) : injection de 120 tickets sur 60 jours directement en base. | Jeu d'exemple injecté directement dans les tables Forge SQL de l'app. |
+| **2** | Type « Problème » présent dans le projet de service | Le problème unique doit porter un type d'issue Jira adapté (idéalement le type natif « Problème » de JSM). | Créer manuellement un ticket dans le projet JSM pour inspecter la liste déroulante des types disponibles. | La fonction `resolveIssueTypeId` ([src/platform/jira.ts](../src/platform/jira.ts)) cherche d'abord le type configuré dans les réglages (`settings.problemIssueType`), puis un type nommé « Problem » ou « Problème », puis se replie sur le premier type utilisable. | Type choisi dans l'écran de réglages du projet ([src/ui/settings-page.tsx](../src/ui/settings-page.tsx)). |
+| **3** | Lecture des délais de service (SLA) et de leur dépassement | Alimente le poste d'addition « Engagements de délai rompus » (lot S). | Appeler l'API REST Service Desk (`/rest/servicedeskapi/request/{id}/sla`) depuis Forge via `requestJira`. | La fonction `readSlaBreaches` ([src/platform/jira.ts](../src/platform/jira.ts)) interroge les détails de la demande (`readRequestDetails`), lit les cycles SLA et extrait `slaBreached(details)` ([src/platform/field.ts](../src/platform/field.ts)). Si le scope ou la donnée manque, la fonction rend `false` sans lever d'exception. | Poste désactivé par défaut dans le MVP (`MVP_BILL_LINES` dans [src/core/constants.ts](../src/core/constants.ts)) ; activable dans les réglages. |
+| **4** | Inventaire (Assets / Insight / Compass) lisible depuis Forge | Alimente l'indice certain « même équipement » pour la marche 3 du rattachement. | Lier un objet d'inventaire à un ticket de démo et vérifier la réponse de l'API Teamwork Graph. | `enrichClues` ([src/platform/graph.ts](../src/platform/graph.ts)) appelle `requestTeamworkGraph` avec la requête `HiddenProblemsIssueContext` pour extraire `inventory { id name }`. Les identifiants sont insérés dans `hardClues.assetIds`. Si le graphe échoue, les indices restent intacts. | Champ personnalisé Jira ou champ texte du ticket si le graphe n'est pas activé. |
+| **5** | Stabilité des signatures d'un passage à l'autre | Un même ticket doit toujours donner la même signature pour éviter les grappes instables. | Soumettre le même texte 10 fois à `extractSignature` et vérifier l'égalité stricte du triplet. | Trois verrous garantissent la stabilité : (a) température fixée à 0 dans [src/platform/llm.ts](../src/platform/llm.ts), (b) vocabulaire fermé fourni au prompt ([src/platform/field.ts](../src/platform/field.ts)), (c) cache systématique par empreinte SHA-256 du texte normalisé (`sourceHash` dans [src/core/signature.ts](../src/core/signature.ts)). | Température minimale (0), vocabulaire fermé obligatoire et cache par empreinte. |
+| **6** | Coût et débit du modèle à l'initialisation | L'initialisation de 90 jours soumet jusqu'à des milliers de tickets au LLM. Le quota Forge est de 100 req/min. | Lancer l'initialisation sur un projet de 1 000 tickets et mesurer le taux de requêtes par minute. | [src/platform/llm.ts](../src/platform/llm.ts) embarque un régulateur de débit (`waitForRateSlot`) borné à 90 req/min (`MAX_CALLS_PER_MINUTE`). Le traitement de masse est découpé par lots de 50 tickets via une file asynchrone (`consumer: bootstrap-batch`). | Préfiltrage par indices certains et modèle Claude économique hébergé Forge. |
+| **7** | Contenu dynamique du bandeau portail selon le service | Pertinence du bandeau pour les clients : afficher les problèmes du service consulté. | Ouvrir le portail client sur une catégorie spécifique et observer le paramètre reçu par le sous-en-tête. | Le module `jiraServiceManagement:portalSubheader` ([src/ui/portal-subheader.tsx](../src/ui/portal-subheader.tsx)) n'a pas accès au service dans le contexte visiteur anonyme : il appelle `getPortalBanner(projectKey, null)` qui bascule automatiquement sur le repli global (les 3 problèmes les plus actifs). | Bandeau global, limité aux 3 problèmes les plus actifs du centre de services. |
+| **8** | Commentaire public sur une demande au nom de l'agent | Permet l'envoi du message groupé à la correction d'un problème (lot S, PC-18). | Appeler l'API de commentaire JSM avec l'identité de l'agent connecté. | L'application ne publie **aucun commentaire public automatique** (§6, §17). Pour le ticket de problème interne, `addInternalComment` ([src/platform/jira.ts](../src/platform/jira.ts)) poste au nom de l'app. Pour les clients, `draftCustomerUpdate` prépare un texte que l'agent copie-colle ou valide explicitement. | Brouillon généré prêt à être validé et envoyé par l'agent. |
+
+---
+
+## 2. Mesures de justesse du rattachement (§17)
+
+Le cahier des charges (§17) fixe deux exigences quantitatives non négociables :
+- **Au moins 85 % de rattachements corrects** sur un échantillon de validation.
+- **Moins de 5 % de rattachements d'office erronés** (faux positifs automatiques).
+
+### Protocole de validation sur les 200 tickets étiquetés
+
+1. **Constitution du corpus** : 200 tickets réels ou issus du générateur déterministe, annotés manuellement avec leur cause réelle (vérité terrain) :
+   - 140 tickets répartis sur 5 causes connues récurrentes (avec formulations variées, fautes, termes familiers) ;
+   - 30 tickets d'incidents isolés (sans cause commune) ;
+   - 20 demandes de service régulières sans défaut (réinitialisation de mot de passe, demande de matériel) ;
+   - 10 tickets courts ou ambigus (« ça ne marche pas », « erreur »).
+
+2. **Exécution du test** :
+   - Injection du corpus dans un environnement de test isolé.
+   - Appel de `matchTicket` ([src/core/matching.ts](../src/core/matching.ts)) pour chaque ticket contre la base de problèmes ouverts.
+   - Enregistrement du résultat : `step`, `confidence`, `auto`, `rationale`.
+
+3. **Matrice de confusion & indicateurs calculés** :
+
+$$\text{Taux de justesse} = \frac{\text{Rattachements corrects (d'office ou proposés)}}{\text{Total des tickets avec cause connue}} \ge 85\%$$
+
+$$\text{Taux d'erreur d'office} = \frac{\text{Rattachements automatiques à un mauvais problème}}{\text{Total des rattachements automatiques}} < 5\%$$
+
+### Comment le code garantit ces seuils
+
+- **Le coupe-circuit des faux positifs** : la fonction `isAutoAttach` ([src/core/matching.ts](../src/core/matching.ts)) n'autorise le rattachement automatique que si deux conditions cumulatives sont remplies :
+  1. `confidence === 'high'` (uniquement la marche 1 — même signature stricte — ou la marche 3 — code d'erreur / asset identique) ;
+  2. `undetermined === false` (les textes trop courts ou vagues sont systématiquement exclus du rattachement automatique, §18).
+- **La marche 2 reste sous contrôle humain** : dès que le modèle intervient sur une proximité sémantique (marche 2), la confiance est plafonnée à `medium` et le rattachement est **uniquement proposé** à l'agent (`auto: false`), éliminant ainsi le risque d'erreur d'office.
