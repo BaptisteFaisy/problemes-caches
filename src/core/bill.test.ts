@@ -6,7 +6,7 @@
 import { strict as assert } from 'node:assert';
 import test from 'node:test';
 
-import { computeBill, computeTrend, hoursOf, mergeBills } from './bill';
+import { aggregateIssueContext, computeBill, computeTrend, hoursOf, mergeBills } from './bill';
 import type { BillInput, BillMeToo, BillTicket } from './bill';
 import { DEFAULT_MINUTES_PER_TOUCH } from './constants';
 import type { ProblemBill } from './types';
@@ -263,4 +263,20 @@ test('§18 fusion : rien à fusionner rend une addition vide', () => {
   assert.equal(merged.hours, 0);
   assert.equal(merged.people, 0);
   assert.equal(merged.minutesPerTouch, DEFAULT_MINUTES_PER_TOUCH);
+});
+
+test('§18 contexte développeur : heures additionnées, personnes au maximum', () => {
+  const totals = aggregateIssueContext([
+    bill({ hours: 61, people: 38 }),
+    bill({ hours: 12, people: 7 }),
+  ]);
+  assert.equal(totals.hoursPerMonth, 73);
+  // Une personne touchée par deux problèmes liés ne compte pas deux fois.
+  assert.equal(totals.people, 38);
+});
+
+test('§18 contexte développeur : additions manquantes ignorées, liste vide à zéro', () => {
+  const trous = aggregateIssueContext([null, bill({ hours: 4, people: 3 }), undefined]);
+  assert.deepEqual(trous, { hoursPerMonth: 4, people: 3 });
+  assert.deepEqual(aggregateIssueContext([]), { hoursPerMonth: 0, people: 0 });
 });

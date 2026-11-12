@@ -15,14 +15,19 @@
  */
 
 import type {
+  BillLineKey,
   BillPeriod,
   ClusterStatus,
   Confidence,
+  CustomerUpdateDraft,
+  DataQuality,
   MembershipBasis,
   ProblemBill,
   ProblemState,
   Settings,
+  TermKind,
   ThresholdHit,
+  Thresholds,
   Trend,
   Vocabulary,
 } from '../../src/core/types';
@@ -160,11 +165,131 @@ export interface DemoPrompt {
 }
 
 // ---------------------------------------------------------------------------
+// Vue développeur (§7.2, §18) — le module `jira:issueContext` de l'app
+// ---------------------------------------------------------------------------
+
+/** Un problème lié au bug regardé, avec son addition. */
+export interface DemoDevProblem {
+  key: string;
+  state: ProblemState;
+  signature: string;
+  bill30: ProblemBill;
+}
+
+/**
+ * « Ce que coûte ce bug » : exactement ce que `getIssueContext` renvoie dans
+ * l'app. Les heures s'additionnent, les personnes **non** — une personne
+ * touchée par deux problèmes liés ne compte pas deux fois (§18). Cette règle
+ * vit dans `aggregateIssueContext` (`src/core/bill.ts`), partagée avec l'app.
+ */
+export interface DemoDevContext {
+  /** Le ticket de correctif regardé, du genre `NET-402`. */
+  issueKey: string;
+  summary: string;
+  problems: DemoDevProblem[];
+  hoursPerMonth: number;
+  people: number;
+}
+
+// ---------------------------------------------------------------------------
+// Cycle de vie et régression (§5, §7.4, §7.5) — `src/core/lifecycle.ts`
+// ---------------------------------------------------------------------------
+
+/** Qualité des données (§11 PC-10) : la forme de l'app, réutilisée telle quelle. */
+export type DemoQuality = DataQuality;
+
+/** Une étape du tableau du §5, atteinte ou non. */
+export interface DemoLifecycleStep {
+  state: ProblemState;
+  at: string | null;
+  reached: boolean;
+}
+
+/** Le cycle complet d'un problème confirmé, tel que le site le montre. */
+export interface DemoLifecycle {
+  clusterId: string;
+  key: string;
+  state: ProblemState;
+  steps: DemoLifecycleStep[];
+  /** Fin de la surveillance (§7.4) : `fixedAt + settings.watchDays`. */
+  watchUntil: string | null;
+  /** Jours de surveillance écoulés sans nouveau ticket. */
+  watchElapsed: boolean;
+  /** Vrai si un ticket est arrivé après la correction (§7.5). */
+  regression: boolean;
+  /** Le brouillon destiné aux clients, `null` tant que rien n'est corrigé. */
+  draft: CustomerUpdateDraft | null;
+  /** Tickets ouverts et « moi aussi » repris dans le brouillon. */
+  openTickets: number;
+  meToo: number;
+}
+
+// ---------------------------------------------------------------------------
+// Portail client (§7.3) — `jiraServiceManagement:portalRequestDetailPanel`
+// ---------------------------------------------------------------------------
+
+/** Une demande vue du portail, avec son bandeau et son correctif prévu. */
+export interface DemoPortalRequest {
+  issueKey: string;
+  summary: string;
+  requester: string;
+  service: string;
+  status: 'open' | 'answered' | 'resolved';
+  /** Problème connu auquel la demande est rattachée, `null` sinon. */
+  problemKey: string | null;
+  /** Le bandeau affiché avant d'écrire, `null` si aucun problème connu. */
+  banner: string | null;
+  fixPlannedAt: string | null;
+  /** Cette personne a cliqué « Moi aussi » (aucun ticket créé, §7.3). */
+  meToo: boolean;
+  /** Prévenue à la résolution (§7.4). */
+  notified: boolean;
+}
+
+// ---------------------------------------------------------------------------
+// Réglages (§11) — `jira:projectSettingsPage`
+// ---------------------------------------------------------------------------
+
+/** Ce que la démo autorise à changer ; tout le reste reste figé. */
+export interface DemoSettingsPatch {
+  minutesPerTouch?: number;
+  hourRateEur?: number | null;
+  surgeFactor?: number;
+  watchDays?: number;
+  thresholds?: Partial<Thresholds>;
+  enabledLines?: BillLineKey[];
+}
+
+// ---------------------------------------------------------------------------
+// Agent Rovo (§12) — conversation simulée, pas seulement le tableau des outils
+// ---------------------------------------------------------------------------
+
+/** Les cinq amorces de conversation déclarées dans `rovo:agent`. */
+export type RovoPromptId = 'cost' | 'surges' | 'suspects' | 'problem' | 'draft';
+
+/** Un tour de conversation : question, outil appelé, réponse, méthode. */
+export interface DemoRovoTurn {
+  promptId: RovoPromptId;
+  question: string;
+  /** L'action MCP réellement appelée, ex. `list-top-problems`. */
+  tool: string;
+  /** Les entrées passées à l'outil, en JSON lisible. */
+  toolInput: string;
+  answer: string;
+  /** Chiffres structurés rendus par l'outil. */
+  figures: { label: string; value: string }[];
+  /** La méthode de calcul affichée avec chaque chiffre (§17). */
+  method: string;
+}
+
+// ---------------------------------------------------------------------------
 // Fonctions du moteur — signatures imposées
 // ---------------------------------------------------------------------------
 //
-// Implémentées dans `build.ts` (construction) et `actions.ts` (interactions),
-// réexportées par `state.ts` :
+// **Lectures** dans `derive.ts`, **mutations** dans `actions.ts`, construction
+// dans `build.ts` ; tout est réexporté par `state.ts`, seule porte d'entrée du
+// rendu. `derive.ts` existe parce que `build.ts` approche la limite des
+// 500 lignes : aucune règle métier ne doit aller dans le rendu (§17).
 //
 //   buildDemoState(locale: DemoLocale, seed?: number): DemoState
 //   confirmSuspect(state, clusterId, removedIssueKeys: string[]): DemoState
@@ -175,5 +300,28 @@ export interface DemoPrompt {
 //   withPeriod(state, period: BillPeriod): DemoState
 //   withLocale(state, locale: DemoLocale): DemoState
 //
-// Le rendu (`render.ts`) n'appelle QUE ces fonctions : aucun calcul métier dans
-// le DOM (§17), et toute évolution de l'état repasse par le moteur testé.
+//   lifecycleOf(state, clusterId): DemoLifecycle | null
+//   devContexts(state): DemoDevContext[]
+//   portalRequestsOf(state): DemoPortalRequest[]
+//   qualityOf(state): DataQuality
+//   askRovo(state, promptId: RovoPromptId): DemoRovoTurn
+//
+//   markFixed(state, clusterId): DemoState
+//   simulateIncoming(state, clusterId): DemoState
+//   verifyWatch(state, clusterId): DemoState
+//   splitCluster(state, clusterId, issueKeys: string[], triggerText: string): DemoState
+//   withSettings(state, patch: DemoSettingsPatch): DemoState
+//   resetSettings(state): DemoState
+//   addTerm(state, kind: TermKind, label: string): DemoState
+//   mergeTerms(state, ids: string[], keepId: string): DemoState
+//
+// `markFixed` appelle `startWatching`, `simulateIncoming` appelle
+// `detectRegression` et `verifyWatch` appelle `nextState(_, 'watch-elapsed')` :
+// ce sont les fonctions de `src/core/lifecycle.ts`, jamais une copie.
+// `customerDraftOf` appelle `fallbackCustomerUpdate` de `src/platform/field.ts`
+// — module pur (aucun `@forge/*` dans sa chaîne d'imports), donc bundlable.
+// Le site affiche `source: 'template'` et le dit : aucun modèle n'est joignable
+// depuis un navigateur.
+//
+// Le rendu (`render*.ts`) n'appelle QUE ces fonctions : aucun calcul métier
+// dans le DOM (§17), et toute évolution de l'état repasse par le moteur testé.
