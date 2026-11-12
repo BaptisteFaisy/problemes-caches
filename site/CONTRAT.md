@@ -76,7 +76,7 @@ ses signatures ne se renégocient pas dans un lot.
 |---|---|---|---|
 | **0** ✅ | `site/src/types.ts`, `site/CONTRAT.md`, `src/core/bill.ts`, `src/core/bill.test.ts`, `src/resolvers/actions.ts` | contrat en code + règle §18 partagée | — |
 | **A** | `site/index.html`, `site/src/styles.css` | structure et apparence. Aucun texte en dur : tout vient du lot B. Pose les ancres ci-dessous, exactement. | 0 |
-| **B** | `site/src/i18n.ts` | tous les textes EN/FR, clés listées ci-dessous | 0 |
+| **B** | `site/src/i18n.ts`, `site/src/i18n-types.ts`, `site/src/i18n-en.ts`, `site/src/i18n-fr.ts`, `site/src/i18n.test.ts` *(les quatre derniers nouveaux)* | tous les textes EN/FR, clés listées ci-dessous | 0 |
 | **C** | `site/src/derive.ts` *(nouveau)*, `site/src/actions.ts`, `site/src/build.ts`, `site/src/state.ts`, `site/src/derive.test.ts` *(nouveau)*, `site/src/actions.test.ts`, `site/src/build.test.ts` | le moteur : lectures dérivées et mutations | 0 |
 | **D** | `site/src/render.ts`, `site/src/render-agents.ts` | rendu des onglets existants + cycle/dev/réglages/portail/vocabulaire, en appelant les rendus du lot E | 0 (ancres et clés du contrat) |
 | **E** | `site/src/render-dev.ts`, `site/src/render-lifecycle.ts`, `site/src/render-settings.ts`, `site/src/render-portal.ts`, `site/src/render-rovo.ts` *(tous nouveaux)* | les nouvelles vues, une par fichier | 0 |
@@ -154,10 +154,22 @@ body
 
 ## Clés i18n — lot B
 
-Le fichier `site/src/i18n.ts` est un `Record<MessageKey, string>` par langue,
-avec interpolation `{variable}`. Toute clé listée ici est **obligatoire dans les
-deux langues** ; `build.test.ts` vérifie que les deux jeux ont exactement les
-mêmes clés. Les clés existantes ne changent pas de sens.
+Le fichier `site/src/i18n.ts` est un `Record<string, string>` par langue, avec
+interpolation `{variable}`. Toute clé listée ici est **obligatoire dans les deux
+langues** — un oubli de traduction est exactement le défaut qui a produit les PR
+#42/#43, donc le lot B ajoute `site/src/i18n.test.ts`, qui vérifie la parité des
+clés EN/FR et l'identité des variables d'interpolation. Il n'existe aucun test
+de ce genre aujourd'hui.
+
+**Découpage imposé** : `i18n.ts` fait déjà 344 lignes et ce contrat ajoute une
+centaine de clés, soit ~180 lignes — le fichier dépasserait la limite des 500.
+Le lot B le scinde donc, sans changer ce que les autres modules importent :
+
+- `i18n-types.ts` : l'interface `SiteCopy` et les constantes techniques partagées
+  (`ROVO_TOOLS`, identiques dans les deux langues) ;
+- `i18n-en.ts` / `i18n-fr.ts` : les deux jeux de textes ;
+- `i18n.ts` : `COPIES`, `copyOf`, `texte` — **les seuls exports consommés par
+  `main.ts`, `render.ts` et `render-agents.ts`, qui ne changent pas d'import.**
 
 - **Onglets** : `tab.cycle`, `tab.dev`, `tab.settings`
 - **Cycle de vie** : `cycle.title`, `cycle.lead`, `cycle.select`, `cycle.steps`,
