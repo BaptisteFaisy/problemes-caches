@@ -8,6 +8,13 @@ immobile, alors qu'un `@mergifyio queue` suffit. Ce balayeur ferme la boucle :
 toute PR prete (checks verts, fusionnable) hors file y est remise, 2 fois max
 par tete puis escalade humaine.
 
+Constat (PR #41/#42, 2026-11-11) : la PR restait immobile et le balayeur
+repondait `file:dedans` alors que Mergify disait `state: waiting`. Cause : un
+check-run « Mergify Merge Queue » simplement present/pending etait lu comme
+« dans la file », alors que Mergify le laisse en attente pendant que son propre
+check « Merge Protections » s'evalue (`mergeStateStatus=UNSTABLE`). Seul le
+payload d'etat publie par Mergify fait foi desormais (`last_mergify`).
+
 Pas de rebase ici : la file fusionne en squash et met les PR a jour par merge
 de main (decision user 2026-11-08, `.mergify.yml`) — les commits de fusion
 dans une branche sont normaux, jamais de reecriture. Seuls les vrais conflits
@@ -28,7 +35,15 @@ import re
 import time
 
 API = 'https://api.github.com'
-REQUIRED = ('ci-budget', 'stale-base-guard', 'hermes-lite/verdict')
+# Checks exiges avant de remettre une PR en file. La partie GitHub est lue dans
+# le ruleset de `main` a l'execution (`required_checks`) ; `stale-base-guard`
+# s'y ajoute car il n'est exige que par la regle « file automatique des PR
+# pretes » de `.mergify.yml`. `hermes-lite/verdict` est volontairement EXCLU :
+# il tourne sur les workers self-hosted du r630, qui peuvent devenir sourds
+# (2026-11-11) — l'attendre immobiliserait la file alors qu'il n'est un check
+# requis ni dans le ruleset ni dans `.mergify.yml`.
+EXTRA_REQUIRED = ('stale-base-guard',)
+FALLBACK_REQUIRED = ('ci', 'ci-budget', 'couche0')
 LABEL_CONFLIT = 'mergify/conflit'
 LABEL_ESCALADE = 'mergify/intervention'
 MAX_REQUEUE = 2
@@ -55,6 +70,40 @@ def api(method, url, body=None, token=None):
             return err.code, json.loads(payload)
         except Exception:
             return err.code, payload.decode('utf-8', errors='replace')
+
+
+def parse_when(text):
+    """Une date ISO-8601 (format GitHub ou Mergify) en datetime UTC, ou None."""
+    import datetime as _dt
+    if not text:
+        return None
+    try:
+        when = _dt.datetime.fromisoformat(str(text).replace('Z', '+00:00'))
+    except ValueError:
+        return None
+    return when if when.tzinfo else when.replace(tzinfo=_dt.timezone.utc)
+
+
+def required_checks(repo, token):
+    """Checks requis : ruleset de `main` (source de verite) + EXTRA_REQUIRED.
+
+    Repli sur FALLBACK_REQUIRED si le ruleset est illisible ou muet, pour ne
+    jamais bloquer la file sur un appel API en echec.
+    """
+    code, rules = api('GET', '/repos/%s/rules/branches/%s' % (repo, BASE),
+                      token=token)
+    contexts = []
+    if code == 200 and isinstance(rules, list):
+        for rule in rules:
+            if not isinstance(rule, dict) or \
+                    rule.get('type') != 'required_status_checks':
+                continue
+            params = rule.get('parameters') or {}
+            for check in params.get('required_status_checks') or []:
+                if isinstance(check, dict) and check.get('context'):
+                    contexts.append(check['context'])
+    base = contexts or list(FALLBACK_REQUIRED)
+    return tuple(dict.fromkeys(base + list(EXTRA_REQUIRED)))
 
 
 def ensure_label(repo, token, name, color, desc):
@@ -127,18 +176,29 @@ def get_pr(repo, token, num):
     return pr if code == 200 and isinstance(pr, dict) else None
 
 
+PAYLOAD = re.compile(r'-\*- Mergify Payload -\*-\s*(\{.*?\})\s*'
+                     r'-\*- Mergify Payload End -\*-', re.S)
+
+
 def last_mergify(comments):
-    """Dernier verdict Mergify : (etat, sha courte) ou None."""
-    bodies = [c.get('body') or '' for c in comments
-              if 'Mergify Payload' in (c.get('body') or '')]
-    if not bodies:
-        return None
-    body = bodies[-1]
-    state = re.search(r'"state":\s*"(\w+)"', body)
-    sha = re.search(r'(?:Left|Entered) the queue.*?· `?([0-9a-f]{7,40})`?',
-                    body)
-    return {'state': state.group(1) if state else '',
-            'sha': sha.group(1) if sha else ''}
+    """Dernier payload d'etat publie par Mergify (dict), ou None.
+
+    Mergify republie ce bloc JSON a chaque transition (`waiting`, `queued`,
+    `merged`, ...) : c'est la seule source fiable pour savoir si la PR est
+    reellement dans la file. Le JSON est analyse, pas devine par regex.
+    """
+    payload = None
+    for comment in comments:
+        found = PAYLOAD.search(comment.get('body') or '')
+        if not found:
+            continue
+        try:
+            parsed = json.loads(found.group(1))
+        except ValueError:
+            continue
+        if isinstance(parsed, dict):
+            payload = parsed
+    return payload
 
 
 def check_runs(repo, token, sha):
@@ -147,17 +207,30 @@ def check_runs(repo, token, sha):
     return (data or {}).get('check_runs') or []
 
 
-def queued_now(repo, token, sha, mergify):
-    """La PR est-elle dans la file en ce moment ?"""
-    if mergify and mergify['state'] == 'queued' and mergify['sha'] \
-            and sha.startswith(mergify['sha']):
-        return True
-    for run in check_runs(repo, token, sha):
-        if run.get('name') == 'Mergify Merge Queue' \
-                and run.get('status') in ('queued', 'in_progress',
-                                          'waiting', 'requested', 'pending'):
-            return True
-    return False
+def head_committed_at(repo, token, sha):
+    """Date de commit de la tete de la PR (ISO), ou None."""
+    code, commit = api('GET', '/repos/%s/commits/%s' % (repo, sha), token=token)
+    if code != 200 or not isinstance(commit, dict):
+        return None
+    return ((commit.get('commit') or {}).get('committer') or {}).get('date')
+
+
+def queued_now(repo, token, sha, payload):
+    """La PR est-elle dans la file Mergify en ce moment ?
+
+    Seul le payload Mergify fait foi. Un check-run « Mergify Merge Queue »
+    present ou en attente ne veut PAS dire « dans la file » : Mergify le laisse
+    `pending` pendant que son check « Merge Protections » s'evalue, la PR reste
+    `waiting` et n'avance jamais. C'est le blocage de #41/#42 (2026-11-11), ou
+    le balayeur repondait `file:dedans` a tort.
+    """
+    if not payload or payload.get('state') != 'queued':
+        return False
+    queued_at = parse_when(payload.get('queued_at'))
+    pushed_at = parse_when(head_committed_at(repo, token, sha))
+    if queued_at and pushed_at and pushed_at > queued_at:
+        return False  # tete poussee apres l'entree en file : entree perimee
+    return True
 
 
 def marker_count(comments, action, sha):
@@ -173,15 +246,14 @@ def marker_age_min(comments, action, sha):
              if tag in (c.get('body') or '')]
     if not dates:
         return None
-    try:
-        when = _dt.datetime.fromisoformat(dates[-1].replace('Z', '+00:00'))
-        now = _dt.datetime.now(_dt.timezone.utc)
-        return max(0, int((now - when).total_seconds() // 60))
-    except ValueError:
+    when = parse_when(dates[-1])
+    if when is None:
         return 999
+    age = (_dt.datetime.now(_dt.timezone.utc) - when).total_seconds() // 60
+    return max(0, int(age))
 
 
-def checks_green(repo, token, sha):
+def checks_green(repo, token, sha, required):
     """Les checks requis sont-ils tous verts sur cette tete ?"""
     latest = {}
     for run in check_runs(repo, token, sha):
@@ -189,7 +261,7 @@ def checks_green(repo, token, sha):
         if run.get('id', 0) > latest.get(name, {}).get('id', -1):
             latest[name] = run
     detail = []
-    for name in REQUIRED:
+    for name in required:
         run = latest.get(name)
         if run is None:
             detail.append('%s=?' % name)
@@ -198,7 +270,7 @@ def checks_green(repo, token, sha):
                                         run.get('conclusion') or '?'))
     ok = all((latest.get(name) or {}).get('status') == 'completed' and
              (latest.get(name) or {}).get('conclusion') == 'success'
-             for name in REQUIRED)
+             for name in required)
     return ok, ','.join(detail)
 
 
@@ -299,7 +371,7 @@ def handle_queue(repo, rtok, wtok, pat, pr, comments, sha, mergify):
     return 'file:remise(%d)' % (done + 1)
 
 
-def handle_pr(repo, rtok, wtok, pat, num):
+def handle_pr(repo, rtok, wtok, pat, num, required):
     pr = get_pr(repo, rtok, num)
     if pr is None or pr.get('state') != 'open' or pr.get('draft'):
         return 'ignore:fermee-ou-brouillon'
@@ -319,7 +391,7 @@ def handle_pr(repo, rtok, wtok, pat, num):
     if pr.get('mergeable') is False and \
             (pr.get('mergeable_state') or '') == 'dirty':
         return handle_dirty(repo, rtok, pr, comments, sha)
-    ok, detail = checks_green(repo, rtok, sha)
+    ok, detail = checks_green(repo, rtok, sha, required)
     if not ok:
         return handle_checks(repo, rtok, pr, comments, sha, detail)
     if pr.get('mergeable') is not True:
@@ -359,10 +431,12 @@ def main():
         return
     ensure_label(repo, rtok, LABEL_CONFLIT, 'd73a4a', 'Pose par file-mergify')
     ensure_label(repo, rtok, LABEL_ESCALADE, 'fbca04', 'Pose par file-mergify')
+    required = required_checks(repo, rtok)
+    print('[sweep] checks requis : %s' % ', '.join(required))
     results = []
     for num in nums:
         try:
-            res = handle_pr(repo, rtok, wtok, pat, num)
+            res = handle_pr(repo, rtok, wtok, pat, num, required)
         except Exception as exc:
             res = 'erreur:exception(%r)' % exc
         print('#%d : %s' % (num, res))
