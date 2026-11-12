@@ -47,6 +47,9 @@ jobs:
       - name: Tests du gate hermes (conflits)
         run: python3 .github/hermes/test_gate.py
 
+      - name: Tests du balayeur de la file Mergify
+        run: python3 .github/mergify/test_sweep.py
+
       - uses: actions/setup-node@v4
         with:
           node-version: 22
