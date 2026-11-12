@@ -122,17 +122,45 @@ function wordsOf(text: string): Set<string> {
 }
 
 /**
- * Comparateur de démonstration : recouvrement de mots entre le texte et la
- * signature d'une grappe. Dans l'app, cette marche est tenue par le modèle
- * (§8.4 étape 2) ; ici elle est déterministe et annoncée comme telle.
+ * Recouvrement de deux jeux de mots, avec tolérance de racine : « facture »
+ * reconnaît « facturation », « invoice » reconnaît « invoices ». Sans cette
+ * tolérance, une reformulation honnête ne matchait jamais.
+ */
+function overlap(source: Set<string>, cible: Set<string>): number {
+  if (source.size === 0 || cible.size === 0) return 0;
+  let commun = 0;
+  for (const mot of cible) {
+    if (source.has(mot)) { commun += 1; continue; }
+    for (const autre of source) {
+      if (Math.min(autre.length, mot.length) >= 5 && (autre.startsWith(mot) || mot.startsWith(autre))) {
+        commun += 1;
+        break;
+      }
+    }
+  }
+  return commun / cible.size;
+}
+
+/**
+ * Comparateur de démonstration (§8.4 étape 2).
+ *
+ * Dans l'app, cette marche compare le ticket à la **fiche du problème** par
+ * modèle. Ici, même idée sans modèle : on compare le texte à la signature de la
+ * grappe **et aux tickets qui la composent**, et on garde le meilleur score —
+ * une reformulation retombe ainsi sur la bonne grappe.
  */
 function demoSimilarity(text: string, cluster: DemoCluster): number {
-  const textWords = wordsOf(text);
-  const clusterWords = wordsOf(`${cluster.systemLabel} ${cluster.symptomLabel} ${cluster.triggerText}`);
-  if (textWords.size === 0 || clusterWords.size === 0) return 0;
-  let shared = 0;
-  for (const word of clusterWords) if (textWords.has(word)) shared += 1;
-  return shared / clusterWords.size;
+  const source = wordsOf(text);
+  const cibles = [
+    `${cluster.systemLabel} ${cluster.symptomLabel} ${cluster.triggerText}`,
+    ...cluster.tickets.map((ticket) => ticket.summary),
+  ];
+  let meilleur = 0;
+  for (const cible of cibles) {
+    const score = overlap(source, wordsOf(cible));
+    if (score > meilleur) meilleur = score;
+  }
+  return meilleur;
 }
 
 /** Réponse proposée à l'agent, à relire avant envoi (§7.2 : jamais envoyée seule). */
