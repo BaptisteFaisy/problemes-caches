@@ -314,7 +314,7 @@ export function buildCluster(
     signature: `${labelOf(vocabulary, 'system', first.systemId, locale)} · ${labelOf(vocabulary, 'symptom', first.symptomId, locale)} · ${triggerOf(first.triggerText, locale)}`,
     systemLabel: labelOf(vocabulary, 'system', first.systemId, locale),
     symptomLabel: labelOf(vocabulary, 'symptom', first.symptomId, locale),
-    triggerText: first.triggerText,
+    triggerText: triggerOf(first.triggerText, locale),
     status: cluster.status,
     kind: first.kind,
     tickets,
