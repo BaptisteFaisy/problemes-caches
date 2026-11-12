@@ -5,6 +5,7 @@
  * `startBootstrap`, `bootstrapProgress`, `loadSampleData`, `clearSampleData`.
  */
 
+import { aggregateIssueContext } from '../core/bill';
 import { matchTicket } from '../core/matching';
 import { buildSignature, extractHardClues } from '../core/signature';
 import type { BootstrapProgress, CustomerUpdateDraft, TicketSignature } from '../core/types';
@@ -54,17 +55,15 @@ export async function getIssueContext(req: ResolverReq): Promise<IssueContextDat
   if (!projectId || !issueKey) return { problems: [], hoursPerMonth: 0, people: 0 };
   const problems = (await listOpenProblems(projectId)).filter((pr) => pr.fixIssueKey === issueKey);
   const entries: { problem: (typeof problems)[number]; bill: Awaited<ReturnType<typeof getBill>>; people: number }[] = [];
-  let hoursPerMonth = 0;
-  let people = 0;
   for (const problem of problems) {
     const bill = await getBill(problem.id, '30d');
-    hoursPerMonth += bill?.hours ?? 0;
-    // Personnes : le max des additions, jamais la somme — une personne
-    // touchée par deux problèmes liés ne compte pas deux fois (§18).
-    people = Math.max(people, bill?.people ?? 0);
     entries.push({ problem, bill, people: bill?.people ?? 0 });
   }
-  return { problems: entries, hoursPerMonth, people };
+  // Heures additionnées, personnes au maximum : une personne touchée par deux
+  // problèmes liés ne compte pas deux fois (§18). Règle partagée avec le site de
+  // démonstration, qui appelle la même fonction (`src/core/bill.ts`).
+  const totals = aggregateIssueContext(entries.map((entry) => entry.bill));
+  return { problems: entries, hoursPerMonth: totals.hoursPerMonth, people: totals.people };
 }
 
 /** Brouillon de message groupé (§7.4, PC-18) : préparé, jamais envoyé par l'app. */

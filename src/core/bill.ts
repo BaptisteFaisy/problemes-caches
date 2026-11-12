@@ -271,3 +271,34 @@ export function mergeBills(bills: readonly ProblemBill[]): ProblemBill {
     computedAt: latestAt(bills.map((bill) => bill.computedAt)) ?? first.computedAt,
   };
 }
+
+/** Totaux du contexte développeur : ce que coûte un bug lié (§7.2, §18). */
+export interface IssueContextTotals {
+  hoursPerMonth: number;
+  people: number;
+}
+
+/**
+ * Agrège les additions des problèmes liés à un ticket de correctif (§18).
+ *
+ * Les heures **s'additionnent**, les personnes **non** : elles sont prises au
+ * maximum des additions, car une personne touchée par deux problèmes liés ne
+ * compte pas deux fois. C'est la règle que le panneau « Ce que coûte ce bug »
+ * affiche dans Jira Software, et le site de démonstration appelle cette
+ * fonction-ci — jamais une copie (règle « zéro duplication »).
+ *
+ * Les additions manquantes sont ignorées : un problème sans addition chiffrée
+ * ne pèse ni en heures ni en personnes.
+ */
+export function aggregateIssueContext(
+  bills: readonly (ProblemBill | null | undefined)[],
+): IssueContextTotals {
+  let hoursPerMonth = 0;
+  let people = 0;
+  for (const bill of bills) {
+    if (!bill) continue;
+    hoursPerMonth += bill.hours;
+    people = Math.max(people, bill.people);
+  }
+  return { hoursPerMonth, people };
+}
